@@ -1,0 +1,8 @@
+.button {
+  display: flex;
+  align-items: center;
+}
+
+.button__progress {
+  margin-left: 10px;
+}

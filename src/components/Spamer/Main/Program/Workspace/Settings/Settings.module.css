@@ -1,0 +1,10 @@
+.times {
+  display: flex;
+  margin-top: 20px;
+  width: 520px;
+  justify-content: space-between;
+}
+
+.checkboxes {
+  margin-top: 5px;
+}

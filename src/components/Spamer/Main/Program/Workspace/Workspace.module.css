@@ -1,0 +1,5 @@
+.workspace {
+  flex-basis: 70%;
+  display: flex;
+  flex-direction: column;
+}

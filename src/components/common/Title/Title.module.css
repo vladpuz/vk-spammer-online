@@ -1,0 +1,10 @@
+.title {
+  font-size: 18px;
+  background: var(--color-title);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin-bottom: 4px;
+  width: max-content;
+  font-family: 'Roboto', sans-serif;
+}

@@ -1,0 +1,59 @@
+.instructions {
+
+}
+
+.inner {
+  padding: 20px;
+}
+
+.title {
+  margin-top: 30px;
+  padding-bottom: 10px;
+  font-size: 36px;
+  background: var(--color-title);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  text-align: center;
+  font-weight: bold;
+}
+
+.title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 3px;
+  background: #ff8a00 linear-gradient(to right, #30a5da, #28ff1f);
+}
+
+.subtitle {
+  font-size: 30px;
+  background: var(--color-title);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.list,
+.addressesList {
+  list-style: none;
+}
+
+.list__item > *:last-child {
+  margin-left: 20px;
+}
+
+.addressesList__title {
+  font-size: 20px;
+}
+
+.screenshot {
+
+}
+
+.instructions p {
+  margin: 10px 0;
+}
