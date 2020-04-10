@@ -7,22 +7,60 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import SdStorageIcon from '@material-ui/icons/SdStorage'
-import { clearAccounts, setIsEnabledAll, shuffleAccounts } from '../../../../../redux/accounts-reducer'
-import { useDispatch } from 'react-redux'
+import { authAccount, clearAccounts, setIsEnabledAll, shuffleAccounts } from '../../../../../redux/accounts-reducer'
+import { useDispatch, useSelector } from 'react-redux'
+import random from '../../../../../utils/random'
+import { authAppType } from '../../../../../types/types'
+import { rootReducerType } from '../../../../../redux/store'
 
 function Buttons () {
   const dispatch = useDispatch()
+  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
 
   return (
     <div className={s.buttons}>
       <div className={s.col}>
-        <input id="uploadSpamAddressees" type="file" style={{ display: 'none' }}/>
+        <input
+          id="uploadSpamAddressees"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            const target = e.currentTarget as HTMLInputElement
+            const file: File = (target.files as FileList)[0]
+            const reader = new FileReader()
+            reader.readAsText(file)
+            reader.onload = () => {
+              if (reader.result && typeof reader.result === 'string') {
+                const data = reader.result.split('\n').map(item => {
+                  return (item && item.includes(':')) ? {
+                    login: item.split(':')[0].trim(),
+                    password: item.split(':')[1].trim()
+                  } : ''
+                })
+
+                for (let item of data) {
+                  if (item) {
+                    const app = ['android', 'iphone', 'ipad', 'windows', 'windowsPhone'][random(0, 4)] as authAppType
+                    dispatch(authAccount(app, item.login, item.password))
+                  }
+                }
+              }
+            }
+          }}
+        />
         <label htmlFor="uploadSpamAddressees">
           <Button fullWidth variant="outlined" color="default" component="span" startIcon={<CloudUploadIcon/>}>
             Загрузить из файла
           </Button>
         </label>
-        <Button fullWidth variant="outlined" startIcon={<ShuffleIcon/>} onClick={() => {dispatch(shuffleAccounts())}}>
+        <Button
+          fullWidth
+          disabled={spamOnPause || spamOnRun}
+          variant="outlined"
+          startIcon={<ShuffleIcon/>}
+          onClick={() => {dispatch(shuffleAccounts())}}
+        >
           Перемешать аккаунты
         </Button>
       </div>
@@ -49,6 +87,7 @@ function Buttons () {
       <div className={s.col}>
         <Button
           fullWidth
+          disabled={spamOnPause || spamOnRun}
           variant="outlined"
           startIcon={<DeleteIcon/>}
           onClick={() => {dispatch(clearAccounts())}}

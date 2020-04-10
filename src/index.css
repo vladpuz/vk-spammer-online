@@ -17,9 +17,9 @@ a {
 
 :root {
   --bg-header: #0c1013;
-  --bg-main: #1c1f22;
-  --bg-widget: #1f2427;
-  --bg-border-widget: #3a3c49;
+  --bg-content: #1c1f22;
+  --bg-accounts: #1f2427;
+  --bg-border-accounts: #3a3c49;
 
   --color-secondary: #d9d9d9;
   --color-title: linear-gradient(to right, #ff8a00, #da3f27);
@@ -30,7 +30,8 @@ body::-webkit-scrollbar {
   width: 16px;
 }
 
-body::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track,
+body::-webkit-scrollbar-corner {
   background-color: #1a1a1d;
 }
 

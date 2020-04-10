@@ -247,7 +247,6 @@ export const authAccount = (
   return async (dispatch, getState) => {
     dispatch(setAuthInProgress(true))
     const res = await auth(app, username, password, code)
-    console.log(res)
 
     if (!res.error) {
       const { access_token: token, user_id: userID } = res

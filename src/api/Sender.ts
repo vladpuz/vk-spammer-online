@@ -3,13 +3,13 @@ import { ISender } from '../types/types'
 
 class Sender implements ISender {
   public token: string
-  public myID: number
+  public userID: number
   public message: string
   public attachment: string
 
-  constructor (token: string, myID: number, message: string, attachment: string) {
+  constructor (token: string, userID: number, message: string, attachment: string) {
     this.token = token
-    this.myID = myID
+    this.userID = userID
     this.message = message
     this.attachment = attachment
   }
@@ -40,7 +40,7 @@ class Sender implements ISender {
 
   public async sendToTalkAndLeave (talkID: number) {
     await this.sendToTalk(talkID)
-    return this.leaveTheTalk(talkID, this.myID)
+    return this.leaveTheTalk(talkID, this.userID)
   }
 
   public async sendToComments (commentID: string) {

@@ -14,9 +14,9 @@ function MyCheckbox (props: any) {
     <Checkbox
       {...props}
       {...field}
-      checked={field.value}
       onChange={onChange}
       error={(meta.touched && !!meta.error) || props.error}
+      checked={field.value}
     />
   )
 }

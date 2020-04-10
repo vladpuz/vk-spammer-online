@@ -2,12 +2,13 @@ import React from 'react'
 import s from './Header.module.css'
 import logo from '../../assets/images/logo.png'
 import { NavLink } from 'react-router-dom'
+import GitHubIcon from '@material-ui/icons/GitHub'
+import { IconButton } from '@material-ui/core'
 
 function Header () {
   return (
     <header className={s.header}>
       <div className={s.inner}>
-
         <div className={s.logo}>
           <NavLink to="/">
             <img className={s.logo__image} src={logo} alt="logo"/>
@@ -20,6 +21,13 @@ function Header () {
           </div>
         </div>
 
+        <div>
+          <a href="https://github.com/vladislav-puzyrev/vk_spamer_online" target="_blank" rel="noopener noreferrer">
+            <IconButton aria-label="github">
+              <GitHubIcon fontSize="large"/>
+            </IconButton>
+          </a>
+        </div>
       </div>
     </header>
   )

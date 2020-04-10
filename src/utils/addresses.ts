@@ -42,19 +42,26 @@ const addresses = {
   setLocalValue (mode: spamModeType, value: any) {
     switch (mode) {
       case 'pm':
-        return bs.local.set('fields.addressees.pm', value)
+        bs.local.set('fields.addressees.pm', value)
+        break
       case 'talks':
-        return bs.local.set('fields.addressees.talks', value)
+        bs.local.set('fields.addressees.talks', value)
+        break
       case 'talksAutoExit':
-        return bs.local.set('fields.addressees.talksAutoExit', value)
+        bs.local.set('fields.addressees.talksAutoExit', value)
+        break
       case 'usersWalls':
-        return bs.local.set('fields.addressees.usersWalls', value)
+        bs.local.set('fields.addressees.usersWalls', value)
+        break
       case 'groupsWalls':
-        return bs.local.set('fields.addressees.groupsWalls', value)
+        bs.local.set('fields.addressees.groupsWalls', value)
+        break
       case 'comments':
-        return bs.local.set('fields.addressees.comments', value)
+        bs.local.set('fields.addressees.comments', value)
+        break
       case 'discussions':
-        return bs.local.set('fields.addressees.discussions', value)
+        bs.local.set('fields.addressees.discussions', value)
+        break
     }
   }
 }

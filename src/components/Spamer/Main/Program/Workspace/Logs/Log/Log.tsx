@@ -1,16 +1,16 @@
 import React from 'react'
 import s from './Log.module.css'
-import { logStateType } from '../../../../../../../types/types'
+import { logStatusType } from '../../../../../../../types/types'
 import useLogData from './useLogData'
 
 interface IProps {
   title: string
-  state: logStateType
+  status: logStatusType
   time: string
 }
 
-function Log ({ title, state, time }: IProps) {
-  const [color, Icon] = useLogData(state)
+function Log ({ title, status, time }: IProps) {
+  const [color, Icon] = useLogData(status)
 
   return (
     <div className={s.log} style={{ backgroundColor: color }}>

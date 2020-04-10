@@ -1,10 +1,9 @@
 .accounts {
-  /*height: 244px;*/
   height: 260px;
   border-radius: 5px;
   overflow: auto;
-  border: 2px solid var(--bg-border-widget);
-  background-color: var(--bg-widget);
+  border: 2px solid var(--bg-border-accounts);
+  background-color: var(--bg-accounts);
   position: relative;
 }
 

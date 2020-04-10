@@ -1,10 +1,10 @@
-export type logStateType = 'error' | 'success' | 'warning' | 'info'
+export type logStatusType = 'error' | 'success' | 'warning' | 'info'
 export type authAppType = 'android' | 'iphone' | 'ipad' | 'windows' | 'windowsPhone'
 export type spamModeType = 'pm' | 'talks' | 'talksAutoExit' | 'usersWalls' | 'groupsWalls' | 'comments' | 'discussions'
 
 export interface ISender {
   token: string
-  myID: number
+  userID: number
   message: string
   attachment: string
   sendToPM: (userDomain: string) => Promise<any>
@@ -14,6 +14,22 @@ export interface ISender {
   sendToDiscussions: (discussionsID: string) => Promise<any>
   postToUser: (userID: number) => Promise<any>
   postToGroup: (groupID: number) => Promise<any>
+}
+
+export interface IValues {
+  message: string
+  attachment: string
+  sendInterval: number
+  autoPauseTimeout: number
+  onePass: boolean
+  antiCaptcha: boolean
+  spamMode: spamModeType
+  addressees: Array<string>
+}
+
+export interface ISpamData {
+  addresseeIndex: number
+  senderIndex: number
 }
 
 export interface IProfileInfo {
@@ -36,6 +52,6 @@ export interface IAccount {
 export interface ILog {
   title: string
   time: string
-  state: logStateType
+  status: logStatusType
   key: number
 }

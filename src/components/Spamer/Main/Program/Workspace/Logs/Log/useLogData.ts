@@ -1,11 +1,11 @@
-import { logStateType } from '../../../../../../../types/types'
+import { logStatusType } from '../../../../../../../types/types'
 import { ReactNode, useEffect, useState } from 'react'
 import ErrorIcon from '@material-ui/icons/Error'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import WarningIcon from '@material-ui/icons/Warning'
 import InfoIcon from '@material-ui/icons/Info'
 
-function useLogData (state: logStateType) {
+function useLogData (state: logStatusType) {
   const [color, setColor] = useState()
   const [Icon, setIcon] = useState<ReactNode>('s')
 

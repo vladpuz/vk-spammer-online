@@ -4,6 +4,8 @@ import s from './FieldAddressees.module.css'
 import MyTextField from '../../../../../common/MyTextField/MyTextField'
 import addresses from '../../../../../../utils/addresses'
 import { useFormikContext } from 'formik'
+import { useSelector } from 'react-redux'
+import { rootReducerType } from '../../../../../../redux/store'
 
 interface IProps {
   placeholder: string
@@ -11,11 +13,14 @@ interface IProps {
 
 function FieldAddressees ({ placeholder }: IProps) {
   const { values } = useFormikContext()
+  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
 
   return (
     <div className={s.field}>
       <Title>Адресаты</Title>
       <MyTextField
+        disabled={spamOnPause || spamOnRun}
         name="addressees"
         multiline
         fullWidth

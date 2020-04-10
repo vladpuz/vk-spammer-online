@@ -1,7 +1,4 @@
-function randomInteger (min: number, max: number) {
-  let rand = min - 0.5 + Math.random() * (max - min + 1)
-  return Math.round(rand)
-}
+import random from './random'
 
 // Делает рандомизацию строки по синтаксису 'Привет, [[value1 | value2 | value3]]'
 function randomization (text: string): string {
@@ -25,7 +22,7 @@ function randomization (text: string): string {
 
     const paramsArr = paramsStr.split('|').map(str => str.trim())
     paramsStr = ''
-    const randomItem = paramsArr[randomInteger(0, paramsArr.length - 1)]
+    const randomItem = paramsArr[random(0, paramsArr.length - 1)]
     result += randomItem
   }
 

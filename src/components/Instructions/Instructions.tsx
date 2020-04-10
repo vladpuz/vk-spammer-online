@@ -10,7 +10,7 @@ import usersWalls from '../../assets/screenshots/users-walls.png'
 
 function Instructions () {
   return (
-    <div className={s.instructions}>
+    <>
       <h2 className={s.title}>Инструкция по использованию</h2>
       <div className={s.inner}>
         <ul className={s.list}>
@@ -133,7 +133,7 @@ function Instructions () {
           </li>
         </ul>
       </div>
-    </div>
+    </>
   )
 }
 

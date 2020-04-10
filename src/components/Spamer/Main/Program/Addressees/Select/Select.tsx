@@ -6,6 +6,8 @@ import bs from '../../../../../../utils/BrowserStorage'
 import addresses from '../../../../../../utils/addresses'
 import { spamModeType } from '../../../../../../types/types'
 import { useFormikContext } from 'formik'
+import { useSelector } from 'react-redux'
+import { rootReducerType } from '../../../../../../redux/store'
 
 interface IProps {
   setPlaceholder: (placeholder: string) => void
@@ -13,11 +15,14 @@ interface IProps {
 
 function Select ({ setPlaceholder }: IProps) {
   const { setFieldValue } = useFormikContext()
+  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
 
   return (
     <>
       <Title>Режим рассылки</Title>
       <MyTextField
+        disabled={spamOnPause || spamOnRun}
         name="spamMode"
         fullWidth
         select

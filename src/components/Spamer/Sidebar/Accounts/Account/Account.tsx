@@ -6,9 +6,10 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import AddIcon from '@material-ui/icons/Add'
 import RemoveIcon from '@material-ui/icons/Remove'
 import { removeAccount, setIsEnabled } from '../../../../../redux/accounts-reducer'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import bs from '../../../../../utils/BrowserStorage'
 import { IAccount } from '../../../../../types/types'
+import { rootReducerType } from '../../../../../redux/store'
 
 interface IProps {
   userID: number
@@ -24,6 +25,8 @@ const Account: React.FC<IProps> = ({ userID, avatarURL, fullName, currentSender,
   const isCurrentSenderClassName = currentSender && s.currentSender
   const vkLink = `https://vk.com/id${userID}`
   const dispatch = useDispatch()
+  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
 
   const remove = () => {
     dispatch(removeAccount(userID))
@@ -37,7 +40,6 @@ const Account: React.FC<IProps> = ({ userID, avatarURL, fullName, currentSender,
         <a href={vkLink} target="_blank" rel="noopener noreferrer">
           <img className={s.avatar} src={avatarURL} alt="avatar"/>
         </a>
-
         <a className={cn(s.fullName, isCurrentSenderClassName)} href={vkLink} target="_blank" rel="noopener noreferrer">
           {fullName}
         </a>
@@ -46,7 +48,11 @@ const Account: React.FC<IProps> = ({ userID, avatarURL, fullName, currentSender,
       <div>
         {
           isEnabled ? (
-            <IconButton aria-label="remove" onClick={() => {dispatch(setIsEnabled(userID, false))}}>
+            <IconButton
+              disabled={spamOnPause || spamOnRun || currentSender}
+              aria-label="remove"
+              onClick={() => {dispatch(setIsEnabled(userID, false))}}
+            >
               <RemoveIcon/>
             </IconButton>
           ) : (
@@ -55,8 +61,11 @@ const Account: React.FC<IProps> = ({ userID, avatarURL, fullName, currentSender,
             </IconButton>
           )
         }
-
-        <IconButton aria-label="delete" onClick={() => {remove()}}>
+        <IconButton
+          disabled={spamOnPause || spamOnRun}
+          aria-label="delete"
+          onClick={() => {remove()}}
+        >
           <DeleteIcon/>
         </IconButton>
       </div>

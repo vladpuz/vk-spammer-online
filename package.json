@@ -1,8 +1,8 @@
 {
   "name": "vk_spamer_online",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": true,
-  "homepage": "http://vladislav-puzyrev.github.io/vk_spamer_online",
+  "homepage": "https://vladislav-puzyrev.github.io/vk_spamer_online",
   "dependencies": {
     "@material-ui/core": "^4.9.9",
     "@material-ui/icons": "^4.9.1",

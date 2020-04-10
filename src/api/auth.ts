@@ -1,7 +1,7 @@
 import { proxyURL, version } from './settings'
 import { authAppType } from '../types/types'
 
-interface IAuthSuccess {
+interface ISuccess {
   access_token: string
   expires_in: number
   user_id: number
@@ -23,7 +23,7 @@ export async function auth (
   username: string,
   password: string,
   code?: number
-): Promise<IAuthSuccess & IAuth2FA> {
+): Promise<ISuccess & IAuth2FA> {
   const { client_id, client_secret } = authApps[app]
   let URL = proxyURL + 'https://oauth.vk.com/token?'
 
