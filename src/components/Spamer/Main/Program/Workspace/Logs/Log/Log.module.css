@@ -16,6 +16,11 @@
   margin-left: 5px;
 }
 
+.right {
+  display: flex;
+  align-items: center;
+}
+
 .time,
 .title__text {
   color: #171717;

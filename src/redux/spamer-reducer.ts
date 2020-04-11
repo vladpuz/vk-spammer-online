@@ -7,24 +7,25 @@ const SET_SPAM_ON_PAUSE = 'vk_spamer_online/spamer/SET_SPAM_ON_PAUSE'
 const SET_AUTO_SWITCH_TIME = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_TIME'
 const SET_ANTI_CAPTCHA_KEY = 'vk_spamer_online/spamer/SET_ANTI_CAPTCHA_KEY'
 const ADD_LOG_ITEM = 'vk_spamer_online/spamer/ADD_LOG_ITEM'
+const CHANGE_LOG_ITEM = 'vk_spamer_online/spamer/CHANGE_LOG_ITEM'
 const CLEAR_LOG = 'vk_spamer_online/spamer/CLEAR_LOG'
 const SET_ADDRESSEE_INDEX = 'vk_spamer_online/spamer/SET_ADDRESSEE_INDEX'
 const SET_SENDER_INDEX = 'vk_spamer_online/spamer/SET_SENDER_INDEX'
 const SET_SPAM_TIMER_ID = 'vk_spamer_online/spamer/SET_SPAM_TIMER_ID'
 const SET_SENDER_TIMER_ID = 'vk_spamer_online/spamer/SET_SENDER_TIMER_ID'
 const SET_AUTO_PAUSE_TIMER_ID = 'vk_spamer_online/spamer/SET_AUTO_PAUSE_TIMER_ID'
-const ADD_SEND_OPERATION = 'vk_spamer_online/spamer/ADD_SEND_OPERATION'
 
 const initialState = {
   spamOnRun: false,
   spamOnPause: false,
   settings: {
-    autoSwitchTime: bs.local.get('fields.autoSwitchTime') || '300',
+    autoSwitchTime: +(bs.local.get('fields.autoSwitchTime') || 300),
     antiCaptchaKey: bs.local.get('fields.antiCaptchaKey') || ''
   },
   logs: [{
     title: 'Приложение открыто',
     status: 'info' as logStatusType,
+    loading: false,
     time: new Date().toLocaleTimeString(),
     key: Date.now()
   }],
@@ -36,8 +37,7 @@ const initialState = {
     spamTimerID: 0,
     senderTimerID: 0,
     autoPauseTimerID: 0,
-  },
-  sendOperations: [] as Promise<any>[]
+  }
 }
 
 type InitialStateType = typeof initialState
@@ -46,14 +46,14 @@ type ActionTypes =
   setAutoSwitchTimeType |
   setAntiCaptchaKeyType |
   addLogItemType |
+  changeLogItemType |
   clearLogType |
   setSpamOnpauseType |
   setAddresseeIndexType |
   setSenderIndexType |
   setSpamTimerIDType |
   setSenderTimerIDType |
-  setAutoPauseTimerIDType |
-  addSendOperationType
+  setAutoPauseTimerIDType
 
 function spamerReducer (state = initialState, action: ActionTypes): InitialStateType {
   switch (action.type) {
@@ -96,11 +96,30 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ]
       }
 
+    case CHANGE_LOG_ITEM:
+      return {
+        ...state,
+        logs: [
+          ...state.logs.map(log => log.key === action.key ? {
+            ...log,
+            title: action.data.title || log.title,
+            status: action.data.status || log.status,
+            loading: !!action.data.loading
+          } : log)
+        ]
+      }
+
     case CLEAR_LOG:
       return {
         ...state,
         logs: [
-          { title: 'Лог очищен', status: 'info', time: new Date().toLocaleTimeString(), key: Date.now() }
+          {
+            title: 'Лог очищен',
+            status: 'info',
+            loading: false,
+            time: new Date().toLocaleTimeString(),
+            key: Date.now()
+          }
         ]
       }
 
@@ -149,15 +168,6 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         }
       }
 
-    case ADD_SEND_OPERATION:
-      return {
-        ...state,
-        sendOperations: [
-          ...state.sendOperations,
-          action.promise
-        ]
-      }
-
     default:
       return state
   }
@@ -189,14 +199,22 @@ export const setAntiCaptchaKey = (key: string): setAntiCaptchaKeyType => ({
 })
 
 type addLogItemType = { type: typeof ADD_LOG_ITEM, item: ILog }
-export const addLogItem = (title: string, status: logStatusType): addLogItemType => ({
+export const addLogItem = (title: string, status: logStatusType, loading: boolean, key: number): addLogItemType => ({
   type: ADD_LOG_ITEM,
   item: {
     title,
     status,
+    loading,
     time: new Date().toLocaleTimeString(),
-    key: Date.now()
+    key: key
   }
+})
+
+type changeLogItemType = { type: typeof CHANGE_LOG_ITEM, key: number, data: { title?: string, status?: logStatusType, loading?: boolean } }
+export const changeLogItem = (key: number, data: { title?: string, status?: logStatusType, loading?: boolean }): changeLogItemType => ({
+  type: CHANGE_LOG_ITEM,
+  key,
+  data,
 })
 
 type clearLogType = { type: typeof CLEAR_LOG }
@@ -232,12 +250,6 @@ type setAutoPauseTimerIDType = { type: typeof SET_AUTO_PAUSE_TIMER_ID, id: numbe
 export const setAutoPauseTimerID = (id: number): setAutoPauseTimerIDType => ({
   type: SET_AUTO_PAUSE_TIMER_ID,
   id
-})
-
-type addSendOperationType = { type: typeof ADD_SEND_OPERATION, promise: Promise<any> }
-export const addSendOperation = (promise: Promise<any>): addSendOperationType => ({
-  type: ADD_SEND_OPERATION,
-  promise
 })
 
 export default spamerReducer

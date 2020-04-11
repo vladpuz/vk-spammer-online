@@ -61,9 +61,17 @@ function AuthForm () {
             />
           }
           <AddButton/>
-          <NavLink to="/" className={s.backLink}>
-            <Button fullWidth variant="contained" color="primary">Вернуться в спамер</Button>
-          </NavLink>
+          <div className={s.backLink}>
+            <Button
+              component={NavLink}
+              to="/"
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              Вернуться в спамер
+            </Button>
+          </div>
           <Snackbars/>
         </div>
       </Form>

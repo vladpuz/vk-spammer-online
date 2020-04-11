@@ -31,7 +31,7 @@ function Program () {
           setErrors,
           setFieldError,
           () => {
-            dispatch(addLogItem('Рассылка начата', 'info'))
+            dispatch(addLogItem('Рассылка начата', 'info', false, Date.now()))
           }
         )
       }}

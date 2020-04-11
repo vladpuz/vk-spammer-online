@@ -51,7 +51,8 @@ export interface IAccount {
 
 export interface ILog {
   title: string
-  time: string
   status: logStatusType
+  loading: boolean
+  time: string
   key: number
 }

@@ -21,13 +21,9 @@ function Header () {
           </div>
         </div>
 
-        <div>
-          <a href="https://github.com/vladislav-puzyrev/vk_spamer_online" target="_blank" rel="noopener noreferrer">
-            <IconButton aria-label="github">
-              <GitHubIcon fontSize="large"/>
-            </IconButton>
-          </a>
-        </div>
+        <IconButton href="https://github.com/vladislav-puzyrev/vk_spamer_online" target="_blank" aria-label="github">
+          <GitHubIcon fontSize="large"/>
+        </IconButton>
       </div>
     </header>
   )

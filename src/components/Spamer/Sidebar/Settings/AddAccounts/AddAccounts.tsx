@@ -5,11 +5,16 @@ import { NavLink } from 'react-router-dom'
 
 function AddAccounts () {
   return (
-    <NavLink to="/accounts">
-      <Button fullWidth variant="contained" color="default" component="span" startIcon={<SupervisorAccountIcon/>}>
-        Добавить аккаунты
-      </Button>
-    </NavLink>
+    <Button
+      component={NavLink}
+      to="/accounts"
+      fullWidth
+      variant="contained"
+      color="default"
+      startIcon={<SupervisorAccountIcon/>}
+    >
+      Добавить аккаунты
+    </Button>
   )
 }
 

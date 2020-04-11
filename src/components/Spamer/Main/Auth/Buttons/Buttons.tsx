@@ -22,6 +22,7 @@ function Buttons () {
     <div className={s.buttons}>
       <div className={s.col}>
         <input
+          disabled={spamOnPause || spamOnRun}
           id="uploadSpamAddressees"
           type="file"
           style={{ display: 'none' }}
@@ -50,7 +51,14 @@ function Buttons () {
           }}
         />
         <label htmlFor="uploadSpamAddressees">
-          <Button fullWidth variant="outlined" color="default" component="span" startIcon={<CloudUploadIcon/>}>
+          <Button
+            disabled={spamOnPause || spamOnRun}
+            fullWidth
+            variant="outlined"
+            color="default"
+            component="span"
+            startIcon={<CloudUploadIcon/>}
+          >
             Загрузить из файла
           </Button>
         </label>
@@ -68,6 +76,7 @@ function Buttons () {
       <div className={s.col}>
         <Button
           fullWidth
+          disabled={spamOnPause || spamOnRun}
           variant="outlined"
           startIcon={<AddCircleIcon/>}
           onClick={() => {dispatch(setIsEnabledAll(true))}}
@@ -76,6 +85,7 @@ function Buttons () {
         </Button>
         <Button
           fullWidth
+          disabled={spamOnPause || spamOnRun}
           variant="outlined"
           startIcon={<RemoveCircleIcon/>}
           onClick={() => {dispatch(setIsEnabledAll(false))}}
@@ -96,6 +106,7 @@ function Buttons () {
         </Button>
         <Button
           fullWidth
+          disabled={spamOnPause || spamOnRun}
           variant="outlined"
           startIcon={<SdStorageIcon/>}
           onClick={() => {

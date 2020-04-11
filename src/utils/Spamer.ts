@@ -8,7 +8,8 @@ import {
   addLogItem,
   setSpamOnPause,
   setSpamOnRun,
-  addSendOperation
+  setAutoPauseTimerID,
+  changeLogItem
 } from '../redux/spamer-reducer'
 import Sender from '../api/Sender'
 import { clearCurrentSender, setCurrentSender } from '../redux/accounts-reducer'
@@ -16,27 +17,27 @@ import randomization from './randomization'
 
 class Spamer {
   private values: IValues
-  private spamData: ISpamData
+  private initData: ISpamData
   private accounts: Array<IAccount>
-  readonly accountsSwitchTime: number
   private sender: ISender
+  readonly accountsSwitchTime: number
 
   constructor (values: IValues) {
     this.values = values
-    this.spamData = store.getState().spamerReducer.initData
+    this.initData = store.getState().spamerReducer.initData
     this.accounts = store.getState().accountsReducer.accounts.filter(account => account.isEnabled)
     this.accountsSwitchTime = store.getState().spamerReducer.settings.autoSwitchTime
 
     this.sender = new Sender(
-      this.accounts[this.spamData.senderIndex].token,
-      this.accounts[this.spamData.senderIndex].profileInfo.id,
+      this.accounts[this.initData.senderIndex].token,
+      this.accounts[this.initData.senderIndex].profileInfo.id,
       randomization(this.values.message),
       randomization(this.values.attachment).split('\n').filter(str => str).join(',')
     )
   }
 
   private async send (mode: spamModeType) {
-    const address = this.values.addressees[this.spamData.addresseeIndex]
+    const address = this.values.addressees[this.initData.addresseeIndex]
 
     switch (mode) {
       case 'pm':
@@ -57,41 +58,35 @@ class Spamer {
   }
 
   private handleSend () {
-    const runSend = () => {
-      const promise = this.send(this.values.spamMode).then(res => {
-        console.log(res)
-        if (res.error) {
-          store.dispatch(addLogItem(`${res.error.error_msg}`, 'error'))
-          if (res.error.error_msg === 'Captcha needed') {
+    // Нужно для сохранения отправителя в лексическом окружении
+    const senderIndex = this.initData.senderIndex
+    const accountName = `${this.accounts[senderIndex].profileInfo.first_name} ${this.accounts[senderIndex].profileInfo.last_name}`
+    const addressName = this.values.addressees[this.initData.addresseeIndex]
 
-          }
+    const key = Date.now()
+    store.dispatch(addLogItem(`Отправляется - ${addressName} от ${accountName}`, 'success', true, key))
+
+    this.send(this.values.spamMode).then(res => {
+      console.log(res)
+
+      if (res.error) {
+        store.dispatch(changeLogItem(key, {
+          title: `Ошибка - ${res.error.error_msg}`,
+          status: 'error',
+          loading: false
+        }))
+        if (res.error.error_msg === 'Captcha needed') {
+
         }
-
-        else {
-          const addressName = this.values.addressees[this.spamData.addresseeIndex]
-          const accountFirstName = this.accounts[this.spamData.senderIndex].profileInfo.first_name
-          const accountLastName = this.accounts[this.spamData.senderIndex].profileInfo.last_name
-          const accountName = `${accountFirstName} ${accountLastName}`
-          store.dispatch(addLogItem(`Отправлено - ${addressName} от ${accountName}`, 'success'))
-        }
-      })
-
-      this.sender.message = randomization(this.values.message)
-      this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
-      return promise
-    }
-
-    if (this.accountsSwitchTime) {
-      store.dispatch(addSendOperation(runSend()))
-    }
-
-    else {
-      for (let i = 0; i < this.accounts.length; i++) {
-        this.sender.token = this.accounts[i].token
-        this.sender.userID = this.accounts[i].profileInfo.id
-        store.dispatch(addSendOperation(runSend()))
       }
-    }
+
+      else {
+        store.dispatch(changeLogItem(key, {
+          title: `Отправлено - ${addressName} от ${accountName}`,
+          loading: false
+        }))
+      }
+    })
   }
 
   private setAutoPauseTimeout () {
@@ -100,71 +95,93 @@ class Spamer {
     }, this.values.autoPauseTimeout * 60 * 1000)
   }
 
-  private setSpamInterval () {
-    return window.setInterval(() => {
-      let nextIndex = 0
-      if (this.values.onePass) {
-        if (this.spamData.addresseeIndex === this.values.addressees.length - 1) {
-          Spamer.stop()
-          store.dispatch(addLogItem('Проход окончен', 'info'))
-          store.dispatch(clearCurrentSender())
-          store.dispatch(setSpamOnPause(false))
-          store.dispatch(setSpamOnRun(false))
-        }
-
-        else {
-          nextIndex = this.spamData.addresseeIndex + 1
-        }
-      }
-
-      else {
-        nextIndex = (this.spamData.addresseeIndex + 1 === this.values.addressees.length) ? 0 : this.spamData.addresseeIndex + 1
-      }
-      store.dispatch(setAddresseeIndex(nextIndex))
-      this.spamData.addresseeIndex = nextIndex
-      this.handleSend()
-    }, this.values.sendInterval * 1000)
-  }
-
   private setSenderChangeInterval () {
     return window.setInterval(() => {
-      const nextSenderIndex = (this.spamData.senderIndex + 1 === this.accounts.length) ? 0 : this.spamData.senderIndex + 1
+      const nextSenderIndex = (this.initData.senderIndex + 1 === this.accounts.length) ? 0 : this.initData.senderIndex + 1
+
+      this.initData.senderIndex = nextSenderIndex
+      this.sender.token = this.accounts[this.initData.senderIndex].token
+      this.sender.userID = this.accounts[this.initData.senderIndex].profileInfo.id
+
       store.dispatch(setSenderIndex(nextSenderIndex))
-
-      this.spamData.senderIndex = nextSenderIndex
-      this.sender.token = this.accounts[this.spamData.senderIndex].token
-      this.sender.userID = this.accounts[this.spamData.senderIndex].profileInfo.id
-
-      store.dispatch(setCurrentSender(this.accounts[this.spamData.senderIndex].profileInfo.id))
+      store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
     }, this.accountsSwitchTime * 1000)
   }
 
+  private spam (first: boolean) {
+    let nextAddresseeIndex = this.initData.addresseeIndex
+
+    // Если время смены аккаунта равно нулю все аккаунты спамят одновременно
+    if (!this.accountsSwitchTime) {
+      if (!first) {
+        nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
+        this.initData.addresseeIndex = nextAddresseeIndex
+        store.dispatch(setAddresseeIndex(nextAddresseeIndex))
+      }
+      for (let i = 0; i < this.accounts.length; i++) {
+        this.sender.token = this.accounts[i].token
+        this.sender.userID = this.accounts[i].profileInfo.id
+        this.sender.message = randomization(this.values.message)
+        this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
+        this.initData.senderIndex = i
+        this.handleSend()
+      }
+    }
+
+    else {
+      if (!first) {
+        nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
+        this.initData.addresseeIndex = nextAddresseeIndex
+        this.sender.message = randomization(this.values.message)
+        this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
+        store.dispatch(setAddresseeIndex(nextAddresseeIndex))
+      }
+      this.handleSend()
+    }
+
+    // Если только один проход, то выключить спам когда придет время
+    if (this.values.onePass && (nextAddresseeIndex + 1 === this.values.addressees.length)) {
+      Spamer.stop('Проход окончен', 'info')
+    }
+  }
+
   public start () {
-    if (this.values.autoPauseTimeout) this.setAutoPauseTimeout()
+    if (this.values.autoPauseTimeout) {
+      const autoPauseTimerID = this.setAutoPauseTimeout()
+      store.dispatch(setAutoPauseTimerID(autoPauseTimerID))
+    }
 
     if (this.accountsSwitchTime) {
       const senderTimerID = this.setSenderChangeInterval()
       store.dispatch(setSenderTimerID(senderTimerID))
-      store.dispatch(setCurrentSender(this.accounts[this.spamData.senderIndex].profileInfo.id))
+      store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
     }
 
-    const spamTimerID = this.setSpamInterval()
+    const spamTimerID = window.setInterval(this.spam.bind(this, false), this.values.sendInterval * 1000)
     store.dispatch(setSpamTimerID(spamTimerID))
-    this.handleSend()
+    this.spam(true)
   }
 
-  public static stop () {
+  private static clearIntervals () {
     clearInterval(store.getState().spamerReducer.timers.senderTimerID)
     clearInterval(store.getState().spamerReducer.timers.spamTimerID)
+    clearInterval(store.getState().spamerReducer.timers.autoPauseTimerID)
+  }
+
+  public static stop (logTitle: string, logState: logStatusType) {
     store.dispatch(setSenderIndex(0))
     store.dispatch(setAddresseeIndex(0))
+    store.dispatch(setSpamOnRun(false))
+    store.dispatch(setSpamOnPause(false))
+    store.dispatch(clearCurrentSender())
+    store.dispatch(addLogItem(logTitle, logState, false, Date.now()))
+    Spamer.clearIntervals()
   }
 
   public static pause (logTitle: string, logState: logStatusType) {
     store.dispatch(setSpamOnPause(true))
-    store.dispatch(addLogItem(logTitle, logState))
-    clearInterval(store.getState().spamerReducer.timers.senderTimerID)
-    clearInterval(store.getState().spamerReducer.timers.spamTimerID)
+    store.dispatch(addLogItem(logTitle, logState, false, Date.now()))
+    Spamer.clearIntervals()
   }
 }
 
