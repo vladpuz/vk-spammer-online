@@ -4,6 +4,11 @@
   padding: 0 10px;
   height: 60px;
   justify-content: space-between;
+  background-color: #26262c;
+}
+
+.account:not(:last-child) {
+  border-bottom: 1px solid #33333B;
 }
 
 .profileInfo {
@@ -29,12 +34,7 @@
   text-decoration: underline;
 }
 
-.accountEnabled {
-  background-color: #26262c;
-}
-
 .accountDisabled {
-  background-color: #26262c;
   opacity: 0.5;
 }
 

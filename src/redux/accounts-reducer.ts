@@ -7,6 +7,7 @@ import shuffle from '../utils/shuffle'
 import bs from '../utils/BrowserStorage'
 
 /* Action types */
+const SET_ACCOUNTS = 'vk_spamer_online/accounts/SET_ACCOUNTS'
 const ADD_ACCOUNT = 'vk_spamer_online/accounts/ADD_ACCOUNT'
 const REMOVE_ACCOUNT = 'vk_spamer_online/accounts/REMOVE_ACCOUNT'
 const SHUFFLE_ACCOUNTS = 'vk_spamer_online/accounts/SHUFFLE_ACCOUNTS'
@@ -34,6 +35,7 @@ const initialState = {
 
 type InitialStateType = typeof initialState
 type ActionTypes =
+  setAccountsType |
   addAccountType |
   removeAccountType |
   shuffleAccountsType |
@@ -50,6 +52,12 @@ type ActionTypes =
 
 function accountsReducer (state = initialState, action: ActionTypes): InitialStateType {
   switch (action.type) {
+    case SET_ACCOUNTS:
+      return {
+        ...state,
+        accounts: action.accounts
+      }
+
     case ADD_ACCOUNT:
       return {
         ...state,
@@ -159,6 +167,12 @@ function accountsReducer (state = initialState, action: ActionTypes): InitialSta
 }
 
 /* Action creators */
+type setAccountsType = { type: typeof SET_ACCOUNTS, accounts: Array<IAccount> }
+export const setAccounts = (accounts: Array<IAccount>): setAccountsType => ({
+  type: SET_ACCOUNTS,
+  accounts
+})
+
 type addAccountType = { type: typeof ADD_ACCOUNT, account: IAccount }
 export const addAccount = (account: IAccount): addAccountType => ({
   type: ADD_ACCOUNT,
