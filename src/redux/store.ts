@@ -5,10 +5,10 @@ import spamerReducer from './spamer-reducer'
 
 const rootReducer = combineReducers({
   accountsReducer,
-  spamerReducer
+  spamerReducer,
 })
 
-export type rootReducerType = ReturnType<typeof rootReducer>
+export type RootReducerType = ReturnType<typeof rootReducer>
 
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose

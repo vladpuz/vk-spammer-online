@@ -1,4 +1,4 @@
-import { IAccount, ISender, spamModeType, IValues, ISpamData, logStatusType } from '../types/types'
+import { IAccount, ISender, SpamModeType, IValues, ISpamData, LogStatusType } from '../types/types'
 import store from '../redux/store'
 import {
   setSenderTimerID,
@@ -9,7 +9,7 @@ import {
   setSpamOnPause,
   setSpamOnRun,
   setAutoPauseTimerID,
-  changeLogItem
+  changeLogItem,
 } from '../redux/spamer-reducer'
 import Sender from '../api/Sender'
 import { clearCurrentSender, setCurrentSender } from '../redux/accounts-reducer'
@@ -32,11 +32,12 @@ class Spamer {
       this.accounts[this.initData.senderIndex].token,
       this.accounts[this.initData.senderIndex].profileInfo.id,
       randomization(this.values.message),
-      randomization(this.values.attachment).split('\n').filter(str => str).join(',')
+      randomization(this.values.attachment).split('\n').filter(str => str).join(','),
     )
   }
 
-  private async send (mode: spamModeType) {
+  private async send () {
+    const mode: SpamModeType = this.values.spamMode
     const address = this.values.addressees[this.initData.addresseeIndex]
 
     switch (mode) {
@@ -63,27 +64,24 @@ class Spamer {
     const accountName = `${this.accounts[senderIndex].profileInfo.first_name} ${this.accounts[senderIndex].profileInfo.last_name}`
     const addressName = this.values.addressees[this.initData.addresseeIndex]
 
-    const key = Date.now()
-    store.dispatch(addLogItem(`Отправляется - ${addressName} от ${accountName}`, 'success', true, key))
+    const key = Date.now().toString()
+    store.dispatch(addLogItem('Запрос обрабатывается', 'pending', true, key))
 
-    this.send(this.values.spamMode).then(res => {
+    this.send().then(res => {
       console.log(res)
 
       if (res.error) {
         store.dispatch(changeLogItem(key, {
           title: `Ошибка - ${res.error.error_msg}`,
           status: 'error',
-          loading: false
+          loading: false,
         }))
-        if (res.error.error_msg === 'Captcha needed') {
-
-        }
-      }
-
-      else {
+        if (res.error.error_msg === 'Captcha needed') {}
+      } else {
         store.dispatch(changeLogItem(key, {
           title: `Отправлено - ${addressName} от ${accountName}`,
-          loading: false
+          status: 'success',
+          loading: false,
         }))
       }
     })
@@ -97,7 +95,7 @@ class Spamer {
 
   private setSenderChangeInterval () {
     return window.setInterval(() => {
-      const nextSenderIndex = (this.initData.senderIndex + 1 === this.accounts.length) ? 0 : this.initData.senderIndex + 1
+      const nextSenderIndex = this.initData.senderIndex + 1 === this.accounts.length ? 0 : this.initData.senderIndex + 1
 
       this.initData.senderIndex = nextSenderIndex
       this.sender.token = this.accounts[this.initData.senderIndex].token
@@ -126,9 +124,7 @@ class Spamer {
         this.initData.senderIndex = i
         this.handleSend()
       }
-    }
-
-    else {
+    } else {
       if (!first) {
         nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
         this.initData.addresseeIndex = nextAddresseeIndex
@@ -165,22 +161,22 @@ class Spamer {
   private static clearIntervals () {
     clearInterval(store.getState().spamerReducer.timers.senderTimerID)
     clearInterval(store.getState().spamerReducer.timers.spamTimerID)
-    clearInterval(store.getState().spamerReducer.timers.autoPauseTimerID)
+    clearTimeout(store.getState().spamerReducer.timers.autoPauseTimerID)
   }
 
-  public static stop (logTitle: string, logState: logStatusType) {
+  public static stop (logTitle: string, logState: LogStatusType) {
     store.dispatch(setSenderIndex(0))
     store.dispatch(setAddresseeIndex(0))
     store.dispatch(setSpamOnRun(false))
     store.dispatch(setSpamOnPause(false))
     store.dispatch(clearCurrentSender())
-    store.dispatch(addLogItem(logTitle, logState, false, Date.now()))
+    store.dispatch(addLogItem(logTitle, logState, false, Date.now().toString()))
     Spamer.clearIntervals()
   }
 
-  public static pause (logTitle: string, logState: logStatusType) {
+  public static pause (logTitle: string, logState: LogStatusType) {
     store.dispatch(setSpamOnPause(true))
-    store.dispatch(addLogItem(logTitle, logState, false, Date.now()))
+    store.dispatch(addLogItem(logTitle, logState, false, Date.now().toString()))
     Spamer.clearIntervals()
   }
 }

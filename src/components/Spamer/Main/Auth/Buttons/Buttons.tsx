@@ -10,13 +10,13 @@ import SdStorageIcon from '@material-ui/icons/SdStorage'
 import { authAccount, clearAccounts, setIsEnabledAll, shuffleAccounts } from '../../../../../redux/accounts-reducer'
 import { useDispatch, useSelector } from 'react-redux'
 import random from '../../../../../utils/random'
-import { authAppType } from '../../../../../types/types'
-import { rootReducerType } from '../../../../../redux/store'
+import { AuthAppType } from '../../../../../types/types'
+import { RootReducerType } from '../../../../../redux/store'
 
 function Buttons () {
   const dispatch = useDispatch()
-  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
 
   return (
     <div className={s.buttons}>
@@ -36,13 +36,13 @@ function Buttons () {
                 const data = reader.result.split('\n').map(item => {
                   return (item && item.includes(':')) ? {
                     login: item.split(':')[0].trim(),
-                    password: item.split(':')[1].trim()
+                    password: item.split(':')[1].trim(),
                   } : ''
                 })
 
                 for (let item of data) {
                   if (item) {
-                    const app = ['android', 'iphone', 'ipad', 'windows', 'windowsPhone'][random(0, 4)] as authAppType
+                    const app = ['android', 'iphone', 'ipad', 'windows', 'windowsPhone'][random(0, 4)] as AuthAppType
                     dispatch(authAccount(app, item.login, item.password))
                   }
                 }
@@ -100,7 +100,10 @@ function Buttons () {
           disabled={spamOnPause || spamOnRun}
           variant="outlined"
           startIcon={<DeleteIcon/>}
-          onClick={() => {dispatch(clearAccounts())}}
+          onClick={() => {
+            localStorage.removeItem('accounts')
+            dispatch(clearAccounts())
+          }}
         >
           Удалить все аккаунты
         </Button>

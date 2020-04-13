@@ -1,8 +1,8 @@
 import React from 'react'
 import s from './Settings.module.css'
-import AddAccounts from './AddAccounts/AddAccounts'
-import AutoSwitchTime from './AutoSwitchTime/AutoSwitchTime'
-import AntiCaptchaKey from './AntiCaptchaKey/AntiCaptchaKey'
+import AddAccounts from './AddAccounts'
+import AutoSwitchTime from './AutoSwitchTime'
+import AntiCaptchaKey from './AntiCaptchaKey'
 
 function Settings () {
   return (

@@ -1,8 +1,13 @@
 import React from 'react'
 import s from './Log.module.css'
-import { logStatusType } from '../../../../../../../types/types'
-import useLogData from './useLogData'
+import { LogStatusType } from '../../../../../../../types/types'
 import { CircularProgress, withStyles } from '@material-ui/core'
+import cn from 'classnames'
+import ErrorIcon from '@material-ui/icons/Error'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import WarningIcon from '@material-ui/icons/Warning'
+import InfoIcon from '@material-ui/icons/Info'
+import HourglassFullIcon from '@material-ui/icons/HourglassFull'
 
 const ColorCircularProgress = withStyles({
   root: {
@@ -12,16 +17,21 @@ const ColorCircularProgress = withStyles({
 
 interface IProps {
   title: string
-  status: logStatusType
+  status: LogStatusType
   loading: boolean
   time: string
 }
 
 function Log ({ title, status, loading, time }: IProps) {
-  const [color, Icon] = useLogData(status)
+  let Icon: any
+  if (status === 'error') Icon = ErrorIcon
+  if (status === 'success') Icon = CheckCircleIcon
+  if (status === 'warning') Icon = WarningIcon
+  if (status === 'info') Icon = InfoIcon
+  if (status === 'pending') Icon = HourglassFullIcon
 
   return (
-    <div className={s.log} style={{ backgroundColor: color }}>
+    <div className={cn(s.log, s[status])}>
       <div className={s.title}>
         <Icon fontSize="small"/>
         <span className={s.title__text}>

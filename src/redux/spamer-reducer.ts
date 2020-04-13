@@ -1,4 +1,4 @@
-import { ILog, logStatusType } from '../types/types'
+import { ILog, LogStatusType } from '../types/types'
 import bs from '../utils/BrowserStorage'
 
 /* Action types */
@@ -19,16 +19,18 @@ const initialState = {
   spamOnRun: false,
   spamOnPause: false,
   settings: {
-    autoSwitchTime: +(bs.local.get('fields.autoSwitchTime') || 300),
-    antiCaptchaKey: bs.local.get('fields.antiCaptchaKey') || ''
+    autoSwitchTime: bs.local.get('fields.autoSwitchTime') === '' ? 0 : 300,
+    antiCaptchaKey: bs.local.get('fields.antiCaptchaKey') || '',
   },
-  logs: [{
-    title: 'Приложение открыто',
-    status: 'info' as logStatusType,
-    loading: false,
-    time: new Date().toLocaleTimeString(),
-    key: Date.now()
-  }],
+  logs: [
+    {
+      title: 'Приложение открыто',
+      status: 'info' as LogStatusType,
+      loading: false,
+      time: new Date().toLocaleTimeString(),
+      key: Date.now().toString(),
+    },
+  ],
   initData: {
     addresseeIndex: 0,
     senderIndex: 0,
@@ -37,7 +39,7 @@ const initialState = {
     spamTimerID: 0,
     senderTimerID: 0,
     autoPauseTimerID: 0,
-  }
+  },
 }
 
 type InitialStateType = typeof initialState
@@ -60,13 +62,13 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
     case SET_SPAM_ON_RUN:
       return {
         ...state,
-        spamOnRun: action.onRun
+        spamOnRun: action.onRun,
       }
 
     case SET_SPAM_ON_PAUSE:
       return {
         ...state,
-        spamOnPause: action.onPause
+        spamOnPause: action.onPause,
       }
 
     case SET_AUTO_SWITCH_TIME:
@@ -74,8 +76,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ...state,
         settings: {
           ...state.settings,
-          autoSwitchTime: action.seconds
-        }
+          autoSwitchTime: action.seconds,
+        },
       }
 
     case SET_ANTI_CAPTCHA_KEY:
@@ -83,8 +85,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ...state,
         settings: {
           ...state.settings,
-          antiCaptchaKey: action.key
-        }
+          antiCaptchaKey: action.key,
+        },
       }
 
     case ADD_LOG_ITEM:
@@ -92,8 +94,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ...state,
         logs: [
           action.item,
-          ...state.logs
-        ]
+          ...state.logs,
+        ],
       }
 
     case CHANGE_LOG_ITEM:
@@ -104,9 +106,9 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
             ...log,
             title: action.data.title || log.title,
             status: action.data.status || log.status,
-            loading: !!action.data.loading
-          } : log)
-        ]
+            loading: !!action.data.loading,
+          } : log),
+        ],
       }
 
     case CLEAR_LOG:
@@ -118,9 +120,9 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
             status: 'info',
             loading: false,
             time: new Date().toLocaleTimeString(),
-            key: Date.now()
-          }
-        ]
+            key: Date.now().toString(),
+          },
+        ],
       }
 
     case SET_ADDRESSEE_INDEX:
@@ -128,8 +130,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ...state,
         initData: {
           ...state.initData,
-          addresseeIndex: action.index
-        }
+          addresseeIndex: action.index,
+        },
       }
 
     case SET_SENDER_INDEX:
@@ -137,8 +139,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ...state,
         initData: {
           ...state.initData,
-          senderIndex: action.index
-        }
+          senderIndex: action.index,
+        },
       }
 
     case SET_SPAM_TIMER_ID:
@@ -146,8 +148,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ...state,
         timers: {
           ...state.timers,
-          spamTimerID: action.id
-        }
+          spamTimerID: action.id,
+        },
       }
 
     case SET_SENDER_TIMER_ID:
@@ -155,8 +157,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ...state,
         timers: {
           ...state.timers,
-          senderTimerID: action.id
-        }
+          senderTimerID: action.id,
+        },
       }
 
     case SET_AUTO_PAUSE_TIMER_ID:
@@ -164,8 +166,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         ...state,
         timers: {
           ...state.timers,
-          autoPauseTimerID: action.id
-        }
+          autoPauseTimerID: action.id,
+        },
       }
 
     default:
@@ -177,41 +179,44 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
 type setSpamOnRunType = { type: typeof SET_SPAM_ON_RUN, onRun: boolean }
 export const setSpamOnRun = (onRun: boolean): setSpamOnRunType => ({
   type: SET_SPAM_ON_RUN,
-  onRun
+  onRun,
 })
 
 type setSpamOnpauseType = { type: typeof SET_SPAM_ON_PAUSE, onPause: boolean }
 export const setSpamOnPause = (onPause: boolean): setSpamOnpauseType => ({
   type: SET_SPAM_ON_PAUSE,
-  onPause
+  onPause,
 })
 
 type setAutoSwitchTimeType = { type: typeof SET_AUTO_SWITCH_TIME, seconds: number }
 export const setAutoSwitchTime = (seconds: number): setAutoSwitchTimeType => ({
   type: SET_AUTO_SWITCH_TIME,
-  seconds
+  seconds,
 })
 
 type setAntiCaptchaKeyType = { type: typeof SET_ANTI_CAPTCHA_KEY, key: string }
 export const setAntiCaptchaKey = (key: string): setAntiCaptchaKeyType => ({
   type: SET_ANTI_CAPTCHA_KEY,
-  key
+  key,
 })
 
 type addLogItemType = { type: typeof ADD_LOG_ITEM, item: ILog }
-export const addLogItem = (title: string, status: logStatusType, loading: boolean, key: number): addLogItemType => ({
+export const addLogItem = (title: string, status: LogStatusType, loading: boolean, key: string): addLogItemType => ({
   type: ADD_LOG_ITEM,
   item: {
     title,
     status,
     loading,
     time: new Date().toLocaleTimeString(),
-    key: key
-  }
+    key,
+  },
 })
 
-type changeLogItemType = { type: typeof CHANGE_LOG_ITEM, key: number, data: { title?: string, status?: logStatusType, loading?: boolean } }
-export const changeLogItem = (key: number, data: { title?: string, status?: logStatusType, loading?: boolean }): changeLogItemType => ({
+type changeLogItemType = { type: typeof CHANGE_LOG_ITEM, key: string, data: { title?: string, status?: LogStatusType, loading?: boolean } }
+export const changeLogItem = (
+  key: string,
+  data: { title?: string, status?: LogStatusType, loading?: boolean },
+): changeLogItemType => ({
   type: CHANGE_LOG_ITEM,
   key,
   data,
@@ -225,31 +230,31 @@ export const clearLog = (): clearLogType => ({
 type setAddresseeIndexType = { type: typeof SET_ADDRESSEE_INDEX, index: number }
 export const setAddresseeIndex = (index: number): setAddresseeIndexType => ({
   type: SET_ADDRESSEE_INDEX,
-  index
+  index,
 })
 
 type setSenderIndexType = { type: typeof SET_SENDER_INDEX, index: number }
 export const setSenderIndex = (index: number): setSenderIndexType => ({
   type: SET_SENDER_INDEX,
-  index
+  index,
 })
 
 type setSpamTimerIDType = { type: typeof SET_SPAM_TIMER_ID, id: number }
 export const setSpamTimerID = (id: number): setSpamTimerIDType => ({
   type: SET_SPAM_TIMER_ID,
-  id
+  id,
 })
 
 type setSenderTimerIDType = { type: typeof SET_SENDER_TIMER_ID, id: number }
 export const setSenderTimerID = (id: number): setSenderTimerIDType => ({
   type: SET_SENDER_TIMER_ID,
-  id
+  id,
 })
 
 type setAutoPauseTimerIDType = { type: typeof SET_AUTO_PAUSE_TIMER_ID, id: number }
 export const setAutoPauseTimerID = (id: number): setAutoPauseTimerIDType => ({
   type: SET_AUTO_PAUSE_TIMER_ID,
-  id
+  id,
 })
 
 export default spamerReducer

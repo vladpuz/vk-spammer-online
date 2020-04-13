@@ -1,11 +1,11 @@
 import React from 'react'
 import Title from '../../../../../common/Title/Title'
 import s from './FieldAddressees.module.css'
-import MyTextField from '../../../../../common/MyTextField/MyTextField'
+import MyTextField from '../../../../../common/MyTextField'
 import addresses from '../../../../../../utils/addresses'
 import { useFormikContext } from 'formik'
 import { useSelector } from 'react-redux'
-import { rootReducerType } from '../../../../../../redux/store'
+import { RootReducerType } from '../../../../../../redux/store'
 
 interface IProps {
   placeholder: string
@@ -13,8 +13,8 @@ interface IProps {
 
 function FieldAddressees ({ placeholder }: IProps) {
   const { values } = useFormikContext()
-  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
 
   return (
     <div className={s.field}>

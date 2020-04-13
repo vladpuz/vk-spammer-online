@@ -9,7 +9,7 @@ import { removeAccount, setIsEnabled } from '../../../../../redux/accounts-reduc
 import { useDispatch, useSelector } from 'react-redux'
 import bs from '../../../../../utils/BrowserStorage'
 import { IAccount } from '../../../../../types/types'
-import { rootReducerType } from '../../../../../redux/store'
+import { RootReducerType } from '../../../../../redux/store'
 import { Draggable } from 'react-beautiful-dnd'
 
 interface IProps {
@@ -22,13 +22,21 @@ interface IProps {
   index: number
 }
 
-const Account: React.FC<IProps> = ({ userID, avatarURL, fullName, currentSender, isEnabled, error, index }) => {
+const Account: React.FC<IProps> = ({
+  userID,
+  avatarURL,
+  fullName,
+  currentSender,
+  isEnabled,
+  error,
+  index,
+}) => {
   const disabledClassName = isEnabled ? '' : s.accountDisabled
   const isCurrentSenderClassName = currentSender && s.currentSender
   const vkLink = `https://vk.com/id${userID}`
   const dispatch = useDispatch()
-  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
 
   const remove = () => {
     dispatch(removeAccount(userID))
@@ -39,11 +47,11 @@ const Account: React.FC<IProps> = ({ userID, avatarURL, fullName, currentSender,
   const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
     userSelect: 'none',
     background: isDragging ? '#373740' : '',
-    ...draggableStyle
+    ...draggableStyle,
   })
 
   return (
-    <Draggable draggableId={String(userID)} index={index}>
+    <Draggable isDragDisabled={spamOnPause || spamOnRun} draggableId={String(userID)} index={index}>
       {
         (provided, snapshot) => (
           <div

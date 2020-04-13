@@ -3,7 +3,7 @@ import s from './Program.module.css'
 import Workspace from './Workspace/Workspace'
 import Addressees from './Addressees/Addressees'
 import { Formik, Form } from 'formik'
-import { spamModeType } from '../../../../types/types'
+import { SpamModeType } from '../../../../types/types'
 import bs from '../../../../utils/BrowserStorage'
 import addresses from '../../../../utils/addresses'
 import submit from '../../../../utils/submit'
@@ -22,17 +22,16 @@ function Program () {
         autoPauseTimeout: bs.local.get('fields.autoPauseTimeout') || '',
         onePass: bs.local.get('fields.onePass') || false,
         antiCaptcha: bs.local.get('fields.antiCaptcha') || false,
-        spamMode: (bs.local.get('fields.spamMode') || 'pm') as spamModeType,
-        addressees: addresses.getLocalValue(bs.local.get('fields.spamMode') || 'pm') || ''
+        spamMode: (bs.local.get('fields.spamMode') || 'pm') as SpamModeType,
+        addressees: addresses.getLocalValue(bs.local.get('fields.spamMode') || 'pm') || '',
       }}
-      onSubmit={(values, { setErrors, setFieldError }) => {
+      onSubmit={(values, { setFieldError }) => {
         submit(
           { ...values, addressees: values.addressees.split('\n').filter((str: string) => str) },
-          setErrors,
           setFieldError,
           () => {
-            dispatch(addLogItem('Рассылка начата', 'info', false, Date.now()))
-          }
+            dispatch(addLogItem('Рассылка начата', 'info', false, Date.now().toString()))
+          },
         )
       }}
     >

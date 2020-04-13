@@ -1,27 +1,27 @@
 import React from 'react'
 import s from './AuthForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { rootReducerType } from '../../../../../redux/store'
-import { authAccount, } from '../../../../../redux/accounts-reducer'
-import { authAppType } from '../../../../../types/types'
+import { RootReducerType } from '../../../../../redux/store'
+import { authAccount } from '../../../../../redux/accounts-reducer'
+import { AuthAppType } from '../../../../../types/types'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
-import MyTextField from '../../../../common/MyTextField/MyTextField'
-import Snackbars from './Snackbars/Snackbars'
-import StaticFields from './StaticFields/StaticFields'
+import MyTextField from '../../../../common/MyTextField'
+import Snackbars from './Snackbars'
+import StaticFields from './StaticFields'
 import AddButton from './AddButton/AddButton'
 import { NavLink } from 'react-router-dom'
 import { Button } from '@material-ui/core'
 
 function AuthForm () {
-  const codeIsRequired = useSelector((state: rootReducerType) => state.accountsReducer.authWorkflow.codeIsRequired)
-  const isSuccessLogin = useSelector((state: rootReducerType) => state.accountsReducer.authWorkflow.isSuccessLogin)
+  const codeIsRequired = useSelector((state: RootReducerType) => state.accountsReducer.authWorkflow.codeIsRequired)
+  const isSuccessLogin = useSelector((state: RootReducerType) => state.accountsReducer.authWorkflow.isSuccessLogin)
   const dispatch = useDispatch()
 
   return (
     <Formik
       initialValues={{
-        app: 'windows' as authAppType,
+        app: 'windows' as AuthAppType,
         login: '',
         password: '',
         code: undefined,

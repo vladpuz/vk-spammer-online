@@ -1,4 +1,4 @@
-.inner {
+.instructions {
   padding: 20px;
 }
 
@@ -44,12 +44,9 @@
 
 .addressesList__title {
   font-size: 20px;
+  margin: 5px 0;
 }
 
 .screenshot {
-
-}
-
-.instructions p {
-  margin: 10px 0;
+  display: block;
 }

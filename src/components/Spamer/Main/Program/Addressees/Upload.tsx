@@ -2,14 +2,14 @@ import React from 'react'
 import { Button } from '@material-ui/core'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import { useFormikContext } from 'formik'
-import addresses from '../../../../../../utils/addresses'
+import addresses from '../../../../../utils/addresses'
 import { useSelector } from 'react-redux'
-import { rootReducerType } from '../../../../../../redux/store'
+import { RootReducerType } from '../../../../../redux/store'
 
 function Upload () {
   const { values, setFieldValue } = useFormikContext()
-  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
 
   return (
     <div style={{ marginBottom: '10px' }}>

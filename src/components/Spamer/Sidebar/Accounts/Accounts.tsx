@@ -2,14 +2,15 @@ import React from 'react'
 import s from './Accounts.module.css'
 import Account from './Account/Account'
 import { useDispatch, useSelector } from 'react-redux'
-import { rootReducerType } from '../../../../redux/store'
+import { RootReducerType } from '../../../../redux/store'
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import { setAccounts } from '../../../../redux/accounts-reducer'
 import bs from '../../../../utils/BrowserStorage'
+import Title from '../../../common/Title/Title'
 
 function Accounts () {
   const dispatch = useDispatch()
-  const accounts = useSelector((state: rootReducerType) => state.accountsReducer.accounts)
+  const accounts = useSelector((state: RootReducerType) => state.accountsReducer.accounts)
   const accountsElements = accounts.map((account, index) => (
     <Account
       key={account.profileInfo.id}
@@ -24,21 +25,19 @@ function Accounts () {
   ))
 
   const reorder = (list: Array<any>, startIndex: number, endIndex: number) => {
-    const result = Array.from(list)
+    const result = [...list]
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)
     return result
   }
 
   const onDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return
-    }
+    if (!result.destination) return
 
     const accountsOrdered = reorder(
       accounts,
       result.source.index,
-      result.destination.index
+      result.destination.index,
     )
 
     bs.local.set('accounts', accountsOrdered)
@@ -46,11 +45,12 @@ function Accounts () {
   }
 
   const getListStyle = (isDragging: boolean) => ({
-    borderColor: isDragging ? 'white' : ''
+    borderColor: isDragging ? 'white' : '',
   })
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
+      <Title>Ваши аккаунты</Title>
       <Droppable droppableId="droppable">
         {
           (provided, snapshot) => (

@@ -8,7 +8,7 @@ import { useFormikContext } from 'formik'
 
 function ResumeButton () {
   const dispatch = useDispatch()
-  const { values, setErrors, setFieldError }: any = useFormikContext()
+  const { values, setFieldError }: any = useFormikContext()
 
   return (
     <Button
@@ -19,12 +19,16 @@ function ResumeButton () {
       onClick={() => {
         submit(
           { ...values, addressees: values.addressees.split('\n').filter((str: string) => str) },
-          setErrors,
           setFieldError,
           () => {
-            dispatch(addLogItem('Рассылка продолжена', 'info', false, Date.now()))
+            dispatch(addLogItem(
+              'Рассылка продолжена',
+              'info',
+              false,
+              Date.now().toString() + 'resume',
+            ))
             dispatch(setSpamOnPause(false))
-          }
+          },
         )
       }}
     >

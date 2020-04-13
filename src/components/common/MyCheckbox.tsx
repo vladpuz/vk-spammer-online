@@ -1,13 +1,13 @@
 import React from 'react'
 import { useField } from 'formik'
-import Checkbox from '@material-ui/core/Checkbox'
+import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox'
 
-function MyCheckbox (props: any) {
-  const [field, meta] = useField(props)
+function MyCheckbox (props: CheckboxProps) {
+  const [field] = useField(props as any)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     field.onChange(e)
-    if (props.onChange) props.onChange(e)
+    if (props.onChange) props.onChange(e, e.currentTarget.checked)
   }
 
   return (
@@ -15,7 +15,6 @@ function MyCheckbox (props: any) {
       {...props}
       {...field}
       onChange={onChange}
-      error={(meta.touched && !!meta.error) || props.error}
       checked={field.value}
     />
   )

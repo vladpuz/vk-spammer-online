@@ -29,3 +29,23 @@
 .time {
   margin-left: 10px;
 }
+
+.error {
+  background-color: var(--error);
+}
+
+.success {
+  background-color: var(--success);
+}
+
+.warning {
+  background-color: var(--warning);
+}
+
+.info {
+  background-color: var(--info);
+}
+
+.pending {
+  background-color: var(--pending);
+}

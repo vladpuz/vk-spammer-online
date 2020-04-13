@@ -7,15 +7,15 @@ import ClearIcon from '@material-ui/icons/Clear'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearLog } from '../../../../../../redux/spamer-reducer'
-import { rootReducerType } from '../../../../../../redux/store'
+import { RootReducerType } from '../../../../../../redux/store'
 import Spamer from '../../../../../../utils/Spamer'
 import ResumeButton from './ResumeButton'
 import PauseButton from './PauseButton'
 
 function Buttons () {
   const buttonWidth = 200
-  const spamIsRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
-  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
+  const spamIsRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
   const dispatch = useDispatch()
 
   return (

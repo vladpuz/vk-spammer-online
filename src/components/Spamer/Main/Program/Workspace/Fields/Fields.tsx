@@ -1,7 +1,7 @@
 import React from 'react'
 import s from './Fields.module.css'
 import Title from '../../../../../common/Title/Title'
-import MyTextField from '../../../../../common/MyTextField/MyTextField'
+import MyTextField from '../../../../../common/MyTextField'
 import bs from '../../../../../../utils/BrowserStorage'
 
 function Fields () {

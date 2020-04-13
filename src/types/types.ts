@@ -1,6 +1,6 @@
-export type logStatusType = 'error' | 'success' | 'warning' | 'info'
-export type authAppType = 'android' | 'iphone' | 'ipad' | 'windows' | 'windowsPhone'
-export type spamModeType = 'pm' | 'talks' | 'talksAutoExit' | 'usersWalls' | 'groupsWalls' | 'comments' | 'discussions'
+export type LogStatusType = 'error' | 'success' | 'warning' | 'info' | 'pending'
+export type AuthAppType = 'android' | 'iphone' | 'ipad' | 'windows' | 'windowsPhone'
+export type SpamModeType = 'pm' | 'talks' | 'talksAutoExit' | 'usersWalls' | 'groupsWalls' | 'comments' | 'discussions'
 
 export interface ISender {
   token: string
@@ -23,7 +23,7 @@ export interface IValues {
   autoPauseTimeout: number
   onePass: boolean
   antiCaptcha: boolean
-  spamMode: spamModeType
+  spamMode: SpamModeType
   addressees: Array<string>
 }
 
@@ -51,8 +51,8 @@ export interface IAccount {
 
 export interface ILog {
   title: string
-  status: logStatusType
+  status: LogStatusType
   loading: boolean
   time: string
-  key: number
+  key: string
 }

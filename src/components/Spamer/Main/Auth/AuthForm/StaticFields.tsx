@@ -1,5 +1,5 @@
 import React from 'react'
-import MyTextField from '../../../../../common/MyTextField/MyTextField'
+import MyTextField from '../../../../common/MyTextField'
 import { MenuItem } from '@material-ui/core'
 
 function StaticFields () {

@@ -1,9 +1,9 @@
-type localStorageType = typeof localStorage
-type sessionStorageType = typeof sessionStorage
+type LocalStorageType = typeof localStorage
+type SessionStorageType = typeof sessionStorage
 
 // Позволяет записывать объекты в storage очень просто (bs.local.set(obj.names.firstName, 'Владислав'))
 class BrowserStorage {
-  private static set (storage: localStorageType | sessionStorageType, path: string, value: any) {
+  private static set (storage: LocalStorageType | SessionStorageType, path: string, value: any) {
     const keys = path.split('.')
     const args = keys.slice(1, keys.length)
 
@@ -22,7 +22,7 @@ class BrowserStorage {
     storage.setItem(keys[0], JSON.stringify(item))
   }
 
-  private static get (storage: localStorageType | sessionStorageType, path: string) {
+  private static get (storage: LocalStorageType | SessionStorageType, path: string) {
     const keys = path.split('.')
     const args = keys.slice(1, keys.length)
 
@@ -43,7 +43,7 @@ class BrowserStorage {
     },
     get (path: string) {
       return BrowserStorage.get(localStorage, path)
-    }
+    },
   }
 
   public static session = {
@@ -52,7 +52,7 @@ class BrowserStorage {
     },
     get (path: string) {
       return BrowserStorage.get(sessionStorage, path)
-    }
+    },
   }
 }
 

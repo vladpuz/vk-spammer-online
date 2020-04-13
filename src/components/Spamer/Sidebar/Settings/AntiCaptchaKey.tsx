@@ -1,12 +1,12 @@
 import React from 'react'
 import TextField from '@material-ui/core/TextField'
-import { setAntiCaptchaKey } from '../../../../../redux/spamer-reducer'
+import { setAntiCaptchaKey } from '../../../../redux/spamer-reducer'
 import { useDispatch, useSelector } from 'react-redux'
-import { rootReducerType } from '../../../../../redux/store'
-import bs from '../../../../../utils/BrowserStorage'
+import { RootReducerType } from '../../../../redux/store'
+import bs from '../../../../utils/BrowserStorage'
 
 function AntiCaptchaKey () {
-  const antiCaptchaKey = useSelector((state: rootReducerType) => state.spamerReducer.settings.antiCaptchaKey)
+  const antiCaptchaKey = useSelector((state: RootReducerType) => state.spamerReducer.settings.antiCaptchaKey)
   const dispatch = useDispatch()
 
   return (

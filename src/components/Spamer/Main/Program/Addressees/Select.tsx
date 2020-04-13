@@ -1,13 +1,13 @@
 import React from 'react'
-import Title from '../../../../../common/Title/Title'
+import Title from '../../../../common/Title/Title'
 import { MenuItem } from '@material-ui/core'
-import MyTextField from '../../../../../common/MyTextField/MyTextField'
-import bs from '../../../../../../utils/BrowserStorage'
-import addresses from '../../../../../../utils/addresses'
-import { spamModeType } from '../../../../../../types/types'
+import MyTextField from '../../../../common/MyTextField'
+import bs from '../../../../../utils/BrowserStorage'
+import addresses from '../../../../../utils/addresses'
+import { SpamModeType } from '../../../../../types/types'
 import { useFormikContext } from 'formik'
 import { useSelector } from 'react-redux'
-import { rootReducerType } from '../../../../../../redux/store'
+import { RootReducerType } from '../../../../../redux/store'
 
 interface IProps {
   setPlaceholder: (placeholder: string) => void
@@ -15,8 +15,8 @@ interface IProps {
 
 function Select ({ setPlaceholder }: IProps) {
   const { setFieldValue } = useFormikContext()
-  const spamOnPause = useSelector((state: rootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: rootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
 
   return (
     <>
@@ -28,10 +28,10 @@ function Select ({ setPlaceholder }: IProps) {
         select
         variant="outlined"
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          const spamMode = e.target.value as spamModeType
+          const spamMode = e.target.value as SpamModeType
 
           bs.local.set('fields.spamMode', spamMode)
-          setPlaceholder(addresses.getPlaceholder(spamMode as spamModeType))
+          setPlaceholder(addresses.getPlaceholder(spamMode as SpamModeType))
           setFieldValue('addressees', addresses.getLocalValue(spamMode) || '')
         }}
       >

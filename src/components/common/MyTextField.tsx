@@ -1,9 +1,10 @@
 import React from 'react'
 import { useField } from 'formik'
 import { TextField } from '@material-ui/core'
+import { TextFieldProps } from '@material-ui/core/TextField/TextField'
 
-function MyTextField (props: any) {
-  const [field, meta] = useField(props)
+function MyTextField (props: TextFieldProps) {
+  const [field, meta] = useField(props as any)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     field.onChange(e)

@@ -14,9 +14,7 @@ function randomization (text: string): string {
         paramsStr += text[i]
       }
       i += 2
-    }
-
-    else {
+    } else {
       result += text[i]
     }
 

@@ -1,5 +1,5 @@
 import { proxyURL, version } from './settings'
-import { authAppType } from '../types/types'
+import { AuthAppType } from '../types/types'
 
 interface ISuccess {
   access_token: string
@@ -19,10 +19,10 @@ interface IAuth2FA {
 
 // Возвращает токен или ошибку для повторного запроса с кодом 2FA
 export async function auth (
-  app: authAppType,
+  app: AuthAppType,
   username: string,
   password: string,
-  code?: number
+  code?: number,
 ): Promise<ISuccess & IAuth2FA> {
   const { client_id, client_secret } = authApps[app]
   let URL = proxyURL + 'https://oauth.vk.com/token?'
@@ -42,22 +42,22 @@ export async function auth (
 const authApps = {
   android: {
     client_id: '2274003',
-    client_secret: 'hHbZxrka2uZ6jB1inYsH'
+    client_secret: 'hHbZxrka2uZ6jB1inYsH',
   },
   iphone: {
     client_id: '3140623',
-    client_secret: 'VeWdmVclDCtn6ihuP1nt'
+    client_secret: 'VeWdmVclDCtn6ihuP1nt',
   },
   ipad: {
     client_id: '3682744',
-    client_secret: 'mY6CDUswIVdJLCD3j15n'
+    client_secret: 'mY6CDUswIVdJLCD3j15n',
   },
   windows: {
     client_id: '3697615',
-    client_secret: 'AlVXZFMUqyrnABp8ncuU'
+    client_secret: 'AlVXZFMUqyrnABp8ncuU',
   },
   windowsPhone: {
     client_id: '3502557',
-    client_secret: 'PEObAuQi6KloPM4T30DV'
-  }
+    client_secret: 'PEObAuQi6KloPM4T30DV',
+  },
 }

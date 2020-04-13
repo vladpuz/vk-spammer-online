@@ -1,8 +1,8 @@
 import React from 'react'
 import s from './Settings.module.css'
 import { Box, FormControlLabel, InputAdornment } from '@material-ui/core'
-import MyTextField from '../../../../../common/MyTextField/MyTextField'
-import MyCheckbox from '../../../../../common/MyCheckbox/MyCheckbox'
+import MyTextField from '../../../../../common/MyTextField'
+import MyCheckbox from '../../../../../common/MyCheckbox'
 import bs from '../../../../../../utils/BrowserStorage'
 
 function Settings () {

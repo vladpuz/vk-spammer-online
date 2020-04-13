@@ -1,9 +1,9 @@
-import { spamModeType } from '../types/types'
+import { SpamModeType } from '../types/types'
 import bs from './BrowserStorage'
 
-// Нужен для локального хранения и получения плейсхолдера для списка адресатов в зависимости от режима рассылки
+// Для локального хранения и получения плейсхолдера для списка адресатов в зависимости от режима рассылки
 const addresses = {
-  getPlaceholder (mode: spamModeType) {
+  getPlaceholder (mode: SpamModeType) {
     switch (mode) {
       case 'pm':
         return 'vanya_101\nid497257108\nkseniya2015\nи т.д.'
@@ -21,7 +21,7 @@ const addresses = {
         return '82514921_14544220\n84625170_24736522\n75625033_34796850\nи т.д.'
     }
   },
-  getLocalValue (mode: spamModeType) {
+  getLocalValue (mode: SpamModeType) {
     switch (mode) {
       case 'pm':
         return bs.local.get('fields.addressees.pm')
@@ -39,7 +39,7 @@ const addresses = {
         return bs.local.get('fields.addressees.discussions')
     }
   },
-  setLocalValue (mode: spamModeType, value: any) {
+  setLocalValue (mode: SpamModeType, value: any) {
     switch (mode) {
       case 'pm':
         bs.local.set('fields.addressees.pm', value)
@@ -63,7 +63,7 @@ const addresses = {
         bs.local.set('fields.addressees.discussions', value)
         break
     }
-  }
+  },
 }
 
 export default addresses
