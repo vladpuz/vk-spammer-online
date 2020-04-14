@@ -23,36 +23,7 @@ const SET_IS_SUCCESS_LOGIN = 'vk_spamer_online/accounts/SET_IS_SUCCESS_LOGIN'
 const SET_ACCOUNT_IS_REPEATED = 'vk_spamer_online/accounts/SET_ACCOUNT_IS_REPEATED'
 
 const initialState = {
-  // accounts: (bs.local.get('accounts') || []) as Array<IAccount>,
-  accounts: [
-    {
-      currentSender: false,
-      error: null as null | string,
-      isEnabled: true,
-      profileInfo: {
-        can_access_closed: true,
-        first_name: 'Владислав',
-        id: 2178496891,
-        is_closed: false,
-        last_name: 'Пузырёв',
-        photo_50: 'https://sun9-8.userapi.com/c849220/v849220169/4cbbc/dT0q8opI1_A.jpg?ava=1',
-      },
-      token: 'cd632956eac2a795185b3f08d5ba7f7433cd69563cc50db01cfc71bbd88c77b1d31d5387175803870ea41',
-    },
-    {
-      currentSender: false,
-      error: null as null | string,
-      isEnabled: true,
-      profileInfo: {
-        can_access_closed: true,
-        first_name: 'Дмитрий',
-        id: 217849689,
-        is_closed: false,
-        last_name: 'Кузюбирдин',
-        photo_50: 'https://sun9-8.userapi.com/c849220/v849220169/4cbbc/dT0q8opI1_A.jpg?ava=1',
-      },
-      token: 'cd632956eac2a795185b3f08d5ba7f7433cd69563cc50db01cfc71bbd88c77b1d31d5387175803870ea41',
-    }],
+  accounts: (bs.local.get('accounts') || []) as Array<IAccount>,
   authWorkflow: {
     authInProgress: false,
     codeIsRequired: false,
