@@ -66,6 +66,16 @@ function Settings () {
             }}
           />
         } label="Антикапча"/>
+
+        <FormControlLabel control={
+          <MyCheckbox
+            name="ignoreCaptcha"
+            color="secondary"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              bs.local.set('fields.ignoreСaptcha', e.currentTarget.checked)
+            }}
+          />
+        } label="Игнорировать капчу"/>
       </div>
     </>
   )

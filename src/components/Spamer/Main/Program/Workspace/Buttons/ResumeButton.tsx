@@ -24,8 +24,7 @@ function ResumeButton () {
             dispatch(addLogItem(
               'Рассылка продолжена',
               'info',
-              false,
-              Date.now().toString() + 'resume',
+              `${Date.now()} Рассылка продолжена info`,
             ))
             dispatch(setSpamOnPause(false))
           },

@@ -10,6 +10,8 @@ import {
   setSpamOnRun,
   setAutoPauseTimerID,
   changeLogItem,
+  setStartTimestamp,
+  setAutoSwitchRemaining,
 } from '../redux/spamer-reducer'
 import Sender from '../api/Sender'
 import { clearCurrentSender, setCurrentSender } from '../redux/accounts-reducer'
@@ -64,8 +66,15 @@ class Spamer {
     const accountName = `${this.accounts[senderIndex].profileInfo.first_name} ${this.accounts[senderIndex].profileInfo.last_name}`
     const addressName = this.values.addressees[this.initData.addresseeIndex]
 
-    const key = Date.now().toString()
-    store.dispatch(addLogItem('Запрос обрабатывается', 'pending', true, key))
+    /*    console.group('handleSend')
+        console.log('senderIndex: ' + senderIndex)
+        console.log('senderID: ' + this.sender.userID)
+        console.log('accountName: ' + accountName)
+        console.log('addressName: ' + addressName)
+        console.groupEnd()*/
+
+    const key = `${Date.now()} Запрос обрабатывается pending ${senderIndex} ${accountName} ${addressName}`
+    store.dispatch(addLogItem('Запрос обрабатывается', 'pending', key))
 
     this.send().then(res => {
       console.log(res)
@@ -93,17 +102,27 @@ class Spamer {
     }, this.values.autoPauseTimeout * 60 * 1000)
   }
 
-  private setSenderChangeInterval () {
-    return window.setInterval(() => {
-      const nextSenderIndex = this.initData.senderIndex + 1 === this.accounts.length ? 0 : this.initData.senderIndex + 1
+  private senderChange () {
+    const senderIndex = this.initData.senderIndex + 1 === this.accounts.length ? 0 : this.initData.senderIndex + 1
+    store.dispatch(setStartTimestamp(Date.now()))
 
-      this.initData.senderIndex = nextSenderIndex
-      this.sender.token = this.accounts[this.initData.senderIndex].token
-      this.sender.userID = this.accounts[this.initData.senderIndex].profileInfo.id
+    this.initData.senderIndex = senderIndex
+    this.sender.token = this.accounts[this.initData.senderIndex].token
+    this.sender.userID = this.accounts[this.initData.senderIndex].profileInfo.id
+    const accountName = `${this.accounts[senderIndex].profileInfo.first_name} ${this.accounts[senderIndex].profileInfo.last_name}`
 
-      store.dispatch(setSenderIndex(nextSenderIndex))
-      store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
-    }, this.accountsSwitchTime * 1000)
+    store.dispatch(addLogItem(
+      `Смена аккаунта на ${accountName}`,
+      'info',
+      `${Date.now()} Смена аккаунта на ${accountName} info`,
+    ))
+    store.dispatch(setSenderIndex(senderIndex))
+    store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
+  }
+
+  private randomize () {
+    this.sender.message = randomization(this.values.message)
+    this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
   }
 
   private spam (first: boolean) {
@@ -114,23 +133,29 @@ class Spamer {
       if (!first) {
         nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
         this.initData.addresseeIndex = nextAddresseeIndex
-        store.dispatch(setAddresseeIndex(nextAddresseeIndex))
+        store.dispatch(setAddresseeIndex(nextAddresseeIndex + 1))
+      } else {
+        let addresseeIndex = this.initData.addresseeIndex
+        addresseeIndex = (addresseeIndex + 1 === this.values.addressees.length) ? 0 : addresseeIndex + 1
+        store.dispatch(setAddresseeIndex(addresseeIndex))
       }
       for (let i = 0; i < this.accounts.length; i++) {
         this.sender.token = this.accounts[i].token
         this.sender.userID = this.accounts[i].profileInfo.id
-        this.sender.message = randomization(this.values.message)
-        this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
         this.initData.senderIndex = i
+        this.randomize()
         this.handleSend()
       }
     } else {
       if (!first) {
         nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
         this.initData.addresseeIndex = nextAddresseeIndex
-        this.sender.message = randomization(this.values.message)
-        this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
-        store.dispatch(setAddresseeIndex(nextAddresseeIndex))
+        store.dispatch(setAddresseeIndex(nextAddresseeIndex + 1))
+        this.randomize()
+      } else {
+        let addresseeIndex = this.initData.addresseeIndex
+        addresseeIndex = (addresseeIndex + 1 === this.values.addressees.length) ? 0 : addresseeIndex + 1
+        store.dispatch(setAddresseeIndex(addresseeIndex))
       }
       this.handleSend()
     }
@@ -142,13 +167,25 @@ class Spamer {
   }
 
   public start () {
+    store.dispatch(setStartTimestamp(Date.now()))
     if (this.values.autoPauseTimeout) {
       const autoPauseTimerID = this.setAutoPauseTimeout()
       store.dispatch(setAutoPauseTimerID(autoPauseTimerID))
     }
 
-    if (this.accountsSwitchTime) {
-      const senderTimerID = this.setSenderChangeInterval()
+    // Смена отправителя с сохранением оставшегося времени
+    if (this.initData.autoSwitchRemaining && this.accountsSwitchTime) {
+      const senderTimerID = window.setTimeout(() => {
+        this.senderChange()
+        store.dispatch(setAutoSwitchRemaining(this.accountsSwitchTime))
+
+        if (this.accountsSwitchTime) {
+          const senderTimerID = window.setInterval(this.senderChange.bind(this), this.accountsSwitchTime * 1000)
+          store.dispatch(setSenderTimerID(senderTimerID))
+          store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
+        }
+      }, this.initData.autoSwitchRemaining * 1000)
+
       store.dispatch(setSenderTimerID(senderTimerID))
       store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
     }
@@ -160,23 +197,47 @@ class Spamer {
 
   private static clearIntervals () {
     clearInterval(store.getState().spamerReducer.timers.senderTimerID)
+    clearTimeout(store.getState().spamerReducer.timers.senderTimerID)
     clearInterval(store.getState().spamerReducer.timers.spamTimerID)
     clearTimeout(store.getState().spamerReducer.timers.autoPauseTimerID)
   }
 
-  public static stop (logTitle: string, logState: LogStatusType) {
+  public static stop (logTitle: string, logStatus: LogStatusType) {
     store.dispatch(setSenderIndex(0))
     store.dispatch(setAddresseeIndex(0))
+    store.dispatch(setAutoSwitchRemaining(store.getState().spamerReducer.settings.autoSwitchTime))
     store.dispatch(setSpamOnRun(false))
     store.dispatch(setSpamOnPause(false))
     store.dispatch(clearCurrentSender())
-    store.dispatch(addLogItem(logTitle, logState, false, Date.now().toString()))
+    store.dispatch(addLogItem(
+      logTitle,
+      logStatus,
+      `${Date.now()} ${logTitle} ${logStatus}`,
+    ))
     Spamer.clearIntervals()
   }
 
-  public static pause (logTitle: string, logState: LogStatusType) {
+  public static pause (logTitle: string, logStatus: LogStatusType) {
+    const startTimestamp = store.getState().spamerReducer.startTimestamp
+    const autoSwitchRemaining = store.getState().spamerReducer.initData.autoSwitchRemaining
+    const autoSwitchTime = store.getState().spamerReducer.settings.autoSwitchTime
+
+    if (autoSwitchRemaining && autoSwitchTime) {
+      console.log(
+        `${autoSwitchTime} - (${(Date.now() - startTimestamp) / 1000} + ${autoSwitchTime - autoSwitchRemaining})`,
+      )
+
+      store.dispatch(setAutoSwitchRemaining(
+        autoSwitchTime - ((Date.now() - startTimestamp) / 1000 + (autoSwitchTime - autoSwitchRemaining)),
+      ))
+    }
+
     store.dispatch(setSpamOnPause(true))
-    store.dispatch(addLogItem(logTitle, logState, false, Date.now().toString()))
+    store.dispatch(addLogItem(
+      logTitle,
+      logStatus,
+      `${Date.now()} ${logTitle} ${logStatus}`,
+    ))
     Spamer.clearIntervals()
   }
 }

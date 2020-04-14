@@ -13,9 +13,17 @@ function submit (
 
   const validate = () => {
     if (!accounts.length) {
-      store.dispatch(addLogItem('Нету ни одного аккаунта', 'warning', false, Date.now().toString()))
+      store.dispatch(addLogItem(
+        'Нету ни одного аккаунта',
+        'warning',
+        `${Date.now()} Нету ни одного аккаунта warning`,
+      ))
     } else if (!accounts.some(account => account.isEnabled)) {
-      store.dispatch(addLogItem('Все аккаунты выключены', 'warning', false, Date.now().toString()))
+      store.dispatch(addLogItem(
+        'Все аккаунты выключены',
+        'warning',
+        `${Date.now()} Все аккаунты выключены warning`,
+      ))
     }
 
     if (!values.addressees.length) setFieldError('addressees', 'Укажите адресаты спама')

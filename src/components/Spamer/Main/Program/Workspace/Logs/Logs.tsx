@@ -11,7 +11,7 @@ function Logs () {
     <div className={s.logs}>
       {
         logs.map(log => {
-          return <Log key={log.key} title={log.title} status={log.status} loading={log.loading} time={log.time}/>
+          return <Log key={log.key} title={log.title} status={log.status} time={log.time}/>
         })
       }
     </div>

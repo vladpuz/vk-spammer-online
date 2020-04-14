@@ -4,6 +4,7 @@ import bs from '../utils/BrowserStorage'
 /* Action types */
 const SET_SPAM_ON_RUN = 'vk_spamer_online/spamer/SET_SPAM_ON_RUN'
 const SET_SPAM_ON_PAUSE = 'vk_spamer_online/spamer/SET_SPAM_ON_PAUSE'
+const SET_START_TIMESTAMP = 'vk_spamer_online/spamer/SET_START_TIMESTAMP'
 const SET_AUTO_SWITCH_TIME = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_TIME'
 const SET_ANTI_CAPTCHA_KEY = 'vk_spamer_online/spamer/SET_ANTI_CAPTCHA_KEY'
 const ADD_LOG_ITEM = 'vk_spamer_online/spamer/ADD_LOG_ITEM'
@@ -11,29 +12,34 @@ const CHANGE_LOG_ITEM = 'vk_spamer_online/spamer/CHANGE_LOG_ITEM'
 const CLEAR_LOG = 'vk_spamer_online/spamer/CLEAR_LOG'
 const SET_ADDRESSEE_INDEX = 'vk_spamer_online/spamer/SET_ADDRESSEE_INDEX'
 const SET_SENDER_INDEX = 'vk_spamer_online/spamer/SET_SENDER_INDEX'
+const SET_AUTO_SWITCH_REMAINING = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_REMAINING'
 const SET_SPAM_TIMER_ID = 'vk_spamer_online/spamer/SET_SPAM_TIMER_ID'
 const SET_SENDER_TIMER_ID = 'vk_spamer_online/spamer/SET_SENDER_TIMER_ID'
 const SET_AUTO_PAUSE_TIMER_ID = 'vk_spamer_online/spamer/SET_AUTO_PAUSE_TIMER_ID'
 
+const localAutoSwitchTime = bs.local.get('fields.autoSwitchTime')
+const autoSwitchTime = localAutoSwitchTime === 0 ? localAutoSwitchTime : localAutoSwitchTime || 300
+
 const initialState = {
   spamOnRun: false,
   spamOnPause: false,
+  startTimestamp: 0,
   settings: {
-    autoSwitchTime: bs.local.get('fields.autoSwitchTime') === '' ? 0 : 300,
+    autoSwitchTime: autoSwitchTime,
     antiCaptchaKey: bs.local.get('fields.antiCaptchaKey') || '',
   },
   logs: [
     {
       title: 'Приложение открыто',
       status: 'info' as LogStatusType,
-      loading: false,
       time: new Date().toLocaleTimeString(),
-      key: Date.now().toString(),
+      key: `${Date.now()} Приложение открыто info`,
     },
   ],
   initData: {
     addresseeIndex: 0,
     senderIndex: 0,
+    autoSwitchRemaining: autoSwitchTime,
   },
   timers: {
     spamTimerID: 0,
@@ -45,13 +51,15 @@ const initialState = {
 type InitialStateType = typeof initialState
 type ActionTypes =
   setSpamOnRunType |
+  setSpamOnpauseType |
+  setStartTimestampType |
   setAutoSwitchTimeType |
   setAntiCaptchaKeyType |
   addLogItemType |
   changeLogItemType |
   clearLogType |
-  setSpamOnpauseType |
   setAddresseeIndexType |
+  setAutoSwitchRemainingType |
   setSenderIndexType |
   setSpamTimerIDType |
   setSenderTimerIDType |
@@ -69,6 +77,12 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
       return {
         ...state,
         spamOnPause: action.onPause,
+      }
+
+    case SET_START_TIMESTAMP:
+      return {
+        ...state,
+        startTimestamp: action.seconds,
       }
 
     case SET_AUTO_SWITCH_TIME:
@@ -118,9 +132,8 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
           {
             title: 'Лог очищен',
             status: 'info',
-            loading: false,
             time: new Date().toLocaleTimeString(),
-            key: Date.now().toString(),
+            key: `${Date.now()} Лог очищен info`,
           },
         ],
       }
@@ -140,6 +153,15 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
         initData: {
           ...state.initData,
           senderIndex: action.index,
+        },
+      }
+
+    case SET_AUTO_SWITCH_REMAINING:
+      return {
+        ...state,
+        initData: {
+          ...state.initData,
+          autoSwitchRemaining: action.seconds,
         },
       }
 
@@ -188,6 +210,12 @@ export const setSpamOnPause = (onPause: boolean): setSpamOnpauseType => ({
   onPause,
 })
 
+type setStartTimestampType = { type: typeof SET_START_TIMESTAMP, seconds: number }
+export const setStartTimestamp = (seconds: number): setStartTimestampType => ({
+  type: SET_START_TIMESTAMP,
+  seconds,
+})
+
 type setAutoSwitchTimeType = { type: typeof SET_AUTO_SWITCH_TIME, seconds: number }
 export const setAutoSwitchTime = (seconds: number): setAutoSwitchTimeType => ({
   type: SET_AUTO_SWITCH_TIME,
@@ -201,12 +229,11 @@ export const setAntiCaptchaKey = (key: string): setAntiCaptchaKeyType => ({
 })
 
 type addLogItemType = { type: typeof ADD_LOG_ITEM, item: ILog }
-export const addLogItem = (title: string, status: LogStatusType, loading: boolean, key: string): addLogItemType => ({
+export const addLogItem = (title: string, status: LogStatusType, key: string): addLogItemType => ({
   type: ADD_LOG_ITEM,
   item: {
     title,
     status,
-    loading,
     time: new Date().toLocaleTimeString(),
     key,
   },
@@ -237,6 +264,12 @@ type setSenderIndexType = { type: typeof SET_SENDER_INDEX, index: number }
 export const setSenderIndex = (index: number): setSenderIndexType => ({
   type: SET_SENDER_INDEX,
   index,
+})
+
+type setAutoSwitchRemainingType = { type: typeof SET_AUTO_SWITCH_REMAINING, seconds: number }
+export const setAutoSwitchRemaining = (seconds: number): setAutoSwitchRemainingType => ({
+  type: SET_AUTO_SWITCH_REMAINING,
+  seconds,
 })
 
 type setSpamTimerIDType = { type: typeof SET_SPAM_TIMER_ID, id: number }

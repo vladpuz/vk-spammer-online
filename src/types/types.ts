@@ -23,6 +23,7 @@ export interface IValues {
   autoPauseTimeout: number
   onePass: boolean
   antiCaptcha: boolean
+  ignoreCaptcha: boolean
   spamMode: SpamModeType
   addressees: Array<string>
 }
@@ -30,6 +31,7 @@ export interface IValues {
 export interface ISpamData {
   addresseeIndex: number
   senderIndex: number
+  autoSwitchRemaining: number
 }
 
 export interface IProfileInfo {
@@ -52,7 +54,6 @@ export interface IAccount {
 export interface ILog {
   title: string
   status: LogStatusType
-  loading: boolean
   time: string
   key: string
 }

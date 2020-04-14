@@ -22,6 +22,7 @@ function Program () {
         autoPauseTimeout: bs.local.get('fields.autoPauseTimeout') || '',
         onePass: bs.local.get('fields.onePass') || false,
         antiCaptcha: bs.local.get('fields.antiCaptcha') || false,
+        ignoreCaptcha: bs.local.get('fields.ignoreСaptcha') || false,
         spamMode: (bs.local.get('fields.spamMode') || 'pm') as SpamModeType,
         addressees: addresses.getLocalValue(bs.local.get('fields.spamMode') || 'pm') || '',
       }}
@@ -30,7 +31,11 @@ function Program () {
           { ...values, addressees: values.addressees.split('\n').filter((str: string) => str) },
           setFieldError,
           () => {
-            dispatch(addLogItem('Рассылка начата', 'info', false, Date.now().toString()))
+            dispatch(addLogItem(
+              'Рассылка начата',
+              'info',
+              `${Date.now()} Рассылка начата info`,
+            ))
           },
         )
       }}

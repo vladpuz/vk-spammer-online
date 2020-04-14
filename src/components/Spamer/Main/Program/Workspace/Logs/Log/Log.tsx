@@ -18,11 +18,10 @@ const ColorCircularProgress = withStyles({
 interface IProps {
   title: string
   status: LogStatusType
-  loading: boolean
   time: string
 }
 
-function Log ({ title, status, loading, time }: IProps) {
+function Log ({ title, status, time }: IProps) {
   let Icon: any
   if (status === 'error') Icon = ErrorIcon
   if (status === 'success') Icon = CheckCircleIcon
@@ -39,7 +38,7 @@ function Log ({ title, status, loading, time }: IProps) {
         </span>
       </div>
       <div className={s.right}>
-        {loading && <ColorCircularProgress size={20}/>}
+        {status === 'pending' && <ColorCircularProgress size={20}/>}
         <time className={s.time}>
           {time}
         </time>
