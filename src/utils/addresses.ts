@@ -3,7 +3,7 @@ import bs from './BrowserStorage'
 
 // Для локального хранения и получения плейсхолдера для списка адресатов в зависимости от режима рассылки
 const addresses = {
-  getPlaceholder (mode: SpamModeType) {
+  getPlaceholder (mode: SpamModeType): string {
     switch (mode) {
       case 'pm':
         return 'vanya_101\nid497257108\nkseniya2015\nи т.д.'
@@ -21,7 +21,7 @@ const addresses = {
         return '82514921_14544220\n84625170_24736522\n75625033_34796850\nи т.д.'
     }
   },
-  getLocalValue (mode: SpamModeType) {
+  getLocalValue (mode: SpamModeType): string {
     switch (mode) {
       case 'pm':
         return bs.local.get('fields.addressees.pm')
@@ -39,7 +39,7 @@ const addresses = {
         return bs.local.get('fields.addressees.discussions')
     }
   },
-  setLocalValue (mode: SpamModeType, value: any) {
+  setLocalValue (mode: SpamModeType, value: any): void {
     switch (mode) {
       case 'pm':
         bs.local.set('fields.addressees.pm', value)

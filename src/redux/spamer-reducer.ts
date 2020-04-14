@@ -48,7 +48,6 @@ const initialState = {
   },
 }
 
-type InitialStateType = typeof initialState
 type ActionTypes =
   setSpamOnRunType |
   setSpamOnpauseType |
@@ -65,7 +64,7 @@ type ActionTypes =
   setSenderTimerIDType |
   setAutoPauseTimerIDType
 
-function spamerReducer (state = initialState, action: ActionTypes): InitialStateType {
+function spamerReducer (state = initialState, action: ActionTypes): typeof initialState {
   switch (action.type) {
     case SET_SPAM_ON_RUN:
       return {
@@ -120,7 +119,6 @@ function spamerReducer (state = initialState, action: ActionTypes): InitialState
             ...log,
             title: action.data.title || log.title,
             status: action.data.status || log.status,
-            loading: !!action.data.loading,
           } : log),
         ],
       }
@@ -239,11 +237,8 @@ export const addLogItem = (title: string, status: LogStatusType, key: string): a
   },
 })
 
-type changeLogItemType = { type: typeof CHANGE_LOG_ITEM, key: string, data: { title?: string, status?: LogStatusType, loading?: boolean } }
-export const changeLogItem = (
-  key: string,
-  data: { title?: string, status?: LogStatusType, loading?: boolean },
-): changeLogItemType => ({
+type changeLogItemType = { type: typeof CHANGE_LOG_ITEM, key: string, data: { title?: string, status?: LogStatusType } }
+export const changeLogItem = (key: string, data: { title?: string, status?: LogStatusType }): changeLogItemType => ({
   type: CHANGE_LOG_ITEM,
   key,
   data,

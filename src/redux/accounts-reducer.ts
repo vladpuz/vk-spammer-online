@@ -11,8 +11,8 @@ const SET_ACCOUNTS = 'vk_spamer_online/accounts/SET_ACCOUNTS'
 const ADD_ACCOUNT = 'vk_spamer_online/accounts/ADD_ACCOUNT'
 const REMOVE_ACCOUNT = 'vk_spamer_online/accounts/REMOVE_ACCOUNT'
 const SHUFFLE_ACCOUNTS = 'vk_spamer_online/accounts/SHUFFLE_ACCOUNTS'
-const SET_IS_ENABLED = 'vk_spamer_online/accounts/SET_IS_ENABLED'
 const CLEAR_ACCOUNTS = 'vk_spamer_online/accounts/CLEAR_ACCOUNTS'
+const SET_IS_ENABLED = 'vk_spamer_online/accounts/SET_IS_ENABLED'
 const SET_IS_ENABLED_ALL = 'vk_spamer_online/accounts/SET_IS_ENABLED_ALL'
 const SET_CURRENT_SENDER = 'vk_spamer_online/accounts/SET_CURRENT_SENDER'
 const CLEAR_CURRENT_SENDER = 'vk_spamer_online/accounts/CLEAR_CURRENT_SENDER'
@@ -23,7 +23,36 @@ const SET_IS_SUCCESS_LOGIN = 'vk_spamer_online/accounts/SET_IS_SUCCESS_LOGIN'
 const SET_ACCOUNT_IS_REPEATED = 'vk_spamer_online/accounts/SET_ACCOUNT_IS_REPEATED'
 
 const initialState = {
-  accounts: (bs.local.get('accounts') || []) as Array<IAccount>,
+  // accounts: (bs.local.get('accounts') || []) as Array<IAccount>,
+  accounts: [
+    {
+      currentSender: false,
+      error: null as null | string,
+      isEnabled: true,
+      profileInfo: {
+        can_access_closed: true,
+        first_name: 'Владислав',
+        id: 2178496891,
+        is_closed: false,
+        last_name: 'Пузырёв',
+        photo_50: 'https://sun9-8.userapi.com/c849220/v849220169/4cbbc/dT0q8opI1_A.jpg?ava=1',
+      },
+      token: 'cd632956eac2a795185b3f08d5ba7f7433cd69563cc50db01cfc71bbd88c77b1d31d5387175803870ea41',
+    },
+    {
+      currentSender: false,
+      error: null as null | string,
+      isEnabled: true,
+      profileInfo: {
+        can_access_closed: true,
+        first_name: 'Дмитрий',
+        id: 217849689,
+        is_closed: false,
+        last_name: 'Кузюбирдин',
+        photo_50: 'https://sun9-8.userapi.com/c849220/v849220169/4cbbc/dT0q8opI1_A.jpg?ava=1',
+      },
+      token: 'cd632956eac2a795185b3f08d5ba7f7433cd69563cc50db01cfc71bbd88c77b1d31d5387175803870ea41',
+    }],
   authWorkflow: {
     authInProgress: false,
     codeIsRequired: false,
@@ -33,24 +62,23 @@ const initialState = {
   },
 }
 
-type InitialStateType = typeof initialState
 type ActionTypes =
   setAccountsType |
   addAccountType |
   removeAccountType |
   shuffleAccountsType |
+  clearAccountsType |
   setIsEnabledType |
+  setIsEnabledAllType |
   setCurrentSenderType |
+  clearCurrentSenderType |
   setAuthInProgressType |
   setCodeIsRequiredType |
-  setIsSuccessLoginType |
-  setAccountIsRepeatedType |
   setCodeIsIncorrectType |
-  clearAccountsType |
-  setIsEnabledAllType |
-  clearCurrentSenderType
+  setIsSuccessLoginType |
+  setAccountIsRepeatedType
 
-function accountsReducer (state = initialState, action: ActionTypes): InitialStateType {
+function accountsReducer (state = initialState, action: ActionTypes): typeof initialState {
   switch (action.type) {
     case SET_ACCOUNTS:
       return {
@@ -79,18 +107,18 @@ function accountsReducer (state = initialState, action: ActionTypes): InitialSta
         accounts: shuffle(state.accounts),
       }
 
+    case CLEAR_ACCOUNTS:
+      return {
+        ...state,
+        accounts: state.accounts.filter(account => account.currentSender),
+      }
+
     case SET_IS_ENABLED:
       return {
         ...state,
         accounts: state.accounts.map(account => {
           return account.profileInfo.id === action.userID ? { ...account, isEnabled: action.isEnabled } : account
         }),
-      }
-
-    case CLEAR_ACCOUNTS:
-      return {
-        ...state,
-        accounts: state.accounts.filter(account => account.currentSender),
       }
 
     case SET_IS_ENABLED_ALL:
@@ -190,16 +218,16 @@ export const shuffleAccounts = (): shuffleAccountsType => ({
   type: SHUFFLE_ACCOUNTS,
 })
 
+type clearAccountsType = { type: typeof CLEAR_ACCOUNTS }
+export const clearAccounts = (): clearAccountsType => ({
+  type: CLEAR_ACCOUNTS,
+})
+
 type setIsEnabledType = { type: typeof SET_IS_ENABLED, userID: number, isEnabled: boolean }
 export const setIsEnabled = (userID: number, isEnabled: boolean): setIsEnabledType => ({
   type: SET_IS_ENABLED,
   userID,
   isEnabled,
-})
-
-type clearAccountsType = { type: typeof CLEAR_ACCOUNTS }
-export const clearAccounts = (): clearAccountsType => ({
-  type: CLEAR_ACCOUNTS,
 })
 
 type setIsEnabledAllType = { type: typeof SET_IS_ENABLED_ALL, isEnabled: boolean }
@@ -225,16 +253,16 @@ export const setAuthInProgress = (isFetching: boolean): setAuthInProgressType =>
   isFetching,
 })
 
-type setCodeIsIncorrectType = { type: typeof SET_CODE_IS_INCORRECT, isIncorrect: boolean }
-export const setCodeIsIncorrect = (isIncorrect: boolean): setCodeIsIncorrectType => ({
-  type: SET_CODE_IS_INCORRECT,
-  isIncorrect,
-})
-
 type setCodeIsRequiredType = { type: typeof SET_CODE_IS_REQUIRED, isRequired: boolean }
 export const setCodeIsRequired = (isRequired: boolean): setCodeIsRequiredType => ({
   type: SET_CODE_IS_REQUIRED,
   isRequired,
+})
+
+type setCodeIsIncorrectType = { type: typeof SET_CODE_IS_INCORRECT, isIncorrect: boolean }
+export const setCodeIsIncorrect = (isIncorrect: boolean): setCodeIsIncorrectType => ({
+  type: SET_CODE_IS_INCORRECT,
+  isIncorrect,
 })
 
 type setIsSuccessLoginType = { type: typeof SET_IS_SUCCESS_LOGIN, isSuccess: boolean | undefined }
@@ -284,8 +312,10 @@ export const authAccount = (
       bs.local.set('accounts', getState().accountsReducer.accounts)
     } else if (res.error === 'need_validation') {
       dispatch(setCodeIsRequired(true))
-    } else if (res.error_description === 'Вы ввели неправильный код' || res.error_description ===
-      'Вы ввели неверный код') {
+    } else if (
+      res.error_description === 'Вы ввели неправильный код' ||
+      res.error_description === 'Вы ввели неверный код'
+    ) {
       dispatch(setCodeIsIncorrect(true))
     } else if (res.error_description === 'Неправильный логин или пароль') {
       dispatch(setIsSuccessLogin(false))

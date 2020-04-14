@@ -1,4 +1,4 @@
-import { IAccount, ISender, SpamModeType, IValues, ISpamData, LogStatusType } from '../types/types'
+import { IAccount, ISender, IValues, IInitData, LogStatusType } from '../types/types'
 import store from '../redux/store'
 import {
   setSenderTimerID,
@@ -19,16 +19,18 @@ import randomization from './randomization'
 
 class Spamer {
   private values: IValues
-  private initData: ISpamData
+  private initData: IInitData
   private accounts: Array<IAccount>
   private sender: ISender
   readonly accountsSwitchTime: number
 
   constructor (values: IValues) {
+    const state = store.getState()
+
     this.values = values
-    this.initData = store.getState().spamerReducer.initData
-    this.accounts = store.getState().accountsReducer.accounts.filter(account => account.isEnabled)
-    this.accountsSwitchTime = store.getState().spamerReducer.settings.autoSwitchTime
+    this.initData = state.spamerReducer.initData
+    this.accounts = state.accountsReducer.accounts.filter(account => account.isEnabled)
+    this.accountsSwitchTime = state.spamerReducer.settings.autoSwitchTime
 
     this.sender = new Sender(
       this.accounts[this.initData.senderIndex].token,
@@ -39,7 +41,7 @@ class Spamer {
   }
 
   private async send () {
-    const mode: SpamModeType = this.values.spamMode
+    const mode = this.values.spamMode
     const address = this.values.addressees[this.initData.addresseeIndex]
 
     switch (mode) {
@@ -61,17 +63,17 @@ class Spamer {
   }
 
   private handleSend () {
-    // Нужно для сохранения отправителя в лексическом окружении
+    // senderIndex, accountName, addressName должны сохранится в лексическом окружении
     const senderIndex = this.initData.senderIndex
     const accountName = `${this.accounts[senderIndex].profileInfo.first_name} ${this.accounts[senderIndex].profileInfo.last_name}`
     const addressName = this.values.addressees[this.initData.addresseeIndex]
 
-    /*    console.group('handleSend')
-        console.log('senderIndex: ' + senderIndex)
-        console.log('senderID: ' + this.sender.userID)
-        console.log('accountName: ' + accountName)
-        console.log('addressName: ' + addressName)
-        console.groupEnd()*/
+    console.group('handleSend')
+    console.log('senderIndex: ' + senderIndex)
+    console.log('senderID: ' + this.sender.userID)
+    console.log('accountName: ' + accountName)
+    console.log('addressName: ' + addressName)
+    console.groupEnd()
 
     const key = `${Date.now()} Запрос обрабатывается pending ${senderIndex} ${accountName} ${addressName}`
     store.dispatch(addLogItem('Запрос обрабатывается', 'pending', key))
@@ -83,14 +85,12 @@ class Spamer {
         store.dispatch(changeLogItem(key, {
           title: `Ошибка - ${res.error.error_msg}`,
           status: 'error',
-          loading: false,
         }))
         if (res.error.error_msg === 'Captcha needed') {}
       } else {
         store.dispatch(changeLogItem(key, {
           title: `Отправлено - ${addressName} от ${accountName}`,
           status: 'success',
-          loading: false,
         }))
       }
     })
@@ -103,21 +103,21 @@ class Spamer {
   }
 
   private senderChange () {
-    const senderIndex = this.initData.senderIndex + 1 === this.accounts.length ? 0 : this.initData.senderIndex + 1
-    store.dispatch(setStartTimestamp(Date.now()))
+    const senderIndex = (this.initData.senderIndex + 1 === this.accounts.length) ? 0 : this.initData.senderIndex + 1
 
     this.initData.senderIndex = senderIndex
-    this.sender.token = this.accounts[this.initData.senderIndex].token
-    this.sender.userID = this.accounts[this.initData.senderIndex].profileInfo.id
+    this.sender.token = this.accounts[senderIndex].token
+    this.sender.userID = this.accounts[senderIndex].profileInfo.id
     const accountName = `${this.accounts[senderIndex].profileInfo.first_name} ${this.accounts[senderIndex].profileInfo.last_name}`
 
+    store.dispatch(setStartTimestamp(Date.now()))
+    store.dispatch(setSenderIndex(senderIndex))
+    store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
     store.dispatch(addLogItem(
       `Смена аккаунта на ${accountName}`,
       'info',
       `${Date.now()} Смена аккаунта на ${accountName} info`,
     ))
-    store.dispatch(setSenderIndex(senderIndex))
-    store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
   }
 
   private randomize () {
@@ -125,20 +125,13 @@ class Spamer {
     this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
   }
 
-  private spam (first: boolean) {
+  private spam () {
     let nextAddresseeIndex = this.initData.addresseeIndex
 
     // Если время смены аккаунта равно нулю все аккаунты спамят одновременно
     if (!this.accountsSwitchTime) {
-      if (!first) {
-        nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
-        this.initData.addresseeIndex = nextAddresseeIndex
-        store.dispatch(setAddresseeIndex(nextAddresseeIndex + 1))
-      } else {
-        let addresseeIndex = this.initData.addresseeIndex
-        addresseeIndex = (addresseeIndex + 1 === this.values.addressees.length) ? 0 : addresseeIndex + 1
-        store.dispatch(setAddresseeIndex(addresseeIndex))
-      }
+      nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
+      store.dispatch(setAddresseeIndex(nextAddresseeIndex))
       for (let i = 0; i < this.accounts.length; i++) {
         this.sender.token = this.accounts[i].token
         this.sender.userID = this.accounts[i].profileInfo.id
@@ -146,34 +139,29 @@ class Spamer {
         this.randomize()
         this.handleSend()
       }
+      this.initData.addresseeIndex = nextAddresseeIndex
     } else {
-      if (!first) {
-        nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
-        this.initData.addresseeIndex = nextAddresseeIndex
-        store.dispatch(setAddresseeIndex(nextAddresseeIndex + 1))
-        this.randomize()
-      } else {
-        let addresseeIndex = this.initData.addresseeIndex
-        addresseeIndex = (addresseeIndex + 1 === this.values.addressees.length) ? 0 : addresseeIndex + 1
-        store.dispatch(setAddresseeIndex(addresseeIndex))
-      }
+      nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
+      store.dispatch(setAddresseeIndex(nextAddresseeIndex))
+      this.randomize()
       this.handleSend()
+      this.initData.addresseeIndex = nextAddresseeIndex
     }
 
     // Если только один проход, то выключить спам когда придет время
-    if (this.values.onePass && (nextAddresseeIndex + 1 === this.values.addressees.length)) {
+    if (this.values.onePass && (nextAddresseeIndex === 0)) {
       Spamer.stop('Проход окончен', 'info')
     }
   }
 
   public start () {
-    store.dispatch(setStartTimestamp(Date.now()))
     if (this.values.autoPauseTimeout) {
       const autoPauseTimerID = this.setAutoPauseTimeout()
       store.dispatch(setAutoPauseTimerID(autoPauseTimerID))
     }
 
     // Смена отправителя с сохранением оставшегося времени
+    store.dispatch(setStartTimestamp(Date.now()))
     if (this.initData.autoSwitchRemaining && this.accountsSwitchTime) {
       const senderTimerID = window.setTimeout(() => {
         this.senderChange()
@@ -190,9 +178,9 @@ class Spamer {
       store.dispatch(setCurrentSender(this.accounts[this.initData.senderIndex].profileInfo.id))
     }
 
-    const spamTimerID = window.setInterval(this.spam.bind(this, false), this.values.sendInterval * 1000)
+    const spamTimerID = window.setInterval(this.spam.bind(this), this.values.sendInterval * 1000)
     store.dispatch(setSpamTimerID(spamTimerID))
-    this.spam(true)
+    this.spam()
   }
 
   private static clearIntervals () {
@@ -214,6 +202,7 @@ class Spamer {
       logStatus,
       `${Date.now()} ${logTitle} ${logStatus}`,
     ))
+
     Spamer.clearIntervals()
   }
 
@@ -238,6 +227,7 @@ class Spamer {
       logStatus,
       `${Date.now()} ${logTitle} ${logStatus}`,
     ))
+
     Spamer.clearIntervals()
   }
 }

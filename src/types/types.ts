@@ -28,7 +28,7 @@ export interface IValues {
   addressees: Array<string>
 }
 
-export interface ISpamData {
+export interface IInitData {
   addresseeIndex: number
   senderIndex: number
   autoSwitchRemaining: number

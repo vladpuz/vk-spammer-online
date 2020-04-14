@@ -1,5 +1,5 @@
 // Иммутабельная перемешка массива
-function shuffle (array: Array<any>) {
+function shuffle (array: Array<any>): Array<any> {
   const copy = [...array]
 
   if (array.length) {
