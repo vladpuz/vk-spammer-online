@@ -6,19 +6,28 @@ class Sender implements ISender {
   public userID: number
   public message: string
   public attachment: string
+  public captchaKey: string
+  public captchaSid: string
 
   constructor (token: string, userID: number, message: string, attachment: string) {
     this.token = token
     this.userID = userID
     this.message = message
     this.attachment = attachment
+    this.captchaKey = ''
+    this.captchaSid = ''
   }
 
   private initURL () {
     let URL = `v=${version}&`
     URL += `access_token=${this.token}&`
     URL += `message=${this.message}&`
-    URL += (this.attachment ? `attachment=${this.attachment}` : '')
+    URL += (this.attachment ? `attachment=${this.attachment}&` : '&')
+
+    if (this.captchaKey && this.captchaSid) {
+      URL += `captcha_key=${this.captchaKey}`
+      URL += `captcha_sid=${this.captchaSid}`
+    }
 
     return URL
   }

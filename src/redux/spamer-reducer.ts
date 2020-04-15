@@ -9,6 +9,7 @@ const SET_AUTO_SWITCH_TIME = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_TIME'
 const SET_ANTI_CAPTCHA_KEY = 'vk_spamer_online/spamer/SET_ANTI_CAPTCHA_KEY'
 const ADD_LOG_ITEM = 'vk_spamer_online/spamer/ADD_LOG_ITEM'
 const CHANGE_LOG_ITEM = 'vk_spamer_online/spamer/CHANGE_LOG_ITEM'
+const DELETE_LOG_ITEM = 'vk_spamer_online/spamer/DELETE_LOG_ITEM'
 const CLEAR_LOG = 'vk_spamer_online/spamer/CLEAR_LOG'
 const SET_ADDRESSEE_INDEX = 'vk_spamer_online/spamer/SET_ADDRESSEE_INDEX'
 const SET_SENDER_INDEX = 'vk_spamer_online/spamer/SET_SENDER_INDEX'
@@ -56,6 +57,7 @@ type ActionTypes =
   setAntiCaptchaKeyType |
   addLogItemType |
   changeLogItemType |
+  deleteLogItemType |
   clearLogType |
   setAddresseeIndexType |
   setAutoSwitchRemainingType |
@@ -120,6 +122,14 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
             title: action.data.title || log.title,
             status: action.data.status || log.status,
           } : log),
+        ],
+      }
+
+    case DELETE_LOG_ITEM:
+      return {
+        ...state,
+        logs: [
+          ...state.logs.filter(log => log.key !== action.key),
         ],
       }
 
@@ -242,6 +252,12 @@ export const changeLogItem = (key: string, data: { title?: string, status?: LogS
   type: CHANGE_LOG_ITEM,
   key,
   data,
+})
+
+type deleteLogItemType = { type: typeof DELETE_LOG_ITEM, key: string }
+export const deleteLogItem = (key: string): deleteLogItemType => ({
+  type: DELETE_LOG_ITEM,
+  key,
 })
 
 type clearLogType = { type: typeof CLEAR_LOG }
