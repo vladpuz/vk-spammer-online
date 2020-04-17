@@ -57,7 +57,7 @@ function AuthForm () {
               label="Требуется подтверждение"
               type="text"
               variant="filled"
-              helperText="Введите код отправленный Вам по смс или сообщением вк"
+              helperText="Введите проверочный код отправленный Вам по смс"
             />
           }
           <AddButton/>

@@ -9,6 +9,7 @@ import addresses from '../../../../utils/addresses'
 import submit from '../../../../utils/submit'
 import { addLogItem } from '../../../../redux/spamer-reducer'
 import { useDispatch } from 'react-redux'
+import CaptchaDialog from './CaptchaDialog/CaptchaDialog'
 
 function Program () {
   const dispatch = useDispatch()
@@ -44,6 +45,7 @@ function Program () {
         <div className={s.spamer}>
           <Workspace/>
           <Addressees/>
+          <CaptchaDialog/>
         </div>
       </Form>
     </Formik>

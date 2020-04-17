@@ -7,6 +7,8 @@ export interface ISender {
   userID: number
   message: string
   attachment: string
+  captchaKey: string
+  captchaSid: number
   sendToPM: (userDomain: string) => Promise<any>
   sendToTalk: (talkID: number) => Promise<any>
   sendToTalkAndLeave: (talkID: number) => Promise<any>
@@ -56,4 +58,27 @@ export interface ILog {
   status: LogStatusType
   time: string
   key: string
+}
+
+export interface ICaptcha {
+  userID: number
+  captchaImg: string
+  captchaKey: string
+  captchaSid: number
+}
+
+export interface IAuthSuccess {
+  access_token: string
+  expires_in: number
+  user_id: number
+  trusted_hash: string
+}
+
+export interface IAuthNeed2FA {
+  error: string
+  error_description: string
+  validation_type: string
+  validation_sid: string
+  phone_mask: string
+  redirect_uri: string
 }

@@ -11,7 +11,10 @@ import {
   setAutoPauseTimerID,
   changeLogItem,
   setStartTimestamp,
-  setAutoSwitchRemaining, deleteLogItem,
+  setAutoSwitchRemaining,
+  removeLogItem,
+  addCaptchaItem,
+  removeCaptchaItem,
 } from '../redux/spamer-reducer'
 import Sender from '../api/Sender'
 import { clearCurrentSender, setCurrentSender, setIsEnabled } from '../redux/accounts-reducer'
@@ -35,9 +38,18 @@ class Spamer {
     this.sender = new Sender(
       this.accounts[this.initData.senderIndex].token,
       this.accounts[this.initData.senderIndex].profileInfo.id,
-      randomization(this.values.message),
-      randomization(this.values.attachment).split('\n').filter(str => str).join(','),
     )
+  }
+
+  private checkCaptcha (userID: number) {
+    const captcha = store.getState().spamerReducer.captcha
+    const captchaIndex = captcha.findIndex(item => item.userID === userID && item.captchaKey)
+
+    if (~captchaIndex) {
+      this.sender.captchaKey = captcha[captchaIndex].captchaKey
+      this.sender.captchaSid = captcha[captchaIndex].captchaSid
+      store.dispatch(removeCaptchaItem(userID))
+    }
   }
 
   private async send () {
@@ -62,70 +74,78 @@ class Spamer {
     }
   }
 
-  private handleSend () {
+  private async handleSend () {
     // senderIndex, accountName, addressName, accountID должны сохранится в лексическом окружении
     const senderIndex = this.initData.senderIndex
     const accountName = `${this.accounts[senderIndex].profileInfo.first_name} ${this.accounts[senderIndex].profileInfo.last_name}`
     const addressName = this.values.addressees[this.initData.addresseeIndex]
     const accountID = this.accounts[senderIndex].profileInfo.id
+    this.checkCaptcha(accountID)
 
-    // console.group('handleSend')
-    // console.log('senderIndex: ' + senderIndex)
-    // console.log('senderID: ' + this.sender.userID)
-    // console.log('accountName: ' + accountName)
-    // console.log('addressName: ' + addressName)
-    // console.groupEnd()
-
-    const key = `${Date.now()} Запрос обрабатывается pending ${senderIndex} ${accountName} ${addressName}`
+    const key = `${Date.now()} Запрос обрабатывается pending ${senderIndex} ${accountName} ${addressName} ${accountID}`
     store.dispatch(addLogItem('Запрос обрабатывается', 'pending', key))
 
-    this.send().then(res => {
-      console.log(res)
+    const res = await this.send()
 
-      if (res.error) {
-        if (res.error.error_msg === 'Captcha needed') {
-          if (this.values.antiCaptcha) {
-            Spamer.pause('Требуется капча', 'error')
-            // запрос на anti-captcha.com
-            // установка кода капчи
-            // продолжение спама
-          } else if (this.values.ignoreCaptcha) {
-            const nextSenderIndex = (senderIndex + 1 === this.accounts.length) ? 0 : senderIndex + 1
+    if (res.error) {
+      if (res.error.error_msg === 'Captcha needed') {
+        if (this.values.antiCaptcha) {
+          Spamer.pause('Требуется капча', 'error')
+          // запрос на anti-captcha.com
+          // установка кода капчи
+          // продолжение спама
+        } else if (this.values.ignoreCaptcha) {
+          const nextSenderIndex = (senderIndex + 1 === this.accounts.length) ? 0 : senderIndex + 1
 
-            if (this.accounts[senderIndex].isEnabled) {
-              store.dispatch(changeLogItem(key, {
-                title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
-                status: 'warning',
-              }))
-            } else {
-              store.dispatch(deleteLogItem(key))
-            }
-
-            if (this.accounts.every(account => !account.isEnabled) && store.getState().spamerReducer.spamOnRun) {
-              Spamer.stop('Все аккаунты были выключены, спам остановлен', 'info')
-            }
-
-            this.accounts[senderIndex].isEnabled = false
-            this.initData.senderIndex = nextSenderIndex
-            store.dispatch(setIsEnabled(accountID, false))
-            store.dispatch(setCurrentSender(this.accounts[nextSenderIndex].profileInfo.id))
+          if (this.accounts[senderIndex].isEnabled) {
+            store.dispatch(changeLogItem(key, {
+              title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
+              status: 'warning',
+            }))
           } else {
-            // save captcha code in state
-            Spamer.pause('Требуется капча', 'error')
+            store.dispatch(removeLogItem(key))
           }
+
+          if (this.accounts.every(account => !account.isEnabled) && store.getState().spamerReducer.spamOnRun) {
+            Spamer.stop('Все аккаунты были выключены, спам остановлен', 'info')
+          }
+
+          this.accounts[senderIndex].isEnabled = false
+          this.initData.senderIndex = nextSenderIndex
+          store.dispatch(setIsEnabled(accountID, false))
+          store.dispatch(setCurrentSender(this.accounts[nextSenderIndex].profileInfo.id))
         } else {
-          store.dispatch(changeLogItem(key, {
-            title: `Ошибка - ${res.error.error_msg}`,
-            status: 'error',
-          }))
+          const captcha = store.getState().spamerReducer.captcha
+
+          if (captcha.some(item => item.userID === accountID)) {
+            store.dispatch(removeCaptchaItem(accountID))
+            store.dispatch(removeLogItem(key))
+          } else {
+            store.dispatch(changeLogItem(key, {
+              title: `Потребовалась капча для аккаунта ${accountName}`,
+              status: 'warning',
+            }))
+          }
+
+          store.dispatch(addCaptchaItem(res.error.captcha_img, +res.error.captcha_sid, accountID))
+
+          if (!store.getState().spamerReducer.spamOnPause) {
+            Spamer.pause('Требуется капча, спам приостановлен', 'info')
+          }
         }
       } else {
         store.dispatch(changeLogItem(key, {
-          title: `Отправлено - ${addressName} от ${accountName}`,
-          status: 'success',
+          title: `Ошибка - ${res.error.error_msg}`,
+          status: 'error',
         }))
       }
-    })
+    } else {
+      store.dispatch(removeCaptchaItem(accountID))
+      store.dispatch(changeLogItem(key, {
+        title: `Отправлено - ${addressName} от ${accountName}`,
+        status: 'success',
+      }))
+    }
   }
 
   private senderChange () {
@@ -149,11 +169,6 @@ class Spamer {
   private spam () {
     let nextAddresseeIndex = this.initData.addresseeIndex
 
-    const randomize = () => {
-      this.sender.message = randomization(this.values.message)
-      this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
-    }
-
     // Если время смены аккаунта равно нулю все аккаунты спамят одновременно
     if (!this.accountsSwitchTime) {
       nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
@@ -161,15 +176,17 @@ class Spamer {
       for (let i = 0; i < this.accounts.length; i++) {
         this.sender.token = this.accounts[i].token
         this.sender.userID = this.accounts[i].profileInfo.id
-        randomize()
         this.initData.senderIndex = i
+        this.sender.message = randomization(this.values.message)
+        this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
         this.handleSend()
       }
       this.initData.addresseeIndex = nextAddresseeIndex
     } else {
       nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
       store.dispatch(setAddresseeIndex(nextAddresseeIndex))
-      randomize()
+      this.sender.message = randomization(this.values.message)
+      this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
       this.handleSend()
       this.initData.addresseeIndex = nextAddresseeIndex
     }

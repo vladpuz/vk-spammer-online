@@ -1,14 +1,10 @@
-import { addLogItem, setSpamOnRun } from '../redux/spamer-reducer'
+import { addLogItem, setSpamOnPause, setSpamOnRun } from '../redux/spamer-reducer'
 import { IValues } from '../types/types'
 import store from '../redux/store'
 import Spamer from './Spamer'
 
 // Валидирует данные и начинает спам
-function submit (
-  values: IValues,
-  setFieldError: (field: string, message: string) => void,
-  addLog: () => void,
-) {
+function submit (values: IValues, setFieldError: (field: string, message: string) => void, addLog: () => void) {
   const accounts = store.getState().accountsReducer.accounts
 
   const validate = () => {
@@ -41,6 +37,7 @@ function submit (
     accounts.some(account => account.isEnabled)
   ) {
     store.dispatch(setSpamOnRun(true))
+    store.dispatch(setSpamOnPause(false))
     addLog()
 
     new Spamer({

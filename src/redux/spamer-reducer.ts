@@ -1,22 +1,26 @@
-import { ILog, LogStatusType } from '../types/types'
+import { LogStatusType, ILog, ICaptcha } from '../types/types'
 import bs from '../utils/BrowserStorage'
 
 /* Action types */
-const SET_SPAM_ON_RUN = 'vk_spamer_online/spamer/SET_SPAM_ON_RUN'
-const SET_SPAM_ON_PAUSE = 'vk_spamer_online/spamer/SET_SPAM_ON_PAUSE'
-const SET_START_TIMESTAMP = 'vk_spamer_online/spamer/SET_START_TIMESTAMP'
-const SET_AUTO_SWITCH_TIME = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_TIME'
-const SET_ANTI_CAPTCHA_KEY = 'vk_spamer_online/spamer/SET_ANTI_CAPTCHA_KEY'
-const ADD_LOG_ITEM = 'vk_spamer_online/spamer/ADD_LOG_ITEM'
-const CHANGE_LOG_ITEM = 'vk_spamer_online/spamer/CHANGE_LOG_ITEM'
-const DELETE_LOG_ITEM = 'vk_spamer_online/spamer/DELETE_LOG_ITEM'
-const CLEAR_LOG = 'vk_spamer_online/spamer/CLEAR_LOG'
-const SET_ADDRESSEE_INDEX = 'vk_spamer_online/spamer/SET_ADDRESSEE_INDEX'
-const SET_SENDER_INDEX = 'vk_spamer_online/spamer/SET_SENDER_INDEX'
-const SET_AUTO_SWITCH_REMAINING = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_REMAINING'
-const SET_SPAM_TIMER_ID = 'vk_spamer_online/spamer/SET_SPAM_TIMER_ID'
-const SET_SENDER_TIMER_ID = 'vk_spamer_online/spamer/SET_SENDER_TIMER_ID'
-const SET_AUTO_PAUSE_TIMER_ID = 'vk_spamer_online/spamer/SET_AUTO_PAUSE_TIMER_ID'
+const SET_SPAM_ON_RUN = 'vk_spamer_online/spamer/SET_SPAM_ON_RUN' as const
+const SET_SPAM_ON_PAUSE = 'vk_spamer_online/spamer/SET_SPAM_ON_PAUSE' as const
+const SET_START_TIMESTAMP = 'vk_spamer_online/spamer/SET_START_TIMESTAMP' as const
+const SET_AUTO_SWITCH_TIME = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_TIME' as const
+const SET_ANTI_CAPTCHA_KEY = 'vk_spamer_online/spamer/SET_ANTI_CAPTCHA_KEY' as const
+const ADD_LOG_ITEM = 'vk_spamer_online/spamer/ADD_LOG_ITEM' as const
+const CHANGE_LOG_ITEM = 'vk_spamer_online/spamer/CHANGE_LOG_ITEM' as const
+const REMOVE_LOG_ITEM = 'vk_spamer_online/spamer/REMOVE_LOG_ITEM' as const
+const CLEAR_LOG = 'vk_spamer_online/spamer/CLEAR_LOG' as const
+const SET_ADDRESSEE_INDEX = 'vk_spamer_online/spamer/SET_ADDRESSEE_INDEX' as const
+const SET_SENDER_INDEX = 'vk_spamer_online/spamer/SET_SENDER_INDEX' as const
+const SET_AUTO_SWITCH_REMAINING = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_REMAINING' as const
+const SET_SPAM_TIMER_ID = 'vk_spamer_online/spamer/SET_SPAM_TIMER_ID' as const
+const SET_SENDER_TIMER_ID = 'vk_spamer_online/spamer/SET_SENDER_TIMER_ID' as const
+const SET_AUTO_PAUSE_TIMER_ID = 'vk_spamer_online/spamer/SET_AUTO_PAUSE_TIMER_ID' as const
+const ADD_CAPTCHA_ITEM = 'vk_spamer_online/spamer/ADD_CAPTCHA_ITEM' as const
+const REMOVE_CAPTCHA_ITEM = 'vk_spamer_online/spamer/REMOVE_CAPTCHA_ITEM' as const
+const CLEAR_CAPTCHA = 'vk_spamer_online/spamer/CLEAR_CAPTCHA' as const
+const UNRAVEL_CAPTCHA_ITEM = 'vk_spamer_online/spamer/UNRAVEL_CAPTCHA_ITEM' as const
 
 const localAutoSwitchTime = bs.local.get('fields.autoSwitchTime')
 const autoSwitchTime = localAutoSwitchTime === 0 ? localAutoSwitchTime : localAutoSwitchTime || 300
@@ -36,7 +40,7 @@ const initialState = {
       time: new Date().toLocaleTimeString(),
       key: `${Date.now()} Приложение открыто info`,
     },
-  ],
+  ] as Array<ILog>,
   initData: {
     addresseeIndex: 0,
     senderIndex: 0,
@@ -47,24 +51,29 @@ const initialState = {
     senderTimerID: 0,
     autoPauseTimerID: 0,
   },
+  captcha: [] as Array<ICaptcha>,
 }
 
 type ActionTypes =
-  setSpamOnRunType |
-  setSpamOnpauseType |
-  setStartTimestampType |
-  setAutoSwitchTimeType |
-  setAntiCaptchaKeyType |
-  addLogItemType |
-  changeLogItemType |
-  deleteLogItemType |
-  clearLogType |
-  setAddresseeIndexType |
-  setAutoSwitchRemainingType |
-  setSenderIndexType |
-  setSpamTimerIDType |
-  setSenderTimerIDType |
-  setAutoPauseTimerIDType
+  ReturnType<typeof setSpamOnRun> |
+  ReturnType<typeof setSpamOnPause> |
+  ReturnType<typeof setStartTimestamp> |
+  ReturnType<typeof setAutoSwitchTime> |
+  ReturnType<typeof setAntiCaptchaKey> |
+  ReturnType<typeof addLogItem> |
+  ReturnType<typeof changeLogItem> |
+  ReturnType<typeof removeLogItem> |
+  ReturnType<typeof clearLog> |
+  ReturnType<typeof setAddresseeIndex> |
+  ReturnType<typeof setAutoSwitchRemaining> |
+  ReturnType<typeof setSenderIndex> |
+  ReturnType<typeof setSpamTimerID> |
+  ReturnType<typeof setSenderTimerID> |
+  ReturnType<typeof setAutoPauseTimerID> |
+  ReturnType<typeof addCaptchaItem> |
+  ReturnType<typeof removeCaptchaItem> |
+  ReturnType<typeof clearCaptcha> |
+  ReturnType<typeof unravelCaptchaItem>
 
 function spamerReducer (state = initialState, action: ActionTypes): typeof initialState {
   switch (action.type) {
@@ -116,21 +125,17 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
     case CHANGE_LOG_ITEM:
       return {
         ...state,
-        logs: [
-          ...state.logs.map(log => log.key === action.key ? {
-            ...log,
-            title: action.data.title || log.title,
-            status: action.data.status || log.status,
-          } : log),
-        ],
+        logs: state.logs.map(log => log.key === action.key ? {
+          ...log,
+          title: action.data.title || log.title,
+          status: action.data.status || log.status,
+        } : log),
       }
 
-    case DELETE_LOG_ITEM:
+    case REMOVE_LOG_ITEM:
       return {
         ...state,
-        logs: [
-          ...state.logs.filter(log => log.key !== action.key),
-        ],
+        logs: state.logs.filter(log => log.key !== action.key),
       }
 
     case CLEAR_LOG:
@@ -200,44 +205,68 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
         },
       }
 
+    case ADD_CAPTCHA_ITEM:
+      return {
+        ...state,
+        captcha: [
+          ...state.captcha,
+          { userID: action.userID, captchaImg: action.img, captchaKey: '', captchaSid: action.sid },
+        ],
+      }
+
+    case REMOVE_CAPTCHA_ITEM:
+      return {
+        ...state,
+        captcha: state.captcha.filter(item => item.userID !== action.userID),
+      }
+
+    case CLEAR_CAPTCHA:
+      return {
+        ...state,
+        captcha: [],
+      }
+
+    case UNRAVEL_CAPTCHA_ITEM:
+      return {
+        ...state,
+        captcha: state.captcha.map(item => item.userID === action.userID ? {
+          ...item,
+          captchaKey: action.key,
+        } : item),
+      }
+
     default:
       return state
   }
 }
 
 /* Action creators */
-type setSpamOnRunType = { type: typeof SET_SPAM_ON_RUN, onRun: boolean }
-export const setSpamOnRun = (onRun: boolean): setSpamOnRunType => ({
+export const setSpamOnRun = (onRun: boolean) => ({
   type: SET_SPAM_ON_RUN,
   onRun,
 })
 
-type setSpamOnpauseType = { type: typeof SET_SPAM_ON_PAUSE, onPause: boolean }
-export const setSpamOnPause = (onPause: boolean): setSpamOnpauseType => ({
+export const setSpamOnPause = (onPause: boolean) => ({
   type: SET_SPAM_ON_PAUSE,
   onPause,
 })
 
-type setStartTimestampType = { type: typeof SET_START_TIMESTAMP, seconds: number }
-export const setStartTimestamp = (seconds: number): setStartTimestampType => ({
+export const setStartTimestamp = (seconds: number) => ({
   type: SET_START_TIMESTAMP,
   seconds,
 })
 
-type setAutoSwitchTimeType = { type: typeof SET_AUTO_SWITCH_TIME, seconds: number }
-export const setAutoSwitchTime = (seconds: number): setAutoSwitchTimeType => ({
+export const setAutoSwitchTime = (seconds: number) => ({
   type: SET_AUTO_SWITCH_TIME,
   seconds,
 })
 
-type setAntiCaptchaKeyType = { type: typeof SET_ANTI_CAPTCHA_KEY, key: string }
-export const setAntiCaptchaKey = (key: string): setAntiCaptchaKeyType => ({
+export const setAntiCaptchaKey = (key: string) => ({
   type: SET_ANTI_CAPTCHA_KEY,
   key,
 })
 
-type addLogItemType = { type: typeof ADD_LOG_ITEM, item: ILog }
-export const addLogItem = (title: string, status: LogStatusType, key: string): addLogItemType => ({
+export const addLogItem = (title: string, status: LogStatusType, key: string) => ({
   type: ADD_LOG_ITEM,
   item: {
     title,
@@ -247,58 +276,71 @@ export const addLogItem = (title: string, status: LogStatusType, key: string): a
   },
 })
 
-type changeLogItemType = { type: typeof CHANGE_LOG_ITEM, key: string, data: { title?: string, status?: LogStatusType } }
-export const changeLogItem = (key: string, data: { title?: string, status?: LogStatusType }): changeLogItemType => ({
+export const changeLogItem = (key: string, data: { title?: string, status?: LogStatusType }) => ({
   type: CHANGE_LOG_ITEM,
   key,
   data,
 })
 
-type deleteLogItemType = { type: typeof DELETE_LOG_ITEM, key: string }
-export const deleteLogItem = (key: string): deleteLogItemType => ({
-  type: DELETE_LOG_ITEM,
+export const removeLogItem = (key: string) => ({
+  type: REMOVE_LOG_ITEM,
   key,
 })
 
-type clearLogType = { type: typeof CLEAR_LOG }
-export const clearLog = (): clearLogType => ({
+export const clearLog = () => ({
   type: CLEAR_LOG,
 })
 
-type setAddresseeIndexType = { type: typeof SET_ADDRESSEE_INDEX, index: number }
-export const setAddresseeIndex = (index: number): setAddresseeIndexType => ({
+export const setAddresseeIndex = (index: number) => ({
   type: SET_ADDRESSEE_INDEX,
   index,
 })
 
-type setSenderIndexType = { type: typeof SET_SENDER_INDEX, index: number }
-export const setSenderIndex = (index: number): setSenderIndexType => ({
+export const setSenderIndex = (index: number) => ({
   type: SET_SENDER_INDEX,
   index,
 })
 
-type setAutoSwitchRemainingType = { type: typeof SET_AUTO_SWITCH_REMAINING, seconds: number }
-export const setAutoSwitchRemaining = (seconds: number): setAutoSwitchRemainingType => ({
+export const setAutoSwitchRemaining = (seconds: number) => ({
   type: SET_AUTO_SWITCH_REMAINING,
   seconds,
 })
 
-type setSpamTimerIDType = { type: typeof SET_SPAM_TIMER_ID, id: number }
-export const setSpamTimerID = (id: number): setSpamTimerIDType => ({
+export const setSpamTimerID = (id: number) => ({
   type: SET_SPAM_TIMER_ID,
   id,
 })
 
-type setSenderTimerIDType = { type: typeof SET_SENDER_TIMER_ID, id: number }
-export const setSenderTimerID = (id: number): setSenderTimerIDType => ({
+export const setSenderTimerID = (id: number) => ({
   type: SET_SENDER_TIMER_ID,
   id,
 })
 
-type setAutoPauseTimerIDType = { type: typeof SET_AUTO_PAUSE_TIMER_ID, id: number }
-export const setAutoPauseTimerID = (id: number): setAutoPauseTimerIDType => ({
+export const setAutoPauseTimerID = (id: number) => ({
   type: SET_AUTO_PAUSE_TIMER_ID,
   id,
+})
+
+export const addCaptchaItem = (img: string, sid: number, userID: number) => ({
+  type: ADD_CAPTCHA_ITEM,
+  img,
+  sid,
+  userID,
+})
+
+export const removeCaptchaItem = (userID: number) => ({
+  type: REMOVE_CAPTCHA_ITEM,
+  userID,
+})
+
+export const clearCaptcha = () => ({
+  type: CLEAR_CAPTCHA,
+})
+
+export const unravelCaptchaItem = (userID: number, key: string) => ({
+  type: UNRAVEL_CAPTCHA_ITEM,
+  userID,
+  key,
 })
 
 export default spamerReducer

@@ -1,29 +1,9 @@
 import { proxyURL, version } from './settings'
-import { AuthAppType } from '../types/types'
-
-interface ISuccess {
-  access_token: string
-  expires_in: number
-  user_id: number
-  trusted_hash: string
-}
-
-interface IAuth2FA {
-  error: string
-  error_description: string
-  validation_type: string
-  validation_sid: string
-  phone_mask: string
-  redirect_uri: string
-}
+import { AuthAppType, IAuthNeed2FA, IAuthSuccess } from '../types/types'
+import axios from 'axios'
 
 // Возвращает токен или ошибку для повторного запроса с кодом 2FA
-export async function auth (
-  app: AuthAppType,
-  username: string,
-  password: string,
-  code?: number,
-): Promise<ISuccess & IAuth2FA> {
+export async function auth (app: AuthAppType, username: string, password: string, code?: number) {
   const { client_id, client_secret } = authApps[app]
   let URL = proxyURL + 'https://oauth.vk.com/token?'
 
@@ -36,7 +16,11 @@ export async function auth (
   URL += `password=${password}&`
   URL += (code ? `code=${code}` : '')
 
-  return (await fetch(URL)).json()
+  try {
+    return await axios.get(URL) as IAuthSuccess
+  } catch (err) {
+    return err.response.data as IAuthNeed2FA
+  }
 }
 
 const authApps = {
