@@ -1,4 +1,4 @@
-import { vkAPI, version } from './settings'
+import { sendAPI, version } from './settings'
 import { ISender } from '../types/types'
 
 class Sender implements ISender {
@@ -39,19 +39,19 @@ class Sender implements ISender {
 
   private async leaveTheTalk (talkID: number, userID: number) {
     const URL = `messages.removeChatUser?${this.initURL()}chat_id=${talkID}&user_id=${userID}&`
-    return (await vkAPI.get(URL)).data
+    return (await sendAPI.get(URL)).data
   }
 
   public async sendToPM (userDomain: string) {
     const URL = `messages.send?${this.initURL()}domain=${userDomain}&`
     this.clearCaptcha()
-    return (await vkAPI.get(URL)).data
+    return (await sendAPI.get(URL)).data
   }
 
   public async sendToTalk (talkID: number) {
     const URL = `messages.send?${this.initURL()}peer_id=${2000000000 + talkID}&`
     this.clearCaptcha()
-    return (await vkAPI.get(URL)).data
+    return (await sendAPI.get(URL)).data
   }
 
   public async sendToTalkAndLeave (talkID: number) {
@@ -64,26 +64,26 @@ class Sender implements ISender {
     const [ownerID, postID] = commentID.split('_')
     const URL = `wall.createComment?${this.initURL()}owner_id=${ownerID}&post_id=${postID}&`
     this.clearCaptcha()
-    return (await vkAPI.get(URL)).data
+    return (await sendAPI.get(URL)).data
   }
 
   public async sendToDiscussions (discussionsID: string) {
     const [groupID, topicID] = discussionsID.split('_')
     const URL = `board.createComment?${this.initURL()}group_id=${groupID}&topic_id=${topicID}&`
     this.clearCaptcha()
-    return (await vkAPI.get(URL)).data
+    return (await sendAPI.get(URL)).data
   }
 
   public async postToUser (userID: number) {
     const URL = `wall.post?${this.initURL()}owner_id=${userID}&`
     this.clearCaptcha()
-    return (await vkAPI.get(URL)).data
+    return (await sendAPI.get(URL)).data
   }
 
   public async postToGroup (groupID: number) {
     const URL = `wall.post?${this.initURL()}owner_id=-${groupID}&`
     this.clearCaptcha()
-    return (await vkAPI.get(URL)).data
+    return (await sendAPI.get(URL)).data
   }
 }
 

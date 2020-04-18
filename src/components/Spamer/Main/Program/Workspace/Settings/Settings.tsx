@@ -19,9 +19,9 @@ function Settings () {
             InputProps={{
               startAdornment: <InputAdornment position="start">секунды:</InputAdornment>,
             }}
+            inputProps={{ min: '0', step: 'any' }}
             variant="filled"
             type="number"
-            inputProps={{ min: '0' }}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               bs.local.set('fields.sendInterval', e.currentTarget.value)
             }}
@@ -35,9 +35,9 @@ function Settings () {
             InputProps={{
               startAdornment: <InputAdornment position="start">минуты:</InputAdornment>,
             }}
+            inputProps={{ min: '0', step: 'any' }}
             variant="filled"
             type="number"
-            inputProps={{ min: '0' }}
             placeholder="никогда"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               bs.local.set('fields.autoPauseTimeout', e.currentTarget.value)

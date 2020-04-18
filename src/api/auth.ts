@@ -1,6 +1,6 @@
+import axios from 'axios'
 import { proxyURL, version } from './settings'
 import { AuthAppType, IAuthNeed2FA, IAuthSuccess } from '../types/types'
-import axios from 'axios'
 
 // Возвращает токен или ошибку для повторного запроса с кодом 2FA
 export async function auth (app: AuthAppType, username: string, password: string, code?: number) {

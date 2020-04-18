@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../../redux/store'
 import Draggable from 'react-draggable'
 import { Form, Formik, useFormikContext } from 'formik'
-import { addLogItem, clearCaptcha, unravelCaptchaItem } from '../../../../../redux/spamer-reducer'
+import {
+  addLogItem,
+  clearCaptcha,
+  setNotificationTimerID,
+  unravelCaptchaItem,
+} from '../../../../../redux/spamer-reducer'
 import MyTextField from '../../../../common/MyTextField'
 import submit from '../../../../../utils/submit'
 import Spamer from '../../../../../utils/Spamer'
@@ -29,7 +34,28 @@ function PaperComponent (props: any) {
 function CaptchaDialog () {
   const dispatch = useDispatch()
   const captcha = useSelector((state: RootReducerType) => state.spamerReducer.captcha).filter(item => !item.captchaKey)
+  const notificationTimerID = useSelector((state: RootReducerType) => state.spamerReducer.timers.notificationTimerID)
   const { values: spamValues, setFieldError: spamSetFieldError }: any = useFormikContext()
+
+  useEffect(() => {
+    if (!!captcha.length) {
+      const timerID = window.setInterval(() => {
+        document.title = 'Требуется капча'
+        window.setTimeout(() => {
+          document.title = 'VK_SPAMER_ONLINE - Бесплатный спамер для вк'
+        }, 1250)
+      }, 2500)
+
+      document.title = 'Требуется капча'
+      window.setTimeout(() => {
+        document.title = 'VK_SPAMER_ONLINE - Бесплатный спамер для вк'
+      }, 1250)
+
+      dispatch(setNotificationTimerID(timerID))
+    } else {
+      clearInterval(notificationTimerID)
+    }
+  }, [captcha.length])
 
   const initialValues: any = {}
   for (let item of captcha) {

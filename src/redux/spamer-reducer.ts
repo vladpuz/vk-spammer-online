@@ -17,6 +17,7 @@ const SET_AUTO_SWITCH_REMAINING = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_REMAI
 const SET_SPAM_TIMER_ID = 'vk_spamer_online/spamer/SET_SPAM_TIMER_ID' as const
 const SET_SENDER_TIMER_ID = 'vk_spamer_online/spamer/SET_SENDER_TIMER_ID' as const
 const SET_AUTO_PAUSE_TIMER_ID = 'vk_spamer_online/spamer/SET_AUTO_PAUSE_TIMER_ID' as const
+const SET_NOTIFICATION_TIMER_ID = 'vk_spamer_online/spamer/SET_NOTIFICATION_TIMER_ID' as const
 const ADD_CAPTCHA_ITEM = 'vk_spamer_online/spamer/ADD_CAPTCHA_ITEM' as const
 const REMOVE_CAPTCHA_ITEM = 'vk_spamer_online/spamer/REMOVE_CAPTCHA_ITEM' as const
 const CLEAR_CAPTCHA = 'vk_spamer_online/spamer/CLEAR_CAPTCHA' as const
@@ -50,6 +51,7 @@ const initialState = {
     spamTimerID: 0,
     senderTimerID: 0,
     autoPauseTimerID: 0,
+    notificationTimerID: 0,
   },
   captcha: [] as Array<ICaptcha>,
 }
@@ -70,6 +72,7 @@ type ActionTypes =
   ReturnType<typeof setSpamTimerID> |
   ReturnType<typeof setSenderTimerID> |
   ReturnType<typeof setAutoPauseTimerID> |
+  ReturnType<typeof setNotificationTimerID> |
   ReturnType<typeof addCaptchaItem> |
   ReturnType<typeof removeCaptchaItem> |
   ReturnType<typeof clearCaptcha> |
@@ -205,6 +208,15 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
         },
       }
 
+    case SET_NOTIFICATION_TIMER_ID:
+      return {
+        ...state,
+        timers: {
+          ...state.timers,
+          notificationTimerID: action.id,
+        },
+      }
+
     case ADD_CAPTCHA_ITEM:
       return {
         ...state,
@@ -318,6 +330,11 @@ export const setSenderTimerID = (id: number) => ({
 
 export const setAutoPauseTimerID = (id: number) => ({
   type: SET_AUTO_PAUSE_TIMER_ID,
+  id,
+})
+
+export const setNotificationTimerID = (id: number) => ({
+  type: SET_NOTIFICATION_TIMER_ID,
   id,
 })
 

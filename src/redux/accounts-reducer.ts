@@ -3,7 +3,7 @@ import { RootReducerType } from './store'
 import { AuthAppType, IAccount, IAuthNeed2FA, IAuthSuccess } from '../types/types'
 import { auth } from '../api/auth'
 import { getProfileInfo } from '../api/getProfileInfo'
-import shuffle from '../utils/shuffle'
+import shuffle from '../utils/helpers/shuffle'
 import bs from '../utils/BrowserStorage'
 
 /* Action types */

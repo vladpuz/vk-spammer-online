@@ -19,21 +19,18 @@ import {
 import Sender from '../api/Sender'
 import { clearCurrentSender, setCurrentSender, setIsEnabled } from '../redux/accounts-reducer'
 import randomization from './randomization'
+import { cancel } from '../api/settings'
 
 class Spamer {
   private values: IValues
   private initData: IInitData
   private accounts: Array<IAccount>
   private sender: ISender
-  readonly accountsSwitchTime: number
 
   constructor (values: IValues) {
-    const state = store.getState()
-
     this.values = values
-    this.initData = state.spamerReducer.initData
-    this.accounts = state.accountsReducer.accounts.filter(account => account.isEnabled)
-    this.accountsSwitchTime = state.spamerReducer.settings.autoSwitchTime
+    this.initData = store.getState().spamerReducer.initData
+    this.accounts = store.getState().accountsReducer.accounts.filter(account => account.isEnabled)
 
     this.sender = new Sender(
       this.accounts[this.initData.senderIndex].token,
@@ -74,7 +71,7 @@ class Spamer {
     }
   }
 
-  private async handleSend () {
+  private handleSend () {
     // senderIndex, accountName, addressName, accountID должны сохранится в лексическом окружении
     const senderIndex = this.initData.senderIndex
     const accountName = `${this.accounts[senderIndex].profileInfo.first_name} ${this.accounts[senderIndex].profileInfo.last_name}`
@@ -85,67 +82,76 @@ class Spamer {
     const key = `${Date.now()} Запрос обрабатывается pending ${senderIndex} ${accountName} ${addressName} ${accountID}`
     store.dispatch(addLogItem('Запрос обрабатывается', 'pending', key))
 
-    const res = await this.send()
+    this.send().then(res => {
 
-    if (res.error) {
-      if (res.error.error_msg === 'Captcha needed') {
-        if (this.values.antiCaptcha) {
-          Spamer.pause('Требуется капча', 'error')
-          // запрос на anti-captcha.com
-          // установка кода капчи
-          // продолжение спама
-        } else if (this.values.ignoreCaptcha) {
-          const nextSenderIndex = (senderIndex + 1 === this.accounts.length) ? 0 : senderIndex + 1
+      if (res.error) {
+        if (res.error.error_msg === 'Captcha needed') {
+          if (this.values.antiCaptcha) {
+            Spamer.pause('Требуется капча', 'error')
+            // запрос на anti-captcha.com
+            // установка кода капчи
+            // продолжение спама
+          } else if (this.values.ignoreCaptcha) {
+            const nextSenderIndex = (senderIndex + 1 === this.accounts.length) ? 0 : senderIndex + 1
 
-          if (this.accounts[senderIndex].isEnabled) {
-            store.dispatch(changeLogItem(key, {
-              title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
-              status: 'warning',
-            }))
+            if (this.accounts[senderIndex].isEnabled) {
+              store.dispatch(changeLogItem(key, {
+                title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
+                status: 'warning',
+              }))
+            } else {
+              store.dispatch(removeLogItem(key))
+            }
+
+            if (this.accounts.every(account => !account.isEnabled) && store.getState().spamerReducer.spamOnRun) {
+              Spamer.stop('Все аккаунты были выключены, спам остановлен', 'info')
+            }
+
+            this.accounts[senderIndex].isEnabled = false
+            this.initData.senderIndex = nextSenderIndex
+            store.dispatch(setIsEnabled(accountID, false))
+            store.dispatch(setCurrentSender(this.accounts[nextSenderIndex].profileInfo.id))
           } else {
-            store.dispatch(removeLogItem(key))
-          }
+            const captcha = store.getState().spamerReducer.captcha
 
-          if (this.accounts.every(account => !account.isEnabled) && store.getState().spamerReducer.spamOnRun) {
-            Spamer.stop('Все аккаунты были выключены, спам остановлен', 'info')
-          }
+            if (captcha.some(item => item.userID === accountID)) {
+              store.dispatch(removeCaptchaItem(accountID))
 
-          this.accounts[senderIndex].isEnabled = false
-          this.initData.senderIndex = nextSenderIndex
-          store.dispatch(setIsEnabled(accountID, false))
-          store.dispatch(setCurrentSender(this.accounts[nextSenderIndex].profileInfo.id))
+              // store.dispatch(removeLogItem(key))
+            } else {
+              cancel('Потребовалась капча')
+              store.dispatch(changeLogItem(key, {
+                title: `Потребовалась капча для аккаунта ${accountName}`,
+                status: 'warning',
+              }))
+            }
+
+            store.dispatch(addCaptchaItem(res.error.captcha_img, +res.error.captcha_sid, accountID))
+
+            if (!store.getState().spamerReducer.spamOnPause) {
+              Spamer.pause('Требуется капча, спам приостановлен', 'info')
+            }
+          }
         } else {
-          const captcha = store.getState().spamerReducer.captcha
-
-          if (captcha.some(item => item.userID === accountID)) {
-            store.dispatch(removeCaptchaItem(accountID))
-            store.dispatch(removeLogItem(key))
-          } else {
-            store.dispatch(changeLogItem(key, {
-              title: `Потребовалась капча для аккаунта ${accountName}`,
-              status: 'warning',
-            }))
-          }
-
-          store.dispatch(addCaptchaItem(res.error.captcha_img, +res.error.captcha_sid, accountID))
-
-          if (!store.getState().spamerReducer.spamOnPause) {
-            Spamer.pause('Требуется капча, спам приостановлен', 'info')
-          }
+          store.dispatch(changeLogItem(key, {
+            title: `Ошибка - ${res.error.error_msg}`,
+            status: 'error',
+          }))
         }
       } else {
+        store.dispatch(removeCaptchaItem(accountID))
         store.dispatch(changeLogItem(key, {
-          title: `Ошибка - ${res.error.error_msg}`,
-          status: 'error',
+          title: `Отправлено - ${addressName} от ${accountName}`,
+          status: 'success',
         }))
       }
-    } else {
-      store.dispatch(removeCaptchaItem(accountID))
+
+    }).catch(err => {
       store.dispatch(changeLogItem(key, {
-        title: `Отправлено - ${addressName} от ${accountName}`,
-        status: 'success',
+        title: `Запрос отменён - ${err.message}`,
+        status: 'warning',
       }))
-    }
+    })
   }
 
   private senderChange () {
@@ -170,7 +176,7 @@ class Spamer {
     let nextAddresseeIndex = this.initData.addresseeIndex
 
     // Если время смены аккаунта равно нулю все аккаунты спамят одновременно
-    if (!this.accountsSwitchTime) {
+    if (!store.getState().spamerReducer.settings.autoSwitchTime) {
       nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
       store.dispatch(setAddresseeIndex(nextAddresseeIndex))
       for (let i = 0; i < this.accounts.length; i++) {
@@ -207,14 +213,15 @@ class Spamer {
     }
 
     // Установка таймера смены отправителя с сохранением оставшегося времени
-    if (this.initData.autoSwitchRemaining && this.accountsSwitchTime) {
+    const autoSwitchTime = store.getState().spamerReducer.settings.autoSwitchTime
+    if (this.initData.autoSwitchRemaining && autoSwitchTime) {
       store.dispatch(setStartTimestamp(Date.now()))
 
       const senderChangeTick = () => {
         this.senderChange()
-        const senderTimerID = window.setTimeout(senderChangeTick, this.accountsSwitchTime * 1000)
+        const senderTimerID = window.setTimeout(senderChangeTick, autoSwitchTime * 1000)
         store.dispatch(setSenderTimerID(senderTimerID))
-        store.dispatch(setAutoSwitchRemaining(this.accountsSwitchTime))
+        store.dispatch(setAutoSwitchRemaining(autoSwitchTime))
       }
 
       const senderTimerID = window.setTimeout(senderChangeTick, this.initData.autoSwitchRemaining * 1000)
@@ -249,7 +256,6 @@ class Spamer {
     const autoSwitchTime = state.spamerReducer.settings.autoSwitchTime
 
     if (autoSwitchRemaining && autoSwitchTime) {
-      // console.log(`${autoSwitchTime}-(${(Date.now() - startTimestamp) / 1000}+${autoSwitchTime - autoSwitchRemaining})`)
       store.dispatch(setAutoSwitchRemaining(
         autoSwitchTime - ((Date.now() - startTimestamp) / 1000 + (autoSwitchTime - autoSwitchRemaining)),
       ))

@@ -7,29 +7,28 @@ import Spamer from './Spamer'
 function submit (values: IValues, setFieldError: (field: string, message: string) => void, addLog: () => void) {
   const accounts = store.getState().accountsReducer.accounts
 
-  const validate = () => {
-    if (!accounts.length) {
-      store.dispatch(addLogItem(
-        'Нету ни одного аккаунта',
-        'warning',
-        `${Date.now()} Нету ни одного аккаунта warning`,
-      ))
-    } else if (!accounts.some(account => account.isEnabled)) {
-      store.dispatch(addLogItem(
-        'Все аккаунты выключены',
-        'warning',
-        `${Date.now()} Все аккаунты выключены warning`,
-      ))
-    }
-
-    if (!values.addressees.length) setFieldError('addressees', 'Укажите адресаты спама')
-    if (!values.message && !values.attachment) {
-      setFieldError('message', 'Сообщение обязательно если не указаны вложения')
-      setFieldError('attachment', 'Вложения обязательны если не указано сообщение')
-    }
+  // Валидация
+  if (!accounts.length) {
+    store.dispatch(addLogItem(
+      'Нету ни одного аккаунта',
+      'warning',
+      `${Date.now()} Нету ни одного аккаунта warning`,
+    ))
+  } else if (!accounts.some(account => account.isEnabled)) {
+    store.dispatch(addLogItem(
+      'Все аккаунты выключены',
+      'warning',
+      `${Date.now()} Все аккаунты выключены warning`,
+    ))
   }
-  validate()
 
+  if (!values.addressees.length) setFieldError('addressees', 'Укажите адресаты спама')
+  if (!values.message && !values.attachment) {
+    setFieldError('message', 'Сообщение обязательно если не указаны вложения')
+    setFieldError('attachment', 'Вложения обязательны если не указано сообщение')
+  }
+
+  // Если всё ок
   if (
     (values.message || values.attachment) &&
     values.addressees.length &&

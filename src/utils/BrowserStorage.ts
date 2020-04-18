@@ -11,8 +11,7 @@ class BrowserStorage {
 
     if (args.length > 1) {
       for (let i = 0; i < args.length - 1; i++) {
-        // eslint-disable-next-line no-eval
-        eval(`if (!item.${args[i]}) item.${args[i]} = {}`)
+        if (!item[args[i]]) item[args[i]] = {}
       }
     }
 
@@ -30,7 +29,7 @@ class BrowserStorage {
 
     if (result) {
       for (let i = 0; i < args.length; i++) {
-        if (result) result = result[args[i]]
+        result = result[args[i]]
       }
     }
 

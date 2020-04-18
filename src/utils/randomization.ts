@@ -1,4 +1,4 @@
-import random from './random'
+import random from './helpers/random'
 
 // Делает рандомизацию строки по синтаксису 'Привет, [[value1 | value2 | value3]]'
 function randomization (text: string): string {
