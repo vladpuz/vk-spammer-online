@@ -24,8 +24,7 @@ export interface IValues {
   sendInterval: number
   autoPauseTimeout: number
   onePass: boolean
-  antiCaptcha: boolean
-  ignoreCaptcha: boolean
+  captchaMode: 'Антикапча' | 'Показывать капчу' | 'Игнорировать капчу'
   spamMode: SpamModeType
   addressees: Array<string>
 }

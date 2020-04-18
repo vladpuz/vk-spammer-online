@@ -81,12 +81,30 @@ const Account: React.FC<IProps> = ({
                   <IconButton
                     disabled={spamOnPause || spamOnRun || currentSender}
                     aria-label="remove"
-                    onClick={() => {dispatch(setIsEnabled(userID, false))}}
+                    onClick={() => {
+                      const accounts = bs.local.get('accounts').map(
+                        (account: IAccount) => account.profileInfo.id === userID ? {
+                          ...account,
+                          isEnabled: false,
+                        } : account,
+                      )
+                      bs.local.set('accounts', accounts)
+                      dispatch(setIsEnabled(userID, false))
+                    }}
                   >
                     <RemoveIcon/>
                   </IconButton>
                 ) : (
-                  <IconButton aria-label="add" onClick={() => {dispatch(setIsEnabled(userID, true))}}>
+                  <IconButton aria-label="add" onClick={() => {
+                    const accounts = bs.local.get('accounts').map(
+                      (account: IAccount) => account.profileInfo.id === userID ? {
+                        ...account,
+                        isEnabled: true,
+                      } : account,
+                    )
+                    bs.local.set('accounts', accounts)
+                    dispatch(setIsEnabled(userID, true))
+                  }}>
                     <AddIcon/>
                   </IconButton>
                 )

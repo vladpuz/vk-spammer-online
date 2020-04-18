@@ -85,10 +85,8 @@ function CaptchaDialog () {
           initialValues={initialValues}
           onSubmit={(values, { setFieldError }) => {
             let ok = true
-            console.log(values)
             for (let item of Object.entries(values)) {
               const [userID, captchaKey] = item
-              console.log(userID)
 
               if (!captchaKey) {
                 setFieldError(userID, 'Введите капчу')

@@ -1,9 +1,13 @@
-import axios from 'axios'
 import { proxyURL, version } from './settings'
 import { AuthAppType, IAuthNeed2FA, IAuthSuccess } from '../types/types'
 
 // Возвращает токен или ошибку для повторного запроса с кодом 2FA
-export async function auth (app: AuthAppType, username: string, password: string, code?: number) {
+export async function auth (
+  app: AuthAppType,
+  username: string,
+  password: string,
+  code?: number,
+): Promise<IAuthNeed2FA | IAuthSuccess> {
   const { client_id, client_secret } = authApps[app]
   let URL = proxyURL + 'https://oauth.vk.com/token?'
 
@@ -16,11 +20,8 @@ export async function auth (app: AuthAppType, username: string, password: string
   URL += `password=${password}&`
   URL += (code ? `code=${code}` : '')
 
-  try {
-    return await axios.get(URL) as IAuthSuccess
-  } catch (err) {
-    return err.response.data as IAuthNeed2FA
-  }
+  const res = await fetch(URL)
+  return await res.json()
 }
 
 const authApps = {

@@ -22,8 +22,7 @@ function Program () {
         sendInterval: bs.local.get('fields.sendInterval') || '10',
         autoPauseTimeout: bs.local.get('fields.autoPauseTimeout') || '',
         onePass: bs.local.get('fields.onePass') || false,
-        antiCaptcha: bs.local.get('fields.antiCaptcha') || false,
-        ignoreCaptcha: bs.local.get('fields.ignoreСaptcha') || false,
+        captchaMode: bs.local.get('fields.captchaMode') || 'Игнорировать капчу',
         spamMode: (bs.local.get('fields.spamMode') || 'pm') as SpamModeType,
         addressees: addresses.getLocalValue(bs.local.get('fields.spamMode') || 'pm') || '',
       }}

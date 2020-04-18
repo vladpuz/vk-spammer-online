@@ -1,9 +1,10 @@
 import React from 'react'
 import s from './Settings.module.css'
-import { Box, FormControlLabel, InputAdornment } from '@material-ui/core'
+import { Box, FormControlLabel, InputAdornment, Radio } from '@material-ui/core'
 import MyTextField from '../../../../../common/MyTextField'
 import MyCheckbox from '../../../../../common/MyCheckbox'
 import bs from '../../../../../../utils/BrowserStorage'
+import MyRadioGroup from '../../../../../common/MyRadioGroup'
 
 function Settings () {
   const fieldWidth = 250
@@ -49,33 +50,53 @@ function Settings () {
       <div className={s.checkboxes}>
         <FormControlLabel control={
           <MyCheckbox
+            size="small"
             name="onePass"
             color="secondary"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               bs.local.set('fields.onePass', e.currentTarget.checked)
             }}
           />
-        } label="Только один проход"/>
+        } label="Один проход"/>
 
-        <FormControlLabel control={
-          <MyCheckbox
-            name="antiCaptcha"
-            color="secondary"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              bs.local.set('fields.antiCaptcha', e.currentTarget.checked)
-            }}
-          />
-        } label="Антикапча"/>
-
-        <FormControlLabel control={
-          <MyCheckbox
-            name="ignoreCaptcha"
-            color="secondary"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              bs.local.set('fields.ignoreСaptcha', e.currentTarget.checked)
-            }}
-          />
-        } label="Игнорировать капчу"/>
+        <MyRadioGroup
+          row
+          aria-label="captchaMode"
+          name="captchaMode"
+          onChange={(e) => {
+            bs.local.set('fields.captchaMode', e.target.value)
+          }}>
+          <FormControlLabel control={
+            <Radio
+              size="small"
+              color="secondary"
+              value="Антикапча"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                bs.local.set('fields.antiCaptcha', e.currentTarget.checked)
+              }}
+            />
+          } label="Антикапча"/>
+          <FormControlLabel control={
+            <Radio
+              size="small"
+              color="secondary"
+              value="Показывать капчу"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                bs.local.set('fields.antiCaptcha', e.currentTarget.checked)
+              }}
+            />
+          } label="Показывать капчу"/>
+          <FormControlLabel control={
+            <Radio
+              size="small"
+              color="secondary"
+              value="Игнорировать капчу"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                bs.local.set('fields.antiCaptcha', e.currentTarget.checked)
+              }}
+            />
+          } label="Игнорировать капчу"/>
+        </MyRadioGroup>
       </div>
     </>
   )

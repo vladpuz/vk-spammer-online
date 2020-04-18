@@ -22,6 +22,8 @@ const ADD_CAPTCHA_ITEM = 'vk_spamer_online/spamer/ADD_CAPTCHA_ITEM' as const
 const REMOVE_CAPTCHA_ITEM = 'vk_spamer_online/spamer/REMOVE_CAPTCHA_ITEM' as const
 const CLEAR_CAPTCHA = 'vk_spamer_online/spamer/CLEAR_CAPTCHA' as const
 const UNRAVEL_CAPTCHA_ITEM = 'vk_spamer_online/spamer/UNRAVEL_CAPTCHA_ITEM' as const
+const ADD_CANCELER_ITEM = 'vk_spamer_online/spamer/ADD_CANCELER_ITEM' as const
+const CLEAR_CANCELERS = 'vk_spamer_online/spamer/CLEAR_CANCELERS' as const
 
 const localAutoSwitchTime = bs.local.get('fields.autoSwitchTime')
 const autoSwitchTime = localAutoSwitchTime === 0 ? localAutoSwitchTime : localAutoSwitchTime || 300
@@ -54,6 +56,7 @@ const initialState = {
     notificationTimerID: 0,
   },
   captcha: [] as Array<ICaptcha>,
+  cancelers: [] as Array<AbortController>,
 }
 
 type ActionTypes =
@@ -76,7 +79,9 @@ type ActionTypes =
   ReturnType<typeof addCaptchaItem> |
   ReturnType<typeof removeCaptchaItem> |
   ReturnType<typeof clearCaptcha> |
-  ReturnType<typeof unravelCaptchaItem>
+  ReturnType<typeof unravelCaptchaItem> |
+  ReturnType<typeof addCancelerItem> |
+  ReturnType<typeof clearCancelers>
 
 function spamerReducer (state = initialState, action: ActionTypes): typeof initialState {
   switch (action.type) {
@@ -247,6 +252,21 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
         } : item),
       }
 
+    case ADD_CANCELER_ITEM:
+      return {
+        ...state,
+        cancelers: [
+          ...state.cancelers,
+          action.canceler,
+        ],
+      }
+
+    case CLEAR_CANCELERS:
+      return {
+        ...state,
+        cancelers: [],
+      }
+
     default:
       return state
   }
@@ -358,6 +378,15 @@ export const unravelCaptchaItem = (userID: number, key: string) => ({
   type: UNRAVEL_CAPTCHA_ITEM,
   userID,
   key,
+})
+
+export const addCancelerItem = (canceler: any) => ({
+  type: ADD_CANCELER_ITEM,
+  canceler,
+})
+
+export const clearCancelers = () => ({
+  type: CLEAR_CANCELERS,
 })
 
 export default spamerReducer
