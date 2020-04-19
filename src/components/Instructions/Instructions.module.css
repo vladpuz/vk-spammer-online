@@ -75,3 +75,11 @@
 .screenshot {
   display: block;
 }
+
+.a {
+  color: #ffd051;
+}
+
+.a:hover {
+  text-decoration: underline;
+}
