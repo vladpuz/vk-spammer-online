@@ -33,9 +33,33 @@
   margin-bottom: 10px;
 }
 
-.list,
-.addressesList {
+.instructions .subtitle {
+  margin-top: 20px;
+}
+
+.list__item:first-child .subtitle {
+  margin-top: 0;
+}
+
+.list {
   list-style: none;
+}
+
+.list p {
+  margin-bottom: 15px;
+}
+
+.addressesList p {
+  margin: 5px 0;
+}
+
+.addressesList {
+  list-style-position: inside;
+  list-style-type: decimal;
+}
+
+.addressesList::marker {
+  display: inline-block;
 }
 
 .list__item > *:last-child {
@@ -44,7 +68,8 @@
 
 .addressesList__title {
   font-size: 20px;
-  margin: 5px 0;
+  display: inline-block;
+  margin-top: 5px;
 }
 
 .screenshot {

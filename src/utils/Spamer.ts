@@ -87,10 +87,14 @@ class Spamer {
         if (res.error.error_msg === 'Captcha needed') {
           switch (this.values.captchaMode) {
             case 'Антикапча':
-              store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
+              const state = store.getState()
+              state.spamerReducer.cancelers.forEach((controller) => {controller.abort()})
               store.dispatch(clearCancelers())
-
-              if (!store.getState().spamerReducer.spamOnPause) {
+              store.dispatch(changeLogItem(key, {
+                title: `Потребовалась капча для аккаунта ${accountName}`,
+                status: 'warning',
+              }))
+              if (!state.spamerReducer.spamOnPause) {
                 Spamer.pause('Антикапча пока не сделана, но скоро будет)', 'error')
               }
               // запрос на anti-captcha.com
