@@ -68,7 +68,10 @@
 
 .addressesList__title {
   font-size: 20px;
-  display: inline-block;
+  display: inline;
+}
+
+.addressesList__item {
   margin-top: 5px;
 }
 
