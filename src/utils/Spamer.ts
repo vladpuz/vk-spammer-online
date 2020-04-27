@@ -83,6 +83,7 @@ class Spamer {
     store.dispatch(addLogItem('Запрос обрабатывается', 'pending', key))
 
     this.send().then(res => {
+      console.log(res)
       if (res.error) {
         if (res.error.error_msg === 'Captcha needed') {
           switch (this.values.captchaMode) {
