@@ -166,7 +166,18 @@ class Spamer {
           title: `Запрос отменён`,
           status: 'warning',
         }))
-      } else throw err
+      } else if (err.name === 'SyntaxError') {
+        store.dispatch(changeLogItem(key, {
+          title: `Превышена длина запроса`,
+          status: 'error',
+        }))
+      } else {
+        store.dispatch(changeLogItem(key, {
+          title: `Ошибка - ${err}`,
+          status: 'error',
+        }))
+        throw err
+      }
     })
   }
 
