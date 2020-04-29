@@ -84,80 +84,82 @@ class Spamer {
 
     this.send().then(res => {
       console.log(res)
-      if (res.error) {
-        if (res.error.error_msg === 'Captcha needed') {
-          switch (this.values.captchaMode) {
-            case 'Антикапча':
-              const state = store.getState()
-              state.spamerReducer.cancelers.forEach((controller) => {controller.abort()})
-              store.dispatch(clearCancelers())
-              store.dispatch(changeLogItem(key, {
-                title: `Потребовалась капча для аккаунта ${accountName}`,
-                status: 'warning',
-              }))
-              if (!state.spamerReducer.spamOnPause) {
-                Spamer.pause('Антикапча пока не сделана, но скоро будет)', 'error')
-              }
-              // запрос на anti-captcha.com
-              // установка кода капчи
-              // продолжение спама
-              break
 
-            case 'Показывать капчу':
-              store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
-              store.dispatch(clearCancelers())
-
-              store.dispatch(changeLogItem(key, {
-                title: `Потребовалась капча для аккаунта ${accountName}`,
-                status: 'warning',
-              }))
-
-              store.dispatch(addCaptchaItem(res.error.captcha_img, +res.error.captcha_sid, accountID))
-              if (!store.getState().spamerReducer.spamOnPause) {
-                Spamer.pause('Требуется капча, спам приостановлен', 'info')
-              }
-              break
-
-            case 'Игнорировать капчу':
-              const nextSenderIndex = (senderIndex + 1 === this.accounts.length) ? 0 : senderIndex + 1
-
-              if (this.accounts[senderIndex].isEnabled) {
-                store.dispatch(changeLogItem(key, {
-                  title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
-                  status: 'warning',
-                }))
-                store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
-                store.dispatch(clearCancelers())
-              }
-
-              const accounts = bs.local.get('accounts').map((account: IAccount) => {
-                return account.profileInfo.id === accountID ? {
-                  ...account,
-                  isEnabled: false,
-                } : account
-              })
-              bs.local.set('accounts', accounts)
-
-              this.accounts[senderIndex].isEnabled = false
-              this.initData.senderIndex = nextSenderIndex
-              store.dispatch(setIsEnabled(accountID, false))
-              store.dispatch(setCurrentSender(this.accounts[nextSenderIndex].profileInfo.id))
-
-              if (this.accounts.every(account => !account.isEnabled) && store.getState().spamerReducer.spamOnRun) {
-                Spamer.stop('Все аккаунты были выключены, спам остановлен', 'info')
-              }
-              break
-          }
-        } else {
-          store.dispatch(changeLogItem(key, {
-            title: `Ошибка - ${res.error.error_msg}`,
-            status: 'error',
-          }))
-        }
-      } else {
+      if (!res.error) {
         store.dispatch(changeLogItem(key, {
           title: `Отправлено - ${addressName} от ${accountName}`,
           status: 'success',
+        }))
+        return
+      }
+
+      if (res.error.error_msg === 'Captcha needed') {
+        switch (this.values.captchaMode) {
+          case 'Антикапча':
+            const state = store.getState()
+            state.spamerReducer.cancelers.forEach((controller) => {controller.abort()})
+            store.dispatch(clearCancelers())
+            store.dispatch(changeLogItem(key, {
+              title: `Потребовалась капча для аккаунта ${accountName}`,
+              status: 'warning',
+            }))
+            if (!state.spamerReducer.spamOnPause) {
+              Spamer.pause('Антикапча пока не сделана, но скоро будет)', 'error')
+            }
+            // запрос на anti-captcha.com
+            // установка кода капчи
+            // продолжение спама
+            break
+
+          case 'Показывать капчу':
+            store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
+            store.dispatch(clearCancelers())
+
+            store.dispatch(changeLogItem(key, {
+              title: `Потребовалась капча для аккаунта ${accountName}`,
+              status: 'warning',
+            }))
+
+            store.dispatch(addCaptchaItem(res.error.captcha_img, +res.error.captcha_sid, accountID))
+            if (!store.getState().spamerReducer.spamOnPause) {
+              Spamer.pause('Требуется капча, спам приостановлен', 'info')
+            }
+            break
+
+          case 'Игнорировать капчу':
+            const nextSenderIndex = (senderIndex + 1 === this.accounts.length) ? 0 : senderIndex + 1
+
+            if (this.accounts[senderIndex].isEnabled) {
+              store.dispatch(changeLogItem(key, {
+                title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
+                status: 'warning',
+              }))
+              store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
+              store.dispatch(clearCancelers())
+            }
+
+            const accounts = bs.local.get('accounts').map((account: IAccount) => {
+              return account.profileInfo.id === accountID ? {
+                ...account,
+                isEnabled: false,
+              } : account
+            })
+            bs.local.set('accounts', accounts)
+
+            this.accounts[senderIndex].isEnabled = false
+            this.initData.senderIndex = nextSenderIndex
+            store.dispatch(setIsEnabled(accountID, false))
+            store.dispatch(setCurrentSender(this.accounts[nextSenderIndex].profileInfo.id))
+
+            if (this.accounts.every(account => !account.isEnabled) && store.getState().spamerReducer.spamOnRun) {
+              Spamer.stop('Все аккаунты были выключены, спам остановлен', 'info')
+            }
+            break
+        }
+      } else {
+        store.dispatch(changeLogItem(key, {
+          title: `Ошибка - ${res.error.error_msg}`,
+          status: 'error',
         }))
       }
     }).catch(err => {
