@@ -9,7 +9,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle'
 import SdStorageIcon from '@material-ui/icons/SdStorage'
 import { authAccount, clearAccounts, setIsEnabledAll, shuffleAccounts } from '../../../../../redux/accounts-reducer'
 import { useDispatch, useSelector } from 'react-redux'
-import random from '../../../../../utils/helpers/random'
+import random from '../../../../../utils/random'
 import { AuthAppType } from '../../../../../types/types'
 import { RootReducerType } from '../../../../../redux/store'
 
