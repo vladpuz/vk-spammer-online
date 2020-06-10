@@ -12,7 +12,7 @@ interface IProps {
 }
 
 function FieldAddressees ({ placeholder }: IProps) {
-  const { values } = useFormikContext()
+  const { values } : { values: any } = useFormikContext()
   const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
   const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
 

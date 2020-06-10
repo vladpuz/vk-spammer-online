@@ -8,7 +8,7 @@ import { useFormikContext } from 'formik'
 import addresses from '../../../../../utils/addresses'
 
 function Addressees () {
-  const { values } = useFormikContext()
+  const { values } : { values: any } = useFormikContext()
   const [placeholder, setPlaceholder] = useState(addresses.getPlaceholder(values.spamMode))
 
   return (
