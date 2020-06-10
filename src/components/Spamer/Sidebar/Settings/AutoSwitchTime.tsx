@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField'
 import { useDispatch, useSelector } from 'react-redux'
 import { setAutoSwitchRemaining, setAutoSwitchTime } from '../../../../redux/spamer-reducer'
 import { RootReducerType } from '../../../../redux/store'
-import bs from '../../../../utils/BrowserStorage'
+import storage from 'store2'
 
 function AutoSwitchTime () {
   const autoSwitchTime = useSelector((state: RootReducerType) => state.spamerReducer.settings.autoSwitchTime)
@@ -18,7 +18,7 @@ function AutoSwitchTime () {
       disabled={spamOnPause || spamOnRun}
       label="Время автосмены аккаунтов"
       InputProps={{
-        startAdornment: <InputAdornment position="start">секунды:</InputAdornment>,
+        startAdornment: <InputAdornment position="start">секунды:</InputAdornment>
       }}
       type="number"
       inputProps={{ min: '0' }}
@@ -28,8 +28,13 @@ function AutoSwitchTime () {
       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(setAutoSwitchTime(+e.currentTarget.value))
         dispatch(setAutoSwitchRemaining(+e.currentTarget.value))
-        bs.local.set('fields.autoSwitchTime', +e.currentTarget.value)
-        bs.local.set('fields.autoSwitchRemaining', +e.currentTarget.value)
+
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          autoSwitchTime: e.currentTarget.value,
+          autoSwitchRemaining: e.currentTarget.value
+        })
       }}
     />
   )

@@ -4,12 +4,12 @@ import Workspace from './Workspace/Workspace'
 import Addressees from './Addressees/Addressees'
 import { Formik, Form } from 'formik'
 import { SpamModeType } from '../../../../types/types'
-import bs from '../../../../utils/BrowserStorage'
 import addresses from '../../../../utils/addresses'
 import submit from '../../../../utils/submit'
 import { addLogItem } from '../../../../redux/spamer-reducer'
 import { useDispatch } from 'react-redux'
 import CaptchaDialog from './CaptchaDialog/CaptchaDialog'
+import storage from 'store2'
 
 function Program () {
   const dispatch = useDispatch()
@@ -17,14 +17,14 @@ function Program () {
   return (
     <Formik
       initialValues={{
-        message: bs.local.get('fields.message') || '',
-        attachment: bs.local.get('fields.attachment') || '',
-        sendInterval: bs.local.get('fields.sendInterval') || '10',
-        autoPauseTimeout: bs.local.get('fields.autoPauseTimeout') || '',
-        onePass: bs.local.get('fields.onePass') || false,
-        captchaMode: bs.local.get('fields.captchaMode') || 'Игнорировать капчу',
-        spamMode: (bs.local.get('fields.spamMode') || 'pm') as SpamModeType,
-        addressees: addresses.getLocalValue(bs.local.get('fields.spamMode') || 'pm') || '',
+        message: storage.local.get('fields')?.message || '',
+        attachment: storage.local.get('fields')?.attachment || '',
+        sendInterval: storage.local.get('fields')?.sendInterval || '10',
+        autoPauseTimeout: storage.local.get('fields')?.autoPauseTimeout || '',
+        onePass: storage.local.get('fields')?.onePass || false,
+        captchaMode: storage.local.get('fields')?.captchaMode || 'Игнорировать капчу',
+        spamMode: (storage.local.get('fields')?.spamMode || 'pm') as SpamModeType,
+        addressees: addresses.getLocalValue(storage.local.get('fields')?.spamMode || 'pm') || ''
       }}
       onSubmit={(values, { setFieldError }) => {
         submit(
@@ -34,9 +34,9 @@ function Program () {
             dispatch(addLogItem(
               'Рассылка начата',
               'info',
-              `${Date.now()} Рассылка начата info`,
+              `${Date.now()} Рассылка начата info`
             ))
-          },
+          }
         )
       }}
     >

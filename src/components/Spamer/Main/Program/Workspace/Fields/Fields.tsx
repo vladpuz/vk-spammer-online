@@ -2,7 +2,7 @@ import React from 'react'
 import s from './Fields.module.css'
 import Title from '../../../../../common/Title/Title'
 import MyTextField from '../../../../../common/MyTextField'
-import bs from '../../../../../../utils/BrowserStorage'
+import storage from 'store2'
 
 function Fields () {
   return (
@@ -17,7 +17,11 @@ function Fields () {
           variant="outlined"
           placeholder="Привет! Меня зовут [[ Артём | Настя | Лена ]]. Я пользуюсь бесплатным онлайн спамером VK_SPAMER_ONLINE 😄"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            bs.local.set('fields.message', e.currentTarget.value)
+            const fields = storage.local.get('fields')
+            storage.local.set('fields', {
+              ...fields,
+              message: e.currentTarget.value
+            })
           }}
         />
       </div>
@@ -34,7 +38,11 @@ function Fields () {
 video217849689_456239447
 и т.д."
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            bs.local.set('fields.attachment', e.currentTarget.value)
+            const fields = storage.local.get('fields')
+            storage.local.set('fields', {
+              ...fields,
+              attachment: e.currentTarget.value
+            })
           }}
         />
       </div>

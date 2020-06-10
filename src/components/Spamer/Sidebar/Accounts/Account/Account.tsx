@@ -7,10 +7,10 @@ import AddIcon from '@material-ui/icons/Add'
 import RemoveIcon from '@material-ui/icons/Remove'
 import { removeAccount, setIsEnabled } from '../../../../../redux/accounts-reducer'
 import { useDispatch, useSelector } from 'react-redux'
-import bs from '../../../../../utils/BrowserStorage'
 import { IAccount } from '../../../../../types/types'
 import { RootReducerType } from '../../../../../redux/store'
 import { Draggable } from 'react-beautiful-dnd'
+import storage from 'store2'
 
 interface IProps {
   userID: number
@@ -29,7 +29,7 @@ const Account: React.FC<IProps> = ({
   currentSender,
   isEnabled,
   error,
-  index,
+  index
 }) => {
   const disabledClassName = isEnabled ? '' : s.accountDisabled
   const isCurrentSenderClassName = currentSender && s.currentSender
@@ -40,14 +40,14 @@ const Account: React.FC<IProps> = ({
 
   const remove = () => {
     dispatch(removeAccount(userID))
-    const accounts = bs.local.get('accounts')
-    bs.local.set('accounts', accounts.filter((account: IAccount) => account.profileInfo.id !== userID))
+    const accounts = storage.local.get('accounts')
+    storage.local.set('accounts', accounts.filter((account: IAccount) => account.profileInfo.id !== userID))
   }
 
   const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
     userSelect: 'none',
     background: isDragging ? '#373740' : '',
-    ...draggableStyle,
+    ...draggableStyle
   })
 
   return (
@@ -82,13 +82,13 @@ const Account: React.FC<IProps> = ({
                     disabled={spamOnPause || spamOnRun || currentSender}
                     aria-label="remove"
                     onClick={() => {
-                      const accounts = bs.local.get('accounts').map(
+                      const accounts = storage.local.get('accounts').map(
                         (account: IAccount) => account.profileInfo.id === userID ? {
                           ...account,
-                          isEnabled: false,
-                        } : account,
+                          isEnabled: false
+                        } : account
                       )
-                      bs.local.set('accounts', accounts)
+                      storage.local.set('accounts', accounts)
                       dispatch(setIsEnabled(userID, false))
                     }}
                   >
@@ -96,13 +96,13 @@ const Account: React.FC<IProps> = ({
                   </IconButton>
                 ) : (
                   <IconButton aria-label="add" onClick={() => {
-                    const accounts = bs.local.get('accounts').map(
+                    const accounts = storage.local.get('accounts').map(
                       (account: IAccount) => account.profileInfo.id === userID ? {
                         ...account,
-                        isEnabled: true,
-                      } : account,
+                        isEnabled: true
+                      } : account
                     )
-                    bs.local.set('accounts', accounts)
+                    storage.local.set('accounts', accounts)
                     dispatch(setIsEnabled(userID, true))
                   }}>
                     <AddIcon/>
@@ -112,7 +112,7 @@ const Account: React.FC<IProps> = ({
               <IconButton
                 disabled={spamOnPause || spamOnRun}
                 aria-label="delete"
-                onClick={() => {remove()}}
+                onClick={() => { remove() }}
               >
                 <DeleteIcon/>
               </IconButton>

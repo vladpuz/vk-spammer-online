@@ -14,12 +14,12 @@ import {
   setAutoSwitchRemaining,
   addCaptchaItem,
   removeCaptchaItem,
-  clearCancelers,
+  clearCancelers
 } from '../redux/spamer-reducer'
 import Sender from '../api/Sender'
 import { clearCurrentSender, setCurrentSender, setIsEnabled } from '../redux/accounts-reducer'
 import randomization from './randomization'
-import bs from '../utils/BrowserStorage'
+import storage from 'store2'
 
 class Spamer {
   private values: IValues
@@ -34,7 +34,7 @@ class Spamer {
 
     this.sender = new Sender(
       this.accounts[this.initData.senderIndex].token,
-      this.accounts[this.initData.senderIndex].profileInfo.id,
+      this.accounts[this.initData.senderIndex].profileInfo.id
     )
   }
 
@@ -88,7 +88,7 @@ class Spamer {
       if (!res.error) {
         store.dispatch(changeLogItem(key, {
           title: `Отправлено - ${addressName} от ${accountName}`,
-          status: 'success',
+          status: 'success'
         }))
         return
       }
@@ -101,7 +101,7 @@ class Spamer {
             store.dispatch(clearCancelers())
             store.dispatch(changeLogItem(key, {
               title: `Потребовалась капча для аккаунта ${accountName}`,
-              status: 'warning',
+              status: 'warning'
             }))
             if (!state.spamerReducer.spamOnPause) {
               Spamer.pause('Антикапча пока не сделана, но скоро будет)', 'error')
@@ -117,7 +117,7 @@ class Spamer {
 
             store.dispatch(changeLogItem(key, {
               title: `Потребовалась капча для аккаунта ${accountName}`,
-              status: 'warning',
+              status: 'warning'
             }))
 
             store.dispatch(addCaptchaItem(res.error.captcha_img, +res.error.captcha_sid, accountID))
@@ -132,19 +132,19 @@ class Spamer {
             if (this.accounts[senderIndex].isEnabled) {
               store.dispatch(changeLogItem(key, {
                 title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
-                status: 'warning',
+                status: 'warning'
               }))
               store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
               store.dispatch(clearCancelers())
             }
 
-            const accounts = bs.local.get('accounts').map((account: IAccount) => {
+            const accounts = storage.local.get('accounts').map((account: IAccount) => {
               return account.profileInfo.id === accountID ? {
                 ...account,
-                isEnabled: false,
+                isEnabled: false
               } : account
             })
-            bs.local.set('accounts', accounts)
+            storage.local.set('accounts', accounts)
 
             this.accounts[senderIndex].isEnabled = false
             this.initData.senderIndex = nextSenderIndex
@@ -159,24 +159,24 @@ class Spamer {
       } else {
         store.dispatch(changeLogItem(key, {
           title: `Ошибка - ${res.error.error_msg}`,
-          status: 'error',
+          status: 'error'
         }))
       }
     }).catch(err => {
       if (err.name === 'AbortError') {
         store.dispatch(changeLogItem(key, {
-          title: `Запрос отменён`,
-          status: 'warning',
+          title: 'Запрос отменён',
+          status: 'warning'
         }))
       } else if (err.name === 'SyntaxError') {
         store.dispatch(changeLogItem(key, {
-          title: `Превышена длина запроса`,
-          status: 'error',
+          title: 'Превышена длина запроса',
+          status: 'error'
         }))
       } else {
         store.dispatch(changeLogItem(key, {
           title: `Ошибка - ${err}`,
-          status: 'error',
+          status: 'error'
         }))
         throw err
       }
@@ -197,7 +197,7 @@ class Spamer {
     store.dispatch(addLogItem(
       `Смена аккаунта на ${accountName}`,
       'info',
-      `${Date.now()} Смена аккаунта на ${accountName} info`,
+      `${Date.now()} Смена аккаунта на ${accountName} info`
     ))
   }
 
@@ -286,7 +286,7 @@ class Spamer {
 
     if (autoSwitchRemaining && autoSwitchTime) {
       store.dispatch(setAutoSwitchRemaining(
-        autoSwitchTime - ((Date.now() - startTimestamp) / 1000 + (autoSwitchTime - autoSwitchRemaining)),
+        autoSwitchTime - ((Date.now() - startTimestamp) / 1000 + (autoSwitchTime - autoSwitchRemaining))
       ))
     }
 
@@ -296,7 +296,7 @@ class Spamer {
   }
 
   public static stop (logTitle: string, logStatus: LogStatusType) {
-    store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
+    store.getState().spamerReducer.cancelers.forEach((controller) => { controller.abort() })
     store.dispatch(clearCancelers())
     store.dispatch(setSenderIndex(0))
     store.dispatch(setAddresseeIndex(0))

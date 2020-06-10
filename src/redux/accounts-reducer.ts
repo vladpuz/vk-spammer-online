@@ -3,8 +3,8 @@ import { RootReducerType } from './store'
 import { AuthAppType, IAccount, IAuthNeed2FA, IAuthSuccess } from '../types/types'
 import { auth } from '../api/auth'
 import { getProfileInfo } from '../api/getProfileInfo'
-import shuffle from '../utils/helpers/shuffle'
-import bs from '../utils/BrowserStorage'
+import shuffle from '../utils/shuffle'
+import storage from 'store2'
 
 /* Action types */
 const SET_ACCOUNTS = 'vk_spamer_online/accounts/SET_ACCOUNTS' as const
@@ -23,14 +23,14 @@ const SET_ACCOUNT_REPEATED = 'vk_spamer_online/accounts/SET_ACCOUNT_REPEATED' as
 const SET_IS_SUCCESS_LOGIN = 'vk_spamer_online/accounts/SET_IS_SUCCESS_LOGIN' as const
 
 const initialState = {
-  accounts: (bs.local.get('accounts') || []) as Array<IAccount>,
+  accounts: (storage.local.get('accounts') || []) as Array<IAccount>,
   authWorkflow: {
     authInProgress: false,
     codeIsRequired: false,
     codeIsIncorrect: false,
     accountRepeated: false,
-    isSuccessLogin: null as boolean | null,
-  },
+    isSuccessLogin: null as boolean | null
+  }
 }
 
 type ActionTypes =
@@ -54,7 +54,7 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
     case SET_ACCOUNTS:
       return {
         ...state,
-        accounts: action.accounts,
+        accounts: action.accounts
       }
 
     case ADD_ACCOUNT:
@@ -62,26 +62,26 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
         ...state,
         accounts: [
           ...state.accounts,
-          action.account,
-        ],
+          action.account
+        ]
       }
 
     case REMOVE_ACCOUNT:
       return {
         ...state,
-        accounts: state.accounts.filter(account => account.profileInfo.id !== action.userID),
+        accounts: state.accounts.filter(account => account.profileInfo.id !== action.userID)
       }
 
     case SHUFFLE_ACCOUNTS:
       return {
         ...state,
-        accounts: shuffle(state.accounts),
+        accounts: shuffle(state.accounts)
       }
 
     case CLEAR_ACCOUNTS:
       return {
         ...state,
-        accounts: state.accounts.filter(account => account.currentSender),
+        accounts: state.accounts.filter(account => account.currentSender)
       }
 
     case SET_IS_ENABLED:
@@ -89,7 +89,7 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
         ...state,
         accounts: state.accounts.map(account => {
           return account.profileInfo.id === action.userID ? { ...account, isEnabled: action.isEnabled } : account
-        }),
+        })
       }
 
     case SET_IS_ENABLED_ALL:
@@ -97,22 +97,22 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
         ...state,
         accounts: state.accounts.map(account => {
           return account.currentSender ? account : { ...account, isEnabled: action.isEnabled }
-        }),
+        })
       }
 
     case SET_CURRENT_SENDER:
       return {
         ...state,
         accounts: state.accounts.map(account => {
-          return account.profileInfo.id === action.userID ?
-            { ...account, currentSender: true } : { ...account, currentSender: false }
-        }),
+          return account.profileInfo.id === action.userID
+            ? { ...account, currentSender: true } : { ...account, currentSender: false }
+        })
       }
 
     case CLEAR_CURRENT_SENDER:
       return {
         ...state,
-        accounts: state.accounts.map(account => ({ ...account, currentSender: false })),
+        accounts: state.accounts.map(account => ({ ...account, currentSender: false }))
       }
 
     case SET_AUTH_IN_PROGRESS:
@@ -120,8 +120,8 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
         ...state,
         authWorkflow: {
           ...state.authWorkflow,
-          authInProgress: action.isFetching,
-        },
+          authInProgress: action.isFetching
+        }
       }
 
     case SET_CODE_IS_REQUIRED:
@@ -129,8 +129,8 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
         ...state,
         authWorkflow: {
           ...state.authWorkflow,
-          codeIsRequired: action.isRequired,
-        },
+          codeIsRequired: action.isRequired
+        }
       }
 
     case SET_CODE_IS_INCORRECT:
@@ -138,8 +138,8 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
         ...state,
         authWorkflow: {
           ...state.authWorkflow,
-          codeIsIncorrect: action.isIncorrect,
-        },
+          codeIsIncorrect: action.isIncorrect
+        }
       }
 
     case SET_ACCOUNT_REPEATED:
@@ -147,8 +147,8 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
         ...state,
         authWorkflow: {
           ...state.authWorkflow,
-          accountRepeated: action.isRepeated,
-        },
+          accountRepeated: action.isRepeated
+        }
       }
 
     case SET_IS_SUCCESS_LOGIN:
@@ -156,8 +156,8 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
         ...state,
         authWorkflow: {
           ...state.authWorkflow,
-          isSuccessLogin: action.isSuccess,
-        },
+          isSuccessLogin: action.isSuccess
+        }
       }
 
     default:
@@ -168,70 +168,70 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
 /* Action creators */
 export const setAccounts = (accounts: Array<IAccount>) => ({
   type: SET_ACCOUNTS,
-  accounts,
+  accounts
 })
 
 export const addAccount = (account: IAccount) => ({
   type: ADD_ACCOUNT,
-  account,
+  account
 })
 
 export const removeAccount = (userID: number) => ({
   type: REMOVE_ACCOUNT,
-  userID,
+  userID
 })
 
 export const shuffleAccounts = () => ({
-  type: SHUFFLE_ACCOUNTS,
+  type: SHUFFLE_ACCOUNTS
 })
 
 export const clearAccounts = () => ({
-  type: CLEAR_ACCOUNTS,
+  type: CLEAR_ACCOUNTS
 })
 
 export const setIsEnabled = (userID: number, isEnabled: boolean) => ({
   type: SET_IS_ENABLED,
   userID,
-  isEnabled,
+  isEnabled
 })
 
 export const setIsEnabledAll = (isEnabled: boolean) => ({
   type: SET_IS_ENABLED_ALL,
-  isEnabled,
+  isEnabled
 })
 
 export const setCurrentSender = (userID: number) => ({
   type: SET_CURRENT_SENDER,
-  userID,
+  userID
 })
 
 export const clearCurrentSender = () => ({
-  type: CLEAR_CURRENT_SENDER,
+  type: CLEAR_CURRENT_SENDER
 })
 
 export const setAuthInProgress = (isFetching: boolean) => ({
   type: SET_AUTH_IN_PROGRESS,
-  isFetching,
+  isFetching
 })
 
 export const setCodeIsRequired = (isRequired: boolean) => ({
   type: SET_CODE_IS_REQUIRED,
-  isRequired,
+  isRequired
 })
 
 export const setCodeIsIncorrect = (isIncorrect: boolean) => ({
   type: SET_CODE_IS_INCORRECT,
-  isIncorrect,
+  isIncorrect
 })
 
 export const setAccountRepeated = (isRepeated: boolean) => ({
   type: SET_ACCOUNT_REPEATED,
-  isRepeated,
+  isRepeated
 })
 
 export const setIsSuccessLogin = (isSuccess: boolean | null) => ({
   type: SET_IS_SUCCESS_LOGIN,
-  isSuccess,
+  isSuccess
 })
 
 /* Thunk creators */
@@ -258,10 +258,10 @@ export const authAccount = (app: AuthAppType, username: string, password: string
         token,
         currentSender: false,
         isEnabled: true,
-        error: null,
+        error: null
       }))
 
-      bs.local.set('accounts', getState().accountsReducer.accounts)
+      storage.local.set('accounts', getState().accountsReducer.accounts)
     } else if ((res as IAuthNeed2FA).error === 'need_validation') {
       dispatch(setCodeIsRequired(true))
     } else if (

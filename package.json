@@ -26,6 +26,7 @@
     "react-scripts": "3.4.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "store2": "^2.11.2",
     "yup": "^0.28.3"
   },
   "devDependencies": {

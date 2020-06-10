@@ -3,8 +3,8 @@ import s from './Settings.module.css'
 import { Box, FormControlLabel, InputAdornment, Radio } from '@material-ui/core'
 import MyTextField from '../../../../../common/MyTextField'
 import MyCheckbox from '../../../../../common/MyCheckbox'
-import bs from '../../../../../../utils/BrowserStorage'
 import MyRadioGroup from '../../../../../common/MyRadioGroup'
+import storage from 'store2'
 
 function Settings () {
   const fieldWidth = 250
@@ -18,13 +18,17 @@ function Settings () {
             name="sendInterval"
             label="Интервал отправки"
             InputProps={{
-              startAdornment: <InputAdornment position="start">секунды:</InputAdornment>,
+              startAdornment: <InputAdornment position="start">секунды:</InputAdornment>
             }}
             inputProps={{ min: '0', step: 'any' }}
             variant="filled"
             type="number"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              bs.local.set('fields.sendInterval', e.currentTarget.value)
+              const fields = storage.local.get('fields')
+              storage.local.set('fields', {
+                ...fields,
+                sendInterval: e.currentTarget.value
+              })
             }}
           />
         </Box>
@@ -34,14 +38,18 @@ function Settings () {
             name="autoPauseTimeout"
             label="Время до автопаузы"
             InputProps={{
-              startAdornment: <InputAdornment position="start">минуты:</InputAdornment>,
+              startAdornment: <InputAdornment position="start">минуты:</InputAdornment>
             }}
             inputProps={{ min: '0', step: 'any' }}
             variant="filled"
             type="number"
             placeholder="никогда"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              bs.local.set('fields.autoPauseTimeout', e.currentTarget.value)
+              const fields = storage.local.get('fields')
+              storage.local.set('fields', {
+                ...fields,
+                autoPauseTimeout: e.currentTarget.value
+              })
             }}
           />
         </Box>
@@ -54,7 +62,11 @@ function Settings () {
             name="onePass"
             color="secondary"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              bs.local.set('fields.onePass', e.currentTarget.checked)
+              const fields = storage.local.get('fields')
+              storage.local.set('fields', {
+                ...fields,
+                onePass: e.currentTarget.checked
+              })
             }}
           />
         } label="Один проход"/>
@@ -64,7 +76,11 @@ function Settings () {
           aria-label="captchaMode"
           name="captchaMode"
           onChange={(e) => {
-            bs.local.set('fields.captchaMode', e.target.value)
+            const fields = storage.local.get('fields')
+            storage.local.set('fields', {
+              ...fields,
+              captchaMode: e.currentTarget.value
+            })
           }}>
           <FormControlLabel control={
             <Radio
@@ -72,7 +88,11 @@ function Settings () {
               color="secondary"
               value="Антикапча"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                bs.local.set('fields.antiCaptcha', e.currentTarget.checked)
+                const fields = storage.local.get('fields')
+                storage.local.set('fields', {
+                  ...fields,
+                  antiCaptcha: e.currentTarget.value
+                })
               }}
             />
           } label="Антикапча"/>
@@ -82,7 +102,11 @@ function Settings () {
               color="secondary"
               value="Показывать капчу"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                bs.local.set('fields.antiCaptcha', e.currentTarget.checked)
+                const fields = storage.local.get('fields')
+                storage.local.set('fields', {
+                  ...fields,
+                  antiCaptcha: e.currentTarget.value
+                })
               }}
             />
           } label="Показывать капчу"/>
@@ -92,7 +116,11 @@ function Settings () {
               color="secondary"
               value="Игнорировать капчу"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                bs.local.set('fields.antiCaptcha', e.currentTarget.checked)
+                const fields = storage.local.get('fields')
+                storage.local.set('fields', {
+                  ...fields,
+                  antiCaptcha: e.currentTarget.value
+                })
               }}
             />
           } label="Игнорировать капчу"/>

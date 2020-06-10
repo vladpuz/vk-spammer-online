@@ -3,7 +3,7 @@ import TextField from '@material-ui/core/TextField'
 import { setAntiCaptchaKey } from '../../../../redux/spamer-reducer'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../redux/store'
-import bs from '../../../../utils/BrowserStorage'
+import storage from 'store2'
 
 function AntiCaptchaKey () {
   const antiCaptchaKey = useSelector((state: RootReducerType) => state.spamerReducer.settings.antiCaptchaKey)
@@ -17,7 +17,11 @@ function AntiCaptchaKey () {
       value={antiCaptchaKey}
       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(setAntiCaptchaKey(e.currentTarget.value))
-        bs.local.set('fields.antiCaptchaKey', e.currentTarget.value)
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          antiCaptchaKey: e.currentTarget.value
+        })
       }}
     />
   )

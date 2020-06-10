@@ -2,12 +2,12 @@ import React from 'react'
 import Title from '../../../../common/Title/Title'
 import { MenuItem } from '@material-ui/core'
 import MyTextField from '../../../../common/MyTextField'
-import bs from '../../../../../utils/BrowserStorage'
 import addresses from '../../../../../utils/addresses'
 import { SpamModeType } from '../../../../../types/types'
 import { useFormikContext } from 'formik'
 import { useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../../redux/store'
+import storage from 'store2'
 
 interface IProps {
   setPlaceholder: (placeholder: string) => void
@@ -30,7 +30,12 @@ function Select ({ setPlaceholder }: IProps) {
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           const spamMode = e.target.value as SpamModeType
 
-          bs.local.set('fields.spamMode', spamMode)
+          const fields = storage.local.get('fields')
+          storage.local.set('fields', {
+            ...fields,
+            spamMode: spamMode
+          })
+
           setPlaceholder(addresses.getPlaceholder(spamMode as SpamModeType))
           setFieldValue('addressees', addresses.getLocalValue(spamMode) || '')
         }}

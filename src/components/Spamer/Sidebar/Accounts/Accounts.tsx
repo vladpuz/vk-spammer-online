@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../redux/store'
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import { setAccounts } from '../../../../redux/accounts-reducer'
-import bs from '../../../../utils/BrowserStorage'
 import Title from '../../../common/Title/Title'
+import storage from 'store2'
 
 function Accounts () {
   const dispatch = useDispatch()
@@ -37,15 +37,15 @@ function Accounts () {
     const accountsOrdered = reorder(
       accounts,
       result.source.index,
-      result.destination.index,
+      result.destination.index
     )
 
-    bs.local.set('accounts', accountsOrdered)
+    storage.local.set('accounts', accountsOrdered)
     dispatch(setAccounts(accountsOrdered))
   }
 
   const getListStyle = (isDragging: boolean) => ({
-    borderColor: isDragging ? 'white' : '',
+    borderColor: isDragging ? 'white' : ''
   })
 
   return (

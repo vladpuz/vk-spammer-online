@@ -1,5 +1,5 @@
 import { SpamModeType } from '../types/types'
-import bs from './BrowserStorage'
+import storage from 'store2'
 
 // Для локального хранения и получения плейсхолдера для списка адресатов в зависимости от режима рассылки
 const addresses = {
@@ -24,46 +24,102 @@ const addresses = {
   getLocalValue (mode: SpamModeType): string {
     switch (mode) {
       case 'pm':
-        return bs.local.get('fields.addressees.pm')
+        return storage.local.get('fields')?.addressees?.pm
       case 'talks':
-        return bs.local.get('fields.addressees.talks')
+        return storage.local.get('fields')?.addressees?.talks
       case 'talksAutoExit':
-        return bs.local.get('fields.addressees.talksAutoExit')
+        return storage.local.get('fields')?.addressees?.talksAutoExit
       case 'usersWalls':
-        return bs.local.get('fields.addressees.usersWalls')
+        return storage.local.get('fields')?.addressees?.usersWalls
       case 'groupsWalls':
-        return bs.local.get('fields.addressees.groupsWalls')
+        return storage.local.get('fields')?.addressees?.groupsWalls
       case 'comments':
-        return bs.local.get('fields.addressees.comments')
+        return storage.local.get('fields')?.addressees?.comments
       case 'discussions':
-        return bs.local.get('fields.addressees.discussions')
+        return storage.local.get('fields')?.addressees?.discussions
     }
   },
   setLocalValue (mode: SpamModeType, value: any): void {
     switch (mode) {
-      case 'pm':
-        bs.local.set('fields.addressees.pm', value)
+      case 'pm': {
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          addressees: {
+            ...fields.addressees,
+            pm: value
+          }
+        })
         break
-      case 'talks':
-        bs.local.set('fields.addressees.talks', value)
+      }
+      case 'talks': {
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          addressees: {
+            ...fields.addressees,
+            talks: value
+          }
+        })
         break
-      case 'talksAutoExit':
-        bs.local.set('fields.addressees.talksAutoExit', value)
+      }
+      case 'talksAutoExit': {
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          addressees: {
+            ...fields.addressees,
+            talksAutoExit: value
+          }
+        })
         break
-      case 'usersWalls':
-        bs.local.set('fields.addressees.usersWalls', value)
+      }
+      case 'usersWalls': {
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          addressees: {
+            ...fields.addressees,
+            usersWalls: value
+          }
+        })
         break
-      case 'groupsWalls':
-        bs.local.set('fields.addressees.groupsWalls', value)
+      }
+      case 'groupsWalls': {
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          addressees: {
+            ...fields.addressees,
+            groupsWalls: value
+          }
+        })
         break
-      case 'comments':
-        bs.local.set('fields.addressees.comments', value)
+      }
+      case 'comments': {
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          addressees: {
+            ...fields.addressees,
+            comments: value
+          }
+        })
         break
-      case 'discussions':
-        bs.local.set('fields.addressees.discussions', value)
+      }
+      case 'discussions': {
+        const fields = storage.local.get('fields')
+        storage.local.set('fields', {
+          ...fields,
+          addressees: {
+            ...fields.addressees,
+            discussions: value
+          }
+        })
         break
+      }
     }
-  },
+  }
 }
 
 export default addresses
