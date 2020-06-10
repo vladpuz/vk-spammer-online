@@ -9,9 +9,9 @@ import AddCircleIcon from '@material-ui/icons/AddCircle'
 import SdStorageIcon from '@material-ui/icons/SdStorage'
 import { authAccount, clearAccounts, setIsEnabledAll, shuffleAccounts } from '../../../../../redux/accounts-reducer'
 import { useDispatch, useSelector } from 'react-redux'
-import random from '../../../../../utils/random'
 import { AuthAppType } from '../../../../../types/types'
 import { RootReducerType } from '../../../../../redux/store'
+import Chance from 'chance'
 
 function Buttons () {
   const dispatch = useDispatch()
@@ -36,13 +36,14 @@ function Buttons () {
                 const data = reader.result.split('\n').map(item => {
                   return (item && item.includes(':')) ? {
                     login: item.split(':')[0].trim(),
-                    password: item.split(':')[1].trim(),
+                    password: item.split(':')[1].trim()
                   } : ''
                 })
 
                 for (let item of data) {
                   if (item) {
-                    const app = ['android', 'iphone', 'ipad', 'windows', 'windowsPhone'][random(0, 4)] as AuthAppType
+                    const chance = new Chance()
+                    const app = chance.pickone(['android', 'iphone', 'ipad', 'windows', 'windowsPhone']) as AuthAppType
                     dispatch(authAccount(app, item.login, item.password))
                   }
                 }

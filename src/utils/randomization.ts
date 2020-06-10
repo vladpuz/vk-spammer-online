@@ -1,4 +1,4 @@
-import random from './random'
+import Chance from 'chance'
 
 // Делает рандомизацию строки по синтаксису 'Привет, [[value1 | value2 | value3]]'
 function randomization (text: string): string {
@@ -20,7 +20,8 @@ function randomization (text: string): string {
 
     const paramsArr = paramsStr.split('|').map(str => str.trim())
     paramsStr = ''
-    const randomItem = paramsArr[random(0, paramsArr.length - 1)]
+    const chance = new Chance()
+    const randomItem = chance.pickone(paramsArr)
     result += randomItem
   }
 
