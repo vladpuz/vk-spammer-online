@@ -15,7 +15,7 @@ function Header () {
           </NavLink>
           <div className={s.logo__text}>
             <NavLink to="/">
-              <h1 className={s.logo__title}>VK_SPAMER_ONLINE</h1>
+              <h1 className={s.logo__title}>VK-SPAMER-ONLINE</h1>
             </NavLink>
             <h2 className={s.logo__subtitle}>Бесплатный спамер для вк</h2>
           </div>

@@ -1,10 +1,10 @@
-## VK SPAMER ONLINE - Бесплатный спамер для вк
+## VK-SPAMER-ONLINE - Бесплатный спамер для вк
 
 Представляю вашему вниманию **бесплатный** спамер для вк в окне вашего браузера.
 
-Я создавал этот спамер вдохновляясь программой [**VK-SPAM-MASTER**](https://vk-spam-master.com), которой пользовался в
-2018 году. Цель работы была создать спамер схожий по функционалу с **VK-SPAM-MASTER**, но абсолютно бесплатный и
-работающий в браузере.
+Я создавал этот спамер вдохновляясь программой [**VK-Spam-Master**](https://vk-spam-master.com), которой пользовался в
+2018 году. Цель работы была создать спамер схожий по функционалу с [**VK-Spam-Master**](https://vk-spam-master.com), но
+абсолютно бесплатный и работающий в браузере.
 
 Доступные режимы рассылки:
 * Личные сообщения
@@ -15,11 +15,12 @@
 * Комментарии
 * Обсуждения
 
-Кроме того мой конкурент **VK-SPAM-MASTER** использует токены авторизованных в программе аккаунтов для накрутки лайков,
-даже в платной версии, скорей всего в целях заработка. Об этом прямым текстом написано в его условиях использования.
+Кроме того мой конкурент [**VK-Spam-Master**](https://vk-spam-master.com) использует токены авторизованных в программе
+аккаунтов для накрутки лайков, даже в платной версии, скорей всего в целях заработка. Об этом прямым текстом написано в
+его условиях использования.
 
-![Screenshot](https://github.com/vladislav-puzyrev/vk_spamer_online/raw/master/screenshot.png)
+![Screenshot](https://github.com/vladislav-puzyrev/vk-spamer-online/raw/master/screenshot.png)
 
-Начать использовать [**VK SPAMER ONLINE**](https://vladislav-puzyrev.github.io/vk-spamer-online)
+Начать использовать [**VK-SPAMER-ONLINE**](https://vladislav-puzyrev.github.io/vk-spamer-online)
 
 Этот проект создан с помощью [**Create React App**](https://github.com/facebook/create-react-app)
