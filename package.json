@@ -1,8 +1,16 @@
 {
-  "name": "vk_spamer_online",
+  "name": "vk-spamer-online",
   "version": "3.0.1",
   "private": true,
-  "homepage": "https://vladislav-puzyrev.github.io/vk_spamer_online",
+  "homepage": "https://vladislav-puzyrev.github.io/vk-spamer-online",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
   "dependencies": {
     "@material-ui/core": "^4.9.9",
     "@material-ui/icons": "^4.9.1",
@@ -33,13 +41,8 @@
     "typescript": "^3.7.5",
     "yup": "^0.28.3"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+  "devDependencies": {
+    "gh-pages": "^2.2.0"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -55,8 +58,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "gh-pages": "^2.2.0"
   }
 }
