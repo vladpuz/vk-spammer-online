@@ -1,6 +1,7 @@
-import { version, proxyURL } from './settings'
+import { version, proxyURL } from './config'
 import store from '../redux/store'
 import { addCancelerItem } from '../redux/spamer-reducer'
+import axios from 'axios'
 
 export async function setChatPhoto (token: string, file: string) {
   let URL = `${proxyURL}https://api.vk.com/method/messages.setChatPhoto?`
@@ -8,9 +9,9 @@ export async function setChatPhoto (token: string, file: string) {
   URL += `access_token=${token}&`
   URL += `file=${file}&`
 
-  const abortController = new AbortController()
-  store.dispatch(addCancelerItem(abortController))
+  const source = axios.CancelToken.source()
+  store.dispatch(addCancelerItem(source))
 
-  const res = await fetch(URL, { signal: abortController.signal })
-  return await res.json()
+  const res = await axios.get(URL, { cancelToken: source.token })
+  return await res.data
 }

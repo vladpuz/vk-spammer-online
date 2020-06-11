@@ -1,5 +1,6 @@
 import { LogStatusType, ILog, ICaptcha } from '../types/types'
 import storage from 'store2'
+import { CancelTokenSource } from 'axios'
 
 /* Action types */
 const SET_SPAM_ON_RUN = 'vk_spamer_online/spamer/SET_SPAM_ON_RUN' as const
@@ -56,7 +57,7 @@ const initialState = {
     notificationTimerID: 0
   },
   captcha: [] as Array<ICaptcha>,
-  cancelers: [] as Array<AbortController>
+  cancelers: [] as Array<CancelTokenSource>
 }
 
 type ActionTypes =
