@@ -2,22 +2,6 @@ export type LogStatusType = 'error' | 'success' | 'warning' | 'info' | 'pending'
 export type AuthAppType = 'android' | 'iphone' | 'ipad' | 'windows' | 'windowsPhone'
 export type SpamModeType = 'pm' | 'talks' | 'talksAutoExit' | 'usersWalls' | 'groupsWalls' | 'comments' | 'discussions'
 
-export interface ISender {
-  token: string
-  userID: number
-  message: string
-  attachment: string
-  captchaKey: string
-  captchaSid: number
-  sendToPM: (userDomain: string) => Promise<any>
-  sendToTalk: (talkID: number) => Promise<any>
-  sendToTalkAndLeave: (talkID: number) => Promise<any>
-  sendToComments: (commentID: string) => Promise<any>
-  sendToDiscussions: (discussionsID: string) => Promise<any>
-  postToUser: (userID: number) => Promise<any>
-  postToGroup: (groupID: number) => Promise<any>
-}
-
 export interface IValues {
   message: string
   attachment: string

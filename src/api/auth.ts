@@ -1,6 +1,6 @@
-import { proxyURL, version } from './config'
-import { AuthAppType, IAuthNeed2FA, IAuthSuccess } from '../types/types'
 import axios from 'axios'
+import { proxyURL, versionAPI } from './config'
+import { AuthAppType, IAuthNeed2FA, IAuthSuccess } from '../types/types'
 
 // Возвращает токен или ошибку для повторного запроса с кодом 2FA
 export async function auth (
@@ -14,16 +14,16 @@ export async function auth (
 
   URL += 'grant_type=password&'
   URL += '2fa_supported=1&'
-  URL += `v=${version}&`
+  URL += `v=${versionAPI}&`
   URL += `client_id=${clientID}&`
   URL += `client_secret=${clientSecret}&`
   URL += `username=${username}&`
   URL += `password=${password}&`
-  URL += (code ? `code=${code}` : '')
+  if (code) URL += `code=${code}&`
 
   try {
     const res = await axios.get(URL)
-    return await res.data
+    return res.data
   } catch (err) {
     return err.response.data
   }

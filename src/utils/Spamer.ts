@@ -1,5 +1,6 @@
-import { IAccount, ISender, IValues, IInitData, LogStatusType } from '../types/types'
 import store from '../redux/store'
+import storage from 'store2'
+import { IAccount, IValues, IInitData, LogStatusType } from '../types/types'
 import {
   setSenderTimerID,
   setSenderIndex,
@@ -16,26 +17,28 @@ import {
   removeCaptchaItem,
   clearCancelers
 } from '../redux/spamer-reducer'
-import Sender from '../api/Sender'
+import * as senders from '../api/senders'
 import { clearCurrentSender, setCurrentSender, setIsEnabled } from '../redux/accounts-reducer'
 import randomization from './randomization'
-import storage from 'store2'
 
 class Spamer {
   private values: IValues
   private initData: IInitData
   private accounts: Array<IAccount>
-  private sender: ISender
+  readonly currentData: any
 
   constructor (values: IValues) {
     this.values = values
     this.initData = store.getState().spamerReducer.initData
     this.accounts = store.getState().accountsReducer.accounts.filter(account => account.isEnabled)
-
-    this.sender = new Sender(
-      this.accounts[this.initData.senderIndex].token,
-      this.accounts[this.initData.senderIndex].profileInfo.id
-    )
+    this.currentData = {
+      attachment: '',
+      message: '',
+      token: this.accounts[0].token,
+      userID: '',
+      captchaKey: '',
+      captchaSid: ''
+    }
   }
 
   private checkCaptcha (userID: number) {
@@ -43,8 +46,8 @@ class Spamer {
     const captchaIndex = captcha.findIndex(item => item.userID === userID && item.captchaKey)
 
     if (~captchaIndex) {
-      this.sender.captchaKey = captcha[captchaIndex].captchaKey
-      this.sender.captchaSid = captcha[captchaIndex].captchaSid
+      this.currentData.captchaKey = captcha[captchaIndex].captchaKey
+      this.currentData.captchaSid = captcha[captchaIndex].captchaSid
       store.dispatch(removeCaptchaItem(userID))
     }
   }
@@ -53,21 +56,66 @@ class Spamer {
     const mode = this.values.spamMode
     const address = this.values.addressees[this.initData.addresseeIndex]
 
+    console.log(
+      this.currentData
+    )
+
     switch (mode) {
       case 'pm':
-        return await this.sender.sendToPM(address)
+        return await senders.sendToUser(
+          this.currentData.token,
+          address,
+          this.currentData.message,
+          this.currentData.attachment,
+          { captchaKey: this.currentData.captchaKey, captchaSid: this.currentData.captchaSid }
+        )
       case 'talks':
-        return await this.sender.sendToTalk(+address)
+        return await senders.sendToTalk(this.currentData.token,
+          +address,
+          this.currentData.message,
+          this.currentData.attachment,
+          { captchaKey: this.currentData.captchaKey, captchaSid: this.currentData.captchaSid }
+        )
       case 'talksAutoExit':
-        return await this.sender.sendToTalkAndLeave(+address)
+        return await senders.sendToTalkAndLeave(
+          this.currentData.token,
+          +address,
+          this.currentData.message,
+          this.currentData.attachment,
+          {
+            captchaKey: this.currentData.captchaKey,
+            captchaSid: this.currentData.captchaSid,
+            userID: this.currentData.userID
+          }
+        )
       case 'usersWalls':
-        return await this.sender.postToUser(+address)
+        return await senders.postToUser(this.currentData.token,
+          +address,
+          this.currentData.message,
+          this.currentData.attachment,
+          { captchaKey: this.currentData.captchaKey, captchaSid: this.currentData.captchaSid }
+        )
       case 'groupsWalls':
-        return await this.sender.postToGroup(+address)
+        return await senders.postToGroup(this.currentData.token,
+          +address,
+          this.currentData.message,
+          this.currentData.attachment,
+          { captchaKey: this.currentData.captchaKey, captchaSid: this.currentData.captchaSid }
+        )
       case 'comments':
-        return await this.sender.sendToComments(address)
+        return await senders.sendToComments(this.currentData.token,
+          address,
+          this.currentData.message,
+          this.currentData.attachment,
+          { captchaKey: this.currentData.captchaKey, captchaSid: this.currentData.captchaSid }
+        )
       case 'discussions':
-        return await this.sender.sendToDiscussions(address)
+        return await senders.sendToDiscussions(this.currentData.token,
+          address,
+          this.currentData.message,
+          this.currentData.attachment,
+          { captchaKey: this.currentData.captchaKey, captchaSid: this.currentData.captchaSid }
+        )
     }
   }
 
@@ -96,14 +144,13 @@ class Spamer {
       if (res.error.error_msg === 'Captcha needed') {
         switch (this.values.captchaMode) {
           case 'Антикапча':
-            const state = store.getState()
-            state.spamerReducer.cancelers.forEach((controller) => {controller.abort()})
+            store.getState().spamerReducer.cancelers.forEach((controller) => { controller.cancel() })
             store.dispatch(clearCancelers())
             store.dispatch(changeLogItem(key, {
               title: `Потребовалась капча для аккаунта ${accountName}`,
               status: 'warning'
             }))
-            if (!state.spamerReducer.spamOnPause) {
+            if (!store.getState().spamerReducer.spamOnPause) {
               Spamer.pause('Антикапча пока не сделана, но скоро будет)', 'error')
             }
             // запрос на anti-captcha.com
@@ -112,7 +159,7 @@ class Spamer {
             break
 
           case 'Показывать капчу':
-            store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
+            store.getState().spamerReducer.cancelers.forEach((controller) => { controller.cancel() })
             store.dispatch(clearCancelers())
 
             store.dispatch(changeLogItem(key, {
@@ -126,7 +173,7 @@ class Spamer {
             }
             break
 
-          case 'Игнорировать капчу':
+          case 'Игнорировать капчу': {
             const nextSenderIndex = (senderIndex + 1 === this.accounts.length) ? 0 : senderIndex + 1
 
             if (this.accounts[senderIndex].isEnabled) {
@@ -134,7 +181,7 @@ class Spamer {
                 title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
                 status: 'warning'
               }))
-              store.getState().spamerReducer.cancelers.forEach((controller) => {controller.abort()})
+              store.getState().spamerReducer.cancelers.forEach((controller) => { controller.cancel() })
               store.dispatch(clearCancelers())
             }
 
@@ -155,6 +202,7 @@ class Spamer {
               Spamer.stop('Все аккаунты были выключены, спам остановлен', 'info')
             }
             break
+          }
         }
       } else {
         store.dispatch(changeLogItem(key, {
@@ -188,8 +236,8 @@ class Spamer {
     const accountName = `${this.accounts[nextSenderIndex].profileInfo.first_name} ${this.accounts[nextSenderIndex].profileInfo.last_name}`
 
     this.initData.senderIndex = nextSenderIndex
-    this.sender.token = this.accounts[nextSenderIndex].token
-    this.sender.userID = this.accounts[nextSenderIndex].profileInfo.id
+    this.currentData.token = this.accounts[nextSenderIndex].token
+    this.currentData.userID = this.accounts[nextSenderIndex].profileInfo.id
 
     store.dispatch(setStartTimestamp(Date.now()))
     store.dispatch(setSenderIndex(nextSenderIndex))
@@ -209,19 +257,19 @@ class Spamer {
       nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
       store.dispatch(setAddresseeIndex(nextAddresseeIndex))
       for (let i = 0; i < this.accounts.length; i++) {
-        this.sender.token = this.accounts[i].token
-        this.sender.userID = this.accounts[i].profileInfo.id
+        this.currentData.token = this.accounts[i].token
+        this.currentData.userID = this.accounts[i].profileInfo.id
         this.initData.senderIndex = i
-        this.sender.message = randomization(this.values.message)
-        this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
+        this.currentData.message = randomization(this.values.message)
+        this.currentData.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
         this.handleSend()
       }
       this.initData.addresseeIndex = nextAddresseeIndex
     } else {
       nextAddresseeIndex = (nextAddresseeIndex + 1 === this.values.addressees.length) ? 0 : nextAddresseeIndex + 1
       store.dispatch(setAddresseeIndex(nextAddresseeIndex))
-      this.sender.message = randomization(this.values.message)
-      this.sender.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
+      this.currentData.message = randomization(this.values.message)
+      this.currentData.attachment = randomization(this.values.attachment).split('\n').filter(str => str).join(',')
       this.handleSend()
       this.initData.addresseeIndex = nextAddresseeIndex
     }
@@ -296,7 +344,7 @@ class Spamer {
   }
 
   public static stop (logTitle: string, logStatus: LogStatusType) {
-    store.getState().spamerReducer.cancelers.forEach((controller) => { controller.abort() })
+    store.getState().spamerReducer.cancelers.forEach((controller) => { controller.cancel() })
     store.dispatch(clearCancelers())
     store.dispatch(setSenderIndex(0))
     store.dispatch(setAddresseeIndex(0))

@@ -1,10 +1,10 @@
+import storage from 'store2'
 import { ThunkAction } from 'redux-thunk'
 import { RootReducerType } from './store'
 import { AuthAppType, IAccount, IAuthNeed2FA, IAuthSuccess } from '../types/types'
 import { auth } from '../api/auth'
-import { getProfileInfo } from '../api/getProfileInfo'
+import { getProfileInfo } from '../api/helpers'
 import shuffle from '../utils/shuffle'
-import storage from 'store2'
 
 /* Action types */
 const SET_ACCOUNTS = 'vk_spamer_online/accounts/SET_ACCOUNTS' as const
