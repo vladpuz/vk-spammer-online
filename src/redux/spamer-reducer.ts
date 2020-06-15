@@ -1,42 +1,43 @@
-import { LogStatusType, ILog, ICaptcha } from '../types/types'
+import axios, { CancelTokenSource } from 'axios'
 import storage from 'store2'
-import { CancelTokenSource } from 'axios'
+import { ThunkAction } from 'redux-thunk'
+import { RootReducerType } from './store'
+import { setCurrentSender, setIsEnabled } from './accounts-reducer'
+import pause from '../utils/spam/pause'
+import stop from '../utils/spam/stop'
+import { leaveTheChat } from '../api/helpers'
+import * as senders from '../api/send'
+import { LogStatusType, ILog, ICaptcha, IAccount, ISpamValues } from '../types/app-types'
+import { createTask, getTaskResult } from '../api/anti-captcha'
+import start from '../utils/spam/start'
+import { proxyURL } from '../api/config'
 
 /* Action types */
-const SET_SPAM_ON_RUN = 'vk_spamer_online/spamer/SET_SPAM_ON_RUN' as const
-const SET_SPAM_ON_PAUSE = 'vk_spamer_online/spamer/SET_SPAM_ON_PAUSE' as const
-const SET_START_TIMESTAMP = 'vk_spamer_online/spamer/SET_START_TIMESTAMP' as const
-const SET_AUTO_SWITCH_TIME = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_TIME' as const
-const SET_ANTI_CAPTCHA_KEY = 'vk_spamer_online/spamer/SET_ANTI_CAPTCHA_KEY' as const
-const ADD_LOG_ITEM = 'vk_spamer_online/spamer/ADD_LOG_ITEM' as const
-const CHANGE_LOG_ITEM = 'vk_spamer_online/spamer/CHANGE_LOG_ITEM' as const
-const REMOVE_LOG_ITEM = 'vk_spamer_online/spamer/REMOVE_LOG_ITEM' as const
-const CLEAR_LOG = 'vk_spamer_online/spamer/CLEAR_LOG' as const
-const SET_ADDRESSEE_INDEX = 'vk_spamer_online/spamer/SET_ADDRESSEE_INDEX' as const
-const SET_SENDER_INDEX = 'vk_spamer_online/spamer/SET_SENDER_INDEX' as const
-const SET_AUTO_SWITCH_REMAINING = 'vk_spamer_online/spamer/SET_AUTO_SWITCH_REMAINING' as const
-const SET_SPAM_TIMER_ID = 'vk_spamer_online/spamer/SET_SPAM_TIMER_ID' as const
-const SET_SENDER_TIMER_ID = 'vk_spamer_online/spamer/SET_SENDER_TIMER_ID' as const
-const SET_AUTO_PAUSE_TIMER_ID = 'vk_spamer_online/spamer/SET_AUTO_PAUSE_TIMER_ID' as const
-const SET_NOTIFICATION_TIMER_ID = 'vk_spamer_online/spamer/SET_NOTIFICATION_TIMER_ID' as const
-const ADD_CAPTCHA_ITEM = 'vk_spamer_online/spamer/ADD_CAPTCHA_ITEM' as const
-const REMOVE_CAPTCHA_ITEM = 'vk_spamer_online/spamer/REMOVE_CAPTCHA_ITEM' as const
-const CLEAR_CAPTCHA = 'vk_spamer_online/spamer/CLEAR_CAPTCHA' as const
-const UNRAVEL_CAPTCHA_ITEM = 'vk_spamer_online/spamer/UNRAVEL_CAPTCHA_ITEM' as const
-const ADD_CANCELER_ITEM = 'vk_spamer_online/spamer/ADD_CANCELER_ITEM' as const
-const CLEAR_CANCELERS = 'vk_spamer_online/spamer/CLEAR_CANCELERS' as const
-
-const localAutoSwitchTime = storage.local.get('fields')?.autoSwitchTime || ''
-const autoSwitchTime = localAutoSwitchTime === 0 ? localAutoSwitchTime : localAutoSwitchTime || 300
+const SET_SPAM_ON_RUN = 'vk-spam-online/spam/SET_SPAM_ON_RUN' as const
+const SET_SPAM_ON_PAUSE = 'vk-spam-online/spam/SET_SPAM_ON_PAUSE' as const
+const SET_START_TIMESTAMP = 'vk-spam-online/spam/SET_START_TIMESTAMP' as const
+const ADD_LOG_ITEM = 'vk-spam-online/spam/ADD_LOG_ITEM' as const
+const CHANGE_LOG_ITEM = 'vk-spam-online/spam/CHANGE_LOG_ITEM' as const
+const REMOVE_LOG_ITEM = 'vk-spam-online/spam/REMOVE_LOG_ITEM' as const
+const CLEAR_LOG = 'vk-spam-online/spam/CLEAR_LOG' as const
+const SET_ADDRESSEE_INDEX = 'vk-spam-online/spam/SET_ADDRESSEE_INDEX' as const
+const SET_SENDER_INDEX = 'vk-spam-online/spam/SET_SENDER_INDEX' as const
+const SET_AUTO_SWITCH_REMAINING = 'vk-spam-online/spam/SET_AUTO_SWITCH_REMAINING' as const
+const SET_SPAM_TIMER_ID = 'vk-spam-online/spam/SET_SPAM_TIMER_Id' as const
+const SET_SENDER_TIMER_ID = 'vk-spam-online/spam/SET_SENDER_TIMER_Id' as const
+const SET_AUTO_PAUSE_TIMER_ID = 'vk-spam-online/spam/SET_AUTO_PAUSE_TIMER_Id' as const
+const SET_NOTIFICATION_TIMER_ID = 'vk-spam-online/spam/SET_NOTIFICATION_TIMER_Id' as const
+const ADD_CAPTCHA_ITEM = 'vk-spam-online/spam/ADD_CAPTCHA_ITEM' as const
+const REMOVE_CAPTCHA_ITEM = 'vk-spam-online/spam/REMOVE_CAPTCHA_ITEM' as const
+const CLEAR_CAPTCHA = 'vk-spam-online/spam/CLEAR_CAPTCHA' as const
+const UNRAVEL_CAPTCHA_ITEM = 'vk-spam-online/spam/UNRAVEL_CAPTCHA_ITEM' as const
+const ADD_CANCELER_ITEM = 'vk-spam-online/spam/ADD_CANCELER_ITEM' as const
+const CLEAR_CANCELERS = 'vk-spam-online/spam/CLEAR_CANCELERS' as const
 
 const initialState = {
   spamOnRun: false,
   spamOnPause: false,
   startTimestamp: 0,
-  settings: {
-    autoSwitchTime: autoSwitchTime,
-    antiCaptchaKey: storage.local.get('fields')?.antiCaptchaKey || ''
-  },
   logs: [
     {
       title: 'Приложение открыто',
@@ -45,16 +46,16 @@ const initialState = {
       key: `${Date.now()} Приложение открыто info`
     }
   ] as Array<ILog>,
-  initData: {
+  storedValues: {
     addresseeIndex: 0,
     senderIndex: 0,
-    autoSwitchRemaining: autoSwitchTime
+    autoSwitchRemaining: storage.local.get('fields')?.autoSwitchTime || '300'
   },
   timers: {
-    spamTimerID: 0,
-    senderTimerID: 0,
-    autoPauseTimerID: 0,
-    notificationTimerID: 0
+    spamTimerId: 0,
+    senderTimerId: 0,
+    autoPauseTimerId: 0,
+    notificationTimerId: 0
   },
   captcha: [] as Array<ICaptcha>,
   cancelers: [] as Array<CancelTokenSource>
@@ -64,8 +65,6 @@ type ActionTypes =
   ReturnType<typeof setSpamOnRun> |
   ReturnType<typeof setSpamOnPause> |
   ReturnType<typeof setStartTimestamp> |
-  ReturnType<typeof setAutoSwitchTime> |
-  ReturnType<typeof setAntiCaptchaKey> |
   ReturnType<typeof addLogItem> |
   ReturnType<typeof changeLogItem> |
   ReturnType<typeof removeLogItem> |
@@ -73,10 +72,10 @@ type ActionTypes =
   ReturnType<typeof setAddresseeIndex> |
   ReturnType<typeof setAutoSwitchRemaining> |
   ReturnType<typeof setSenderIndex> |
-  ReturnType<typeof setSpamTimerID> |
-  ReturnType<typeof setSenderTimerID> |
-  ReturnType<typeof setAutoPauseTimerID> |
-  ReturnType<typeof setNotificationTimerID> |
+  ReturnType<typeof setSpamTimerId> |
+  ReturnType<typeof setSenderTimerId> |
+  ReturnType<typeof setAutoPauseTimerId> |
+  ReturnType<typeof setNotificationTimerId> |
   ReturnType<typeof addCaptchaItem> |
   ReturnType<typeof removeCaptchaItem> |
   ReturnType<typeof clearCaptcha> |
@@ -102,24 +101,6 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
       return {
         ...state,
         startTimestamp: action.seconds
-      }
-
-    case SET_AUTO_SWITCH_TIME:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          autoSwitchTime: action.seconds
-        }
-      }
-
-    case SET_ANTI_CAPTCHA_KEY:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          antiCaptchaKey: action.key
-        }
       }
 
     case ADD_LOG_ITEM:
@@ -163,8 +144,8 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
     case SET_ADDRESSEE_INDEX:
       return {
         ...state,
-        initData: {
-          ...state.initData,
+        storedValues: {
+          ...state.storedValues,
           addresseeIndex: action.index
         }
       }
@@ -172,8 +153,8 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
     case SET_SENDER_INDEX:
       return {
         ...state,
-        initData: {
-          ...state.initData,
+        storedValues: {
+          ...state.storedValues,
           senderIndex: action.index
         }
       }
@@ -181,8 +162,8 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
     case SET_AUTO_SWITCH_REMAINING:
       return {
         ...state,
-        initData: {
-          ...state.initData,
+        storedValues: {
+          ...state.storedValues,
           autoSwitchRemaining: action.seconds
         }
       }
@@ -192,7 +173,7 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
         ...state,
         timers: {
           ...state.timers,
-          spamTimerID: action.id
+          spamTimerId: action.id
         }
       }
 
@@ -201,7 +182,7 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
         ...state,
         timers: {
           ...state.timers,
-          senderTimerID: action.id
+          senderTimerId: action.id
         }
       }
 
@@ -210,7 +191,7 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
         ...state,
         timers: {
           ...state.timers,
-          autoPauseTimerID: action.id
+          autoPauseTimerId: action.id
         }
       }
 
@@ -219,7 +200,7 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
         ...state,
         timers: {
           ...state.timers,
-          notificationTimerID: action.id
+          notificationTimerId: action.id
         }
       }
 
@@ -228,14 +209,14 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
         ...state,
         captcha: [
           ...state.captcha,
-          { userID: action.userID, captchaImg: action.img, captchaKey: '', captchaSid: action.sid }
+          { userId: action.userId, captchaImg: action.img, captchaKey: '', captchaSid: action.sid }
         ]
       }
 
     case REMOVE_CAPTCHA_ITEM:
       return {
         ...state,
-        captcha: state.captcha.filter(item => item.userID !== action.userID)
+        captcha: state.captcha.filter(item => item.userId !== action.userId)
       }
 
     case CLEAR_CAPTCHA:
@@ -247,7 +228,7 @@ function spamerReducer (state = initialState, action: ActionTypes): typeof initi
     case UNRAVEL_CAPTCHA_ITEM:
       return {
         ...state,
-        captcha: state.captcha.map(item => item.userID === action.userID ? {
+        captcha: state.captcha.map(item => item.userId === action.userId ? {
           ...item,
           captchaKey: action.key
         } : item)
@@ -287,16 +268,6 @@ export const setSpamOnPause = (onPause: boolean) => ({
 export const setStartTimestamp = (seconds: number) => ({
   type: SET_START_TIMESTAMP,
   seconds
-})
-
-export const setAutoSwitchTime = (seconds: number) => ({
-  type: SET_AUTO_SWITCH_TIME,
-  seconds
-})
-
-export const setAntiCaptchaKey = (key: string) => ({
-  type: SET_ANTI_CAPTCHA_KEY,
-  key
 })
 
 export const addLogItem = (title: string, status: LogStatusType, key: string) => ({
@@ -339,45 +310,45 @@ export const setAutoSwitchRemaining = (seconds: number) => ({
   seconds
 })
 
-export const setSpamTimerID = (id: number) => ({
+export const setSpamTimerId = (id: number) => ({
   type: SET_SPAM_TIMER_ID,
   id
 })
 
-export const setSenderTimerID = (id: number) => ({
+export const setSenderTimerId = (id: number) => ({
   type: SET_SENDER_TIMER_ID,
   id
 })
 
-export const setAutoPauseTimerID = (id: number) => ({
+export const setAutoPauseTimerId = (id: number) => ({
   type: SET_AUTO_PAUSE_TIMER_ID,
   id
 })
 
-export const setNotificationTimerID = (id: number) => ({
+export const setNotificationTimerId = (id: number) => ({
   type: SET_NOTIFICATION_TIMER_ID,
   id
 })
 
-export const addCaptchaItem = (img: string, sid: number, userID: number) => ({
+export const addCaptchaItem = (img: string, sid: number, userId: number) => ({
   type: ADD_CAPTCHA_ITEM,
   img,
   sid,
-  userID
+  userId
 })
 
-export const removeCaptchaItem = (userID: number) => ({
+export const removeCaptchaItem = (userId: number) => ({
   type: REMOVE_CAPTCHA_ITEM,
-  userID
+  userId
 })
 
 export const clearCaptcha = () => ({
   type: CLEAR_CAPTCHA
 })
 
-export const unravelCaptchaItem = (userID: number, key: string) => ({
+export const unravelCaptchaItem = (userId: number, key: string) => ({
   type: UNRAVEL_CAPTCHA_ITEM,
-  userID,
+  userId,
   key
 })
 
@@ -389,5 +360,190 @@ export const addCancelerItem = (canceler: any) => ({
 export const clearCancelers = () => ({
   type: CLEAR_CANCELERS
 })
+
+/* Thunk creators */
+type ThunkActionTypes = ActionTypes | ReturnType<typeof setIsEnabled> | ReturnType<typeof setCurrentSender>
+type ThunkType = ThunkAction<Promise<any>, RootReducerType, unknown, ThunkActionTypes>
+
+export const send = (spamValues: ISpamValues): ThunkType => {
+  return async (dispatch, getState) => {
+    const state = getState()
+    const accounts = state.accountsReducer.accounts.filter(account => account.isEnabled)
+    const { spamOnRun, spamOnPause, storedValues, captcha, cancelers } = state.spamerReducer
+    const token = accounts[storedValues.senderIndex].token
+    const accountName = `${accounts[storedValues.senderIndex].profileInfo.first_name} ${accounts[storedValues.senderIndex].profileInfo.last_name}`
+    const addressName = spamValues.addresses[storedValues.addresseeIndex]
+    const userId = accounts[storedValues.senderIndex].profileInfo.id
+    const address = spamValues.addresses[storedValues.addresseeIndex]
+
+    const captchaIndex = captcha.findIndex(item => item.userId === userId && item.captchaKey)
+    const captchaOpt = { captchaKey: captcha[captchaIndex]?.captchaKey, captchaSid: captcha[captchaIndex]?.captchaSid }
+    if (~captchaIndex) dispatch(removeCaptchaItem(userId))
+
+    const key = `Запрос обрабатывается ${accountName} ${addressName} ${userId} - ${Date.now()}`
+    dispatch(addLogItem('Запрос обрабатывается', 'pending', key))
+
+    let res
+
+    // Выполнение запроса
+    try {
+      switch (spamValues.spamMode) {
+        case 'pm':
+          res = await senders.sendToUser(token, address, spamValues.message, spamValues.attachment, captchaOpt)
+          break
+        case 'chat':
+          res = await senders.sendToChat(token, +address, spamValues.message, spamValues.attachment, captchaOpt)
+          break
+        case 'chatAutoExit':
+          res = await senders.sendToChat(token, +address, spamValues.message, spamValues.attachment, captchaOpt)
+          await leaveTheChat(token, +address, userId)
+          break
+        case 'usersWalls':
+          res = await senders.postToUser(token, +address, spamValues.message, spamValues.attachment, captchaOpt)
+          break
+        case 'groupsWalls':
+          res = await senders.postToGroup(token, +address, spamValues.message, spamValues.attachment, captchaOpt)
+          break
+        case 'comments':
+          res = await senders.sendToComments(token, address, spamValues.message, spamValues.attachment, captchaOpt)
+          break
+        case 'discussions':
+          res = await senders.sendToDiscussions(token, address, spamValues.message, spamValues.attachment,
+            captchaOpt)
+          break
+      }
+    } catch (err) {
+      if (axios.isCancel(err)) {
+        dispatch(changeLogItem(key, {
+          title: 'Запрос отменён',
+          status: 'warning'
+        }))
+      } else {
+        dispatch(changeLogItem(key, {
+          title: `Ошибка приложения - ${err}`,
+          status: 'error'
+        }))
+      }
+      return
+    }
+
+    // Если всё хорошо
+    if (!res.error) {
+      dispatch(changeLogItem(key, {
+        title: `Отправлено - ${addressName} от ${accountName}`,
+        status: 'success'
+      }))
+      return
+    }
+
+    // Обработка капчи
+    if (res.error.error_msg === 'Captcha needed') {
+      if (spamValues.captchaMode === 'Антикапча') {
+        cancelers.forEach((source) => { source.cancel() })
+        dispatch(addCaptchaItem(res.error.captcha_img, res.error.captcha_sid, userId))
+        dispatch(clearCancelers())
+        dispatch(changeLogItem(key, {
+          title: `Потребовалась капча для аккаунта ${accountName}`,
+          status: 'warning'
+        }))
+
+        if (!spamOnPause) {
+          pause(
+            addLogItem(
+              'Капча разгадывается…',
+              'info',
+              `Капча разгадывается… - ${Date.now()}`
+            ),
+            spamValues.autoSwitchTime
+          )
+        }
+
+        const blob = (await axios.get(proxyURL + res.error.captcha_img, { responseType: 'blob' })).data
+        const reader = new FileReader()
+
+        reader.readAsDataURL(blob)
+        reader.onload = async () => {
+          const body = String(reader.result).split(',')[1]
+
+          const createTaskRes = await createTask(spamValues.antiCaptchaKey, body)
+          console.log(createTaskRes)
+
+          const tick = async () => {
+            const getTaskRes = await getTaskResult(spamValues.antiCaptchaKey, createTaskRes.taskId)
+            console.log(getTaskRes)
+            if (getTaskRes.status === 'ready') {
+              dispatch(unravelCaptchaItem(userId, getTaskRes.solution.text))
+              if (getState().spamerReducer.spamOnRun) {
+                start(spamValues, addLogItem(
+                  'Капча разгадана, спам продолжен',
+                  'info',
+                  `Капча разгадана, спам продолжен - ${Date.now()}`
+                ))
+              }
+            } else {
+              setTimeout(tick, 1000)
+            }
+          }
+
+          setTimeout(tick, 5000)
+        }
+      } else if (spamValues.captchaMode === 'Показывать капчу') {
+        cancelers.forEach((source) => { source.cancel() })
+        dispatch(clearCancelers())
+        dispatch(changeLogItem(key, { title: `Потребовалась капча для аккаунта ${accountName}`, status: 'warning' }))
+        dispatch(addCaptchaItem(res.error.captcha_img, res.error.captcha_sid, userId))
+        if (!getState().spamerReducer.spamOnPause) {
+          pause(
+            addLogItem(
+              'Требуется капча, спам приостановлен',
+              'info',
+              `Требуется капча, спам приостановлен - ${Date.now()}`
+            ),
+            spamValues.autoSwitchTime
+          )
+        }
+      } else if (spamValues.captchaMode === 'Игнорировать капчу') {
+        const nextSenderIndex = (storedValues.senderIndex + 1 === accounts.length) ? 0 : storedValues.senderIndex + 1
+
+        if (accounts[storedValues.senderIndex].isEnabled) {
+          dispatch(changeLogItem(key, {
+            title: `Потребовалась капча, аккаунт ${accountName} был выключен`,
+            status: 'warning'
+          }))
+          cancelers.forEach((source) => { source.cancel() })
+          dispatch(clearCancelers())
+        }
+
+        const newAccounts = storage.local.get('accounts').map((account: IAccount) => {
+          return account.profileInfo.id === userId ? {
+            ...account,
+            isEnabled: false
+          } : account
+        })
+        storage.local.set('accounts', newAccounts)
+
+        dispatch(setIsEnabled(userId, false))
+        dispatch(setCurrentSender(accounts[nextSenderIndex].profileInfo.id))
+
+        accounts[storedValues.senderIndex].isEnabled = false
+        if (accounts.every(account => !account.isEnabled) && spamOnRun) {
+          stop(
+            addLogItem(
+              'Все аккаунты были выключены, спам остановлен',
+              'info',
+              `Все аккаунты были выключены, спам остановлен - ${Date.now()}`
+            ),
+            spamValues.autoSwitchTime
+          )
+        }
+      }
+    } else {
+      dispatch(changeLogItem(key, {
+        title: `Ошибка вк - ${res.error.error_msg}`,
+        status: 'error'
+      }))
+    }
+  }
+}
 
 export default spamerReducer

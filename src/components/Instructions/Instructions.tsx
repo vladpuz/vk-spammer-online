@@ -5,7 +5,7 @@ import comments from '../../assets/screenshots/comments.png'
 import discussions from '../../assets/screenshots/discussions.png'
 import groupsWalls from '../../assets/screenshots/groups-walls.png'
 import pm from '../../assets/screenshots/pm.png'
-import talks from '../../assets/screenshots/talks.png'
+import talks from '../../assets/screenshots/chat.png'
 import usersWalls from '../../assets/screenshots/users-walls.png'
 
 function Instructions () {
@@ -85,6 +85,26 @@ function Instructions () {
             </div>
           </li>
           <li className={s.list__item}>
+            <h3 className={s.subtitle}>Антикапча</h3>
+            <div>
+              <p>
+                Спамер интегрирован с сервисом
+                <a className={s.a} target="_blank" rel="noreferrer"
+                   href="https://anti-captcha.com"> anti-captcha.com</a>.
+                На нем работают реальные люди которые отгадывают нам капчу и получают за это деньги. Разгадывание капчи
+                <b> платное</b>. Цена примерно <b>0.05₽</b> за одну капчу картинку.
+              </p>
+              <p>
+                Чтобы работал режим антикапчи нужно ввести ключ учетной записи полученный на этом сервисе. Для начала
+                зарегистрируйтесь на нем, ключ после пополнения баланса можно будет взять
+                здесь - <a className={s.a} target="_blank" rel="noreferrer"
+                           href="https://anti-captcha.com/clients/settings/apisetup">
+                anti-captcha.com/clients/settings/apisetup
+              </a>.
+              </p>
+            </div>
+          </li>
+          <li className={s.list__item}>
             <h3 className={s.subtitle}>Рандомизация</h3>
             <div>
               <p>
@@ -114,7 +134,11 @@ function Instructions () {
               </p>
               <p>
                 Для смены фото беседы, нужно получить специальную строку с сервера вк, в будущем я добавлю всё это в
-                удобный интерфейс. Зайдите сюда <a className={s.a} href="https://vk.com/dev/photos.getChatUploadServer">
+                удобный интерфейс. Зайдите сюда <a
+                target="_blank"
+                rel="noreferrer"
+                className={s.a}
+                href="https://vk.com/dev/photos.getChatUploadServer">
                 https://vk.com/dev/photos.getChatUploadServer
               </a>.
               </p>
