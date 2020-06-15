@@ -40,16 +40,16 @@
 
 .logo__title {
   font-size: 20px;
-  letter-spacing: 0.35px;
+  letter-spacing: 0.60px;
 }
 
 .logo__title:hover {
-  color: var(--color-active)
+  color: var(--color-active);
 }
 
 .logo__subtitle {
   color: var(--color-secondary);
   font-size: 14px;
   margin-top: 2px;
-  letter-spacing: -0.35px;
+  letter-spacing: -0.60px;
 }

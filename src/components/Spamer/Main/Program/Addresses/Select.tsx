@@ -2,12 +2,12 @@ import React from 'react'
 import Title from '../../../../common/Title/Title'
 import { MenuItem } from '@material-ui/core'
 import MyTextField from '../../../../common/MyTextField'
-import addresses from '../../../../../utils/addresses'
-import { SpamModeType } from '../../../../../types/types'
+import { SpamModeType } from '../../../../../types/app-types'
 import { useFormikContext } from 'formik'
 import { useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../../redux/store'
 import storage from 'store2'
+import getPlaceholder from '../../../../../utils/get-placeholder'
 
 interface IProps {
   setPlaceholder: (placeholder: string) => void
@@ -36,13 +36,13 @@ function Select ({ setPlaceholder }: IProps) {
             spamMode: spamMode
           })
 
-          setPlaceholder(addresses.getPlaceholder(spamMode as SpamModeType))
-          setFieldValue('addressees', addresses.getLocalValue(spamMode) || '')
+          setPlaceholder(getPlaceholder(spamMode as SpamModeType))
+          setFieldValue('addresses', storage.get('fields')?.addresses)
         }}
       >
         <MenuItem value={'pm'}>Личные сообщения <span role="img" aria-label="pm">👨</span></MenuItem>,
-        <MenuItem value={'talks'}>Беседы <span role="img" aria-label="talks">👪</span></MenuItem>,
-        <MenuItem value={'talksAutoExit'}>Беседы с автовыходом <span role="img" aria-label="talks">⛔</span></MenuItem>,
+        <MenuItem value={'chat'}>Беседы <span role="img" aria-label="talks">👪</span></MenuItem>,
+        <MenuItem value={'chatAutoExit'}>Беседы с автовыходом <span role="img" aria-label="talks">⛔</span></MenuItem>,
         <MenuItem value={'usersWalls'}>Стены юзеров <span role="img" aria-label="usersWalls">📄</span></MenuItem>,
         <MenuItem value={'groupsWalls'}>Стены групп <span role="img" aria-label="groupsWalls">📢</span></MenuItem>,
         <MenuItem value={'comments'}>Комментарии <span role="img" aria-label="comments">🖊</span></MenuItem>,

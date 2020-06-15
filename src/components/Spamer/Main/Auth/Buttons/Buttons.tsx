@@ -7,11 +7,11 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import SdStorageIcon from '@material-ui/icons/SdStorage'
-import { authAccount, clearAccounts, setIsEnabledAll, shuffleAccounts } from '../../../../../redux/accounts-reducer'
+import { login, clearAccounts, setIsEnabledAll, shuffleAccounts } from '../../../../../redux/accounts-reducer'
 import { useDispatch, useSelector } from 'react-redux'
-import { AuthAppType } from '../../../../../types/types'
+import { AuthAppType } from '../../../../../types/app-types'
 import { RootReducerType } from '../../../../../redux/store'
-import Chance from 'chance'
+import lodash from 'lodash'
 
 function Buttons () {
   const dispatch = useDispatch()
@@ -23,7 +23,7 @@ function Buttons () {
       <div className={s.col}>
         <input
           disabled={spamOnPause || spamOnRun}
-          id="uploadSpamAddressees"
+          id="uploadSpamAddresses"
           type="file"
           style={{ display: 'none' }}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,18 +40,18 @@ function Buttons () {
                   } : ''
                 })
 
-                for (let item of data) {
+                for (const item of data) {
                   if (item) {
-                    const chance = new Chance()
-                    const app = chance.pickone(['android', 'iphone', 'ipad', 'windows', 'windowsPhone']) as AuthAppType
-                    dispatch(authAccount(app, item.login, item.password))
+                    const apps = ['android', 'iphone', 'ipad', 'windows', 'windowsPhone']
+                    const app = apps[lodash.random(0, apps.length - 1)] as AuthAppType
+                    dispatch(login(app, item.login, item.password))
                   }
                 }
               }
             }
           }}
         />
-        <label htmlFor="uploadSpamAddressees">
+        <label htmlFor="uploadSpamAddresses">
           <Button
             disabled={spamOnPause || spamOnRun}
             fullWidth
@@ -68,7 +68,7 @@ function Buttons () {
           disabled={spamOnPause || spamOnRun}
           variant="outlined"
           startIcon={<ShuffleIcon/>}
-          onClick={() => {dispatch(shuffleAccounts())}}
+          onClick={() => { dispatch(shuffleAccounts()) }}
         >
           Перемешать аккаунты
         </Button>
@@ -80,7 +80,7 @@ function Buttons () {
           disabled={spamOnPause || spamOnRun}
           variant="outlined"
           startIcon={<AddCircleIcon/>}
-          onClick={() => {dispatch(setIsEnabledAll(true))}}
+          onClick={() => { dispatch(setIsEnabledAll(true)) }}
         >
           Включить все аккаунты
         </Button>
@@ -89,7 +89,7 @@ function Buttons () {
           disabled={spamOnPause || spamOnRun}
           variant="outlined"
           startIcon={<RemoveCircleIcon/>}
-          onClick={() => {dispatch(setIsEnabledAll(false))}}
+          onClick={() => { dispatch(setIsEnabledAll(false)) }}
         >
           Выключить все аккаунты
         </Button>

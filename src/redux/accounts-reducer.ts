@@ -1,26 +1,26 @@
 import storage from 'store2'
+import lodash from 'lodash'
 import { ThunkAction } from 'redux-thunk'
 import { RootReducerType } from './store'
-import { AuthAppType, IAccount, IAuthNeed2FA, IAuthSuccess } from '../types/types'
 import { auth } from '../api/auth'
 import { getProfileInfo } from '../api/helpers'
-import shuffle from '../utils/shuffle'
+import { AuthAppType, IAccount } from '../types/app-types'
 
 /* Action types */
-const SET_ACCOUNTS = 'vk_spamer_online/accounts/SET_ACCOUNTS' as const
-const ADD_ACCOUNT = 'vk_spamer_online/accounts/ADD_ACCOUNT' as const
-const REMOVE_ACCOUNT = 'vk_spamer_online/accounts/REMOVE_ACCOUNT' as const
-const SHUFFLE_ACCOUNTS = 'vk_spamer_online/accounts/SHUFFLE_ACCOUNTS' as const
-const CLEAR_ACCOUNTS = 'vk_spamer_online/accounts/CLEAR_ACCOUNTS' as const
-const SET_IS_ENABLED = 'vk_spamer_online/accounts/SET_IS_ENABLED' as const
-const SET_IS_ENABLED_ALL = 'vk_spamer_online/accounts/SET_IS_ENABLED_ALL' as const
-const SET_CURRENT_SENDER = 'vk_spamer_online/accounts/SET_CURRENT_SENDER' as const
-const CLEAR_CURRENT_SENDER = 'vk_spamer_online/accounts/CLEAR_CURRENT_SENDER' as const
-const SET_AUTH_IN_PROGRESS = 'vk_spamer_online/accounts/SET_AUTH_IN_PROGRESS' as const
-const SET_CODE_IS_REQUIRED = 'vk_spamer_online/accounts/SET_CODE_IS_REQUIRED' as const
-const SET_CODE_IS_INCORRECT = 'vk_spamer_online/accounts/SET_CODE_IS_INCORRECT' as const
-const SET_ACCOUNT_REPEATED = 'vk_spamer_online/accounts/SET_ACCOUNT_REPEATED' as const
-const SET_IS_SUCCESS_LOGIN = 'vk_spamer_online/accounts/SET_IS_SUCCESS_LOGIN' as const
+const SET_ACCOUNTS = 'vk-spam-online/accounts/SET_ACCOUNTS' as const
+const ADD_ACCOUNT = 'vk-spam-online/accounts/ADD_ACCOUNT' as const
+const REMOVE_ACCOUNT = 'vk-spam-online/accounts/REMOVE_ACCOUNT' as const
+const SHUFFLE_ACCOUNTS = 'vk-spam-online/accounts/SHUFFLE_ACCOUNTS' as const
+const CLEAR_ACCOUNTS = 'vk-spam-online/accounts/CLEAR_ACCOUNTS' as const
+const SET_IS_ENABLED = 'vk-spam-online/accounts/SET_IS_ENABLED' as const
+const SET_IS_ENABLED_ALL = 'vk-spam-online/accounts/SET_IS_ENABLED_ALL' as const
+const SET_CURRENT_SENDER = 'vk-spam-online/accounts/SET_CURRENT_SENDER' as const
+const CLEAR_CURRENT_SENDER = 'vk-spam-online/accounts/CLEAR_CURRENT_SENDER' as const
+const SET_AUTH_IN_PROGRESS = 'vk-spam-online/accounts/SET_AUTH_IN_PROGRESS' as const
+const SET_CODE_IS_REQUIRED = 'vk-spam-online/accounts/SET_CODE_IS_REQUIRED' as const
+const SET_CODE_IS_INCORRECT = 'vk-spam-online/accounts/SET_CODE_IS_INCORRECT' as const
+const SET_ACCOUNT_REPEATED = 'vk-spam-online/accounts/SET_ACCOUNT_REPEATED' as const
+const SET_IS_SUCCESS_LOGIN = 'vk-spam-online/accounts/SET_IS_SUCCESS_LOGIN' as const
 
 const initialState = {
   accounts: (storage.local.get('accounts') || []) as Array<IAccount>,
@@ -69,13 +69,13 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
     case REMOVE_ACCOUNT:
       return {
         ...state,
-        accounts: state.accounts.filter(account => account.profileInfo.id !== action.userID)
+        accounts: state.accounts.filter(account => account.profileInfo.id !== action.userId)
       }
 
     case SHUFFLE_ACCOUNTS:
       return {
         ...state,
-        accounts: shuffle(state.accounts)
+        accounts: lodash.shuffle(state.accounts)
       }
 
     case CLEAR_ACCOUNTS:
@@ -88,7 +88,7 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
       return {
         ...state,
         accounts: state.accounts.map(account => {
-          return account.profileInfo.id === action.userID ? { ...account, isEnabled: action.isEnabled } : account
+          return account.profileInfo.id === action.userId ? { ...account, isEnabled: action.isEnabled } : account
         })
       }
 
@@ -104,7 +104,7 @@ function accountsReducer (state = initialState, action: ActionTypes): typeof ini
       return {
         ...state,
         accounts: state.accounts.map(account => {
-          return account.profileInfo.id === action.userID
+          return account.profileInfo.id === action.userId
             ? { ...account, currentSender: true } : { ...account, currentSender: false }
         })
       }
@@ -176,9 +176,9 @@ export const addAccount = (account: IAccount) => ({
   account
 })
 
-export const removeAccount = (userID: number) => ({
+export const removeAccount = (userId: number) => ({
   type: REMOVE_ACCOUNT,
-  userID
+  userId
 })
 
 export const shuffleAccounts = () => ({
@@ -189,9 +189,9 @@ export const clearAccounts = () => ({
   type: CLEAR_ACCOUNTS
 })
 
-export const setIsEnabled = (userID: number, isEnabled: boolean) => ({
+export const setIsEnabled = (userId: number, isEnabled: boolean) => ({
   type: SET_IS_ENABLED,
-  userID,
+  userId,
   isEnabled
 })
 
@@ -200,9 +200,9 @@ export const setIsEnabledAll = (isEnabled: boolean) => ({
   isEnabled
 })
 
-export const setCurrentSender = (userID: number) => ({
+export const setCurrentSender = (userId: number) => ({
   type: SET_CURRENT_SENDER,
-  userID
+  userId
 })
 
 export const clearCurrentSender = () => ({
@@ -237,18 +237,18 @@ export const setIsSuccessLogin = (isSuccess: boolean | null) => ({
 /* Thunk creators */
 type ThunkType = ThunkAction<Promise<any>, RootReducerType, unknown, ActionTypes>
 
-export const authAccount = (app: AuthAppType, username: string, password: string, code?: number): ThunkType => {
+export const login = (app: AuthAppType, username: string, password: string, code?: number): ThunkType => {
   return async (dispatch, getState) => {
     dispatch(setAuthInProgress(true))
-    const res = await auth(app, username, password, code)
+    const res = await auth(username, password, { app, code })
 
-    if (!(res as IAuthNeed2FA).error) {
-      const { access_token: token, user_id: userID } = res as IAuthSuccess
-      const profileInfo = (await getProfileInfo(token, userID))
+    if (!res.error) {
+      const { access_token: token, user_id: userId } = res
+      const profileInfo = (await getProfileInfo(token))
 
-      if (getState().accountsReducer.accounts.some(account => account.profileInfo.id === userID)) {
+      if (getState().accountsReducer.accounts.some(account => account.profileInfo.id === userId)) {
         dispatch(setAccountRepeated(true))
-        dispatch(removeAccount(userID))
+        dispatch(removeAccount(userId))
       }
 
       dispatch(setIsSuccessLogin(true))
@@ -262,14 +262,14 @@ export const authAccount = (app: AuthAppType, username: string, password: string
       }))
 
       storage.local.set('accounts', getState().accountsReducer.accounts)
-    } else if ((res as IAuthNeed2FA).error === 'need_validation') {
+    } else if ((res).error === 'need_validation') {
       dispatch(setCodeIsRequired(true))
     } else if (
-      (res as IAuthNeed2FA).error_description === 'Вы ввели неправильный код' ||
-      (res as IAuthNeed2FA).error_description === 'Вы ввели неверный код'
+      (res).error_description === 'Вы ввели неправильный код' ||
+      (res).error_description === 'Вы ввели неверный код'
     ) {
       dispatch(setCodeIsIncorrect(true))
-    } else if ((res as IAuthNeed2FA).error_description === 'Неправильный логин или пароль') {
+    } else if ((res).error_description === 'Неправильный логин или пароль') {
       dispatch(setIsSuccessLogin(false))
     }
 

@@ -2,71 +2,66 @@ import axios from 'axios'
 import store from '../redux/store'
 import { getBaseURL } from './config'
 import { addCancelerItem } from '../redux/spamer-reducer'
-import { leaveTheTalk, setChatName, setChatPhoto } from './helpers'
+import { setChatName, setChatPhoto } from './helpers'
 
-export const sendToUser = async (
+export async function sendToUser (
   token: string,
   userDomain: string,
-  message?: string,
-  attachment?: string,
-  opt?: { captchaKey: string, captchaSid: string }
-) => {
+  message: string,
+  attachment: string,
+  opt?: { captchaKey?: string, captchaSid?: number }
+): Promise<any> {
   let URL = getBaseURL('messages.send', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `random_id=${Date.now()}&`
   URL += `domain=${userDomain}&`
   if (message) URL += `message=${message}&`
   if (attachment) URL += `attachment=${attachment}&`
 
+  console.log(URL)
+
   const source = axios.CancelToken.source()
   store.dispatch(addCancelerItem(source))
   return (await axios.get(URL, { cancelToken: source.token })).data
 }
 
-export const sendToTalk = async (
+export async function sendToChat (
   token: string,
-  talkID: number,
-  message?: string,
-  attachment?: string,
-  opt?: { captchaKey?: string, captchaSid?: string }
-) => {
+  chatId: number,
+  message: string,
+  attachment: string,
+  opt?: { captchaKey?: string, captchaSid?: number }
+): Promise<any> {
   let URL = getBaseURL('messages.send', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `random_id=${Date.now()}&`
-  URL += `peer_id=${2000000000 + talkID}&`
+  URL += `peer_id=${2000000000 + chatId}&`
   if (message) URL += `message=${message}&`
   if (attachment) URL += `attachment=${attachment}&`
 
+  const promises: Promise<any>[] = []
   // @ts-ignore
-  if (window.title) setChatName(this.token, talkID, window.title).then(r => { console.log(r) })
+  if (window.title) promises.push(setChatName(this.token, chatId, window.title))
   // @ts-ignore
-  if (window.image) setChatPhoto(this.token, window.image).then(r => { console.log(r) })
+  if (window.image) promises.push(setChatPhoto(this.token, window.image))
 
   const source = axios.CancelToken.source()
   store.dispatch(addCancelerItem(source))
-  return (await axios.get(URL, { cancelToken: source.token })).data
+  const promise = axios.get(URL, { cancelToken: source.token })
+
+  await Promise.allSettled(promises)
+  return (await promise).data
 }
 
-export const sendToTalkAndLeave = async (
+export async function sendToComments (
   token: string,
-  talkID: number,
+  commentId: string,
   message: string,
   attachment: string,
-  opt: { captchaKey?: string, captchaSid?: string, userID: number }
-) => {
-  await sendToTalk(token, talkID, message, attachment, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
-  return (await leaveTheTalk(token, talkID, opt?.userID)).data
-}
-
-export const sendToComments = async (
-  token: string,
-  commentID: string,
-  message: string,
-  attachment: string,
-  opt?: { captchaKey?: string, captchaSid?: string }
-) => {
-  const [ownerID, postID] = commentID.split('_')
+  opt?: { captchaKey?: string, captchaSid?: number }
+): Promise<any> {
+  const [ownerId, postId] = commentId.split('_')
   let URL = getBaseURL('messages.createComment', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
-  URL += `owner_id=${ownerID}&`
-  URL += `post_id=${postID}&`
+  URL += `owner_id=${ownerId}&`
+  URL += `post_id=${postId}&`
   if (message) URL += `message=${message}&`
   if (attachment) URL += `attachment=${attachment}&`
 
@@ -75,17 +70,17 @@ export const sendToComments = async (
   return (await axios.get(URL, { cancelToken: source.token })).data
 }
 
-export const sendToDiscussions = async (
+export async function sendToDiscussions (
   token: string,
-  discussionsID: string,
+  discussionsId: string,
   message: string,
   attachment: string,
-  opt?: { captchaKey?: string, captchaSid?: string }
-) => {
-  const [groupID, topicID] = discussionsID.split('_')
+  opt?: { captchaKey?: string, captchaSid?: number }
+): Promise<any> {
+  const [groupId, topicId] = discussionsId.split('_')
   let URL = getBaseURL('board.createComment', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
-  URL += `group_id=${groupID}&`
-  URL += `topic_id=${topicID}&`
+  URL += `group_id=${groupId}&`
+  URL += `topic_id=${topicId}&`
   if (message) URL += `message=${message}&`
   if (attachment) URL += `attachment=${attachment}&`
 
@@ -94,15 +89,15 @@ export const sendToDiscussions = async (
   return (await axios.get(URL, { cancelToken: source.token })).data
 }
 
-export const postToUser = async (
+export async function postToUser (
   token: string,
-  userID: number,
+  userId: number,
   message: string,
   attachment: string,
-  opt?: { captchaKey?: string, captchaSid?: string }
-) => {
+  opt?: { captchaKey?: string, captchaSid?: number }
+): Promise<any> {
   let URL = getBaseURL('wall.post', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
-  URL += `owner_id=${userID}&`
+  URL += `owner_id=${userId}&`
   if (message) URL += `message=${message}&`
   if (attachment) URL += `attachment=${attachment}&`
 
@@ -111,15 +106,15 @@ export const postToUser = async (
   return (await axios.get(URL, { cancelToken: source.token })).data
 }
 
-export const postToGroup = async (
+export async function postToGroup (
   token: string,
-  groupID: number,
+  groupId: number,
   message: string,
   attachment: string,
-  opt?: { captchaKey?: string, captchaSid?: string }
-) => {
+  opt?: { captchaKey?: string, captchaSid?: number }
+): Promise<any> {
   let URL = getBaseURL('wall.post', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
-  URL += `owner_id=-${groupID}&`
+  URL += `owner_id=-${groupId}&`
   if (message) URL += `message=${message}&`
   if (attachment) URL += `attachment=${attachment}&`
 

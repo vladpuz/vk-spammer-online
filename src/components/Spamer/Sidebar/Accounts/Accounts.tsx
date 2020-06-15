@@ -19,7 +19,7 @@ function Accounts () {
       error={account.error}
       fullName={`${account.profileInfo.first_name} ${account.profileInfo.last_name}`}
       isEnabled={account.isEnabled}
-      userID={account.profileInfo.id}
+      userId={account.profileInfo.id}
       index={index}
     />
   ))

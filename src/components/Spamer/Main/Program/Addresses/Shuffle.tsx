@@ -1,8 +1,8 @@
 import React from 'react'
+import lodash from 'lodash'
 import { Button } from '@material-ui/core'
 import ShuffleIcon from '@material-ui/icons/Shuffle'
 import { useFormikContext } from 'formik'
-import shuffle from '../../../../../utils/shuffle'
 import { useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../../redux/store'
 import storage from 'store2'
@@ -21,15 +21,15 @@ function Shuffle () {
       component="span"
       startIcon={<ShuffleIcon/>}
       onClick={() => {
-        const arr = values.addressees.split('\n').filter((str: string) => str)
-        const sortStr = shuffle(arr).join('\n')
-        setFieldValue('addressees', sortStr)
+        const arr = values.addresses.split('\n').filter((str: string) => str)
+        const sortStr = lodash.shuffle(arr).join('\n')
+        setFieldValue('addresses', sortStr)
 
         const fields = storage.local.get('fields')
         storage.local.set('fields', {
           ...fields,
-          addressees: {
-            ...fields.addressees,
+          addresses: {
+            ...fields.addresses,
             [values.spamMode]: sortStr
           }
         })

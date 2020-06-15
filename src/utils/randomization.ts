@@ -1,4 +1,4 @@
-import Chance from 'chance'
+import lodash from 'lodash'
 
 // Делает рандомизацию строки по синтаксису 'Привет, [[value1 | value2 | value3]]'
 function randomization (text: string): string {
@@ -20,8 +20,8 @@ function randomization (text: string): string {
 
     const paramsArr = paramsStr.split('|').map(str => str.trim())
     paramsStr = ''
-    const chance = new Chance()
-    const randomItem = chance.pickone(paramsArr)
+
+    const randomItem = paramsArr[lodash.random(0, paramsArr.length - 1)]
     result += randomItem
   }
 

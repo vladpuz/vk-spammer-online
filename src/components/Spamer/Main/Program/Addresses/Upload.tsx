@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from '@material-ui/core'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import { useFormikContext } from 'formik'
-import addresses from '../../../../../utils/addresses'
+import addresses from '../../../../../utils/get-placeholder'
 import { useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../../redux/store'
 
@@ -15,7 +15,7 @@ function Upload () {
     <div style={{ marginBottom: '10px' }}>
       <input
         disabled={spamOnPause || spamOnRun}
-        id="uploadSpamAddressees"
+        id="uploadSpamAddresses"
         type="file"
         style={{ display: 'none' }}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,11 +26,11 @@ function Upload () {
           reader.onload = () => {
             // @ts-ignore
             addresses.setLocalValue(values.spamMode, reader.result)
-            setFieldValue('addressees', reader.result)
+            setFieldValue('addresses', reader.result)
           }
         }}
       />
-      <label htmlFor="uploadSpamAddressees">
+      <label htmlFor="uploadSpamAddresses">
         <Button
           fullWidth
           disabled={spamOnPause || spamOnRun}

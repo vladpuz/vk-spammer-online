@@ -7,7 +7,7 @@ import {
   Button,
   DialogActions,
   Paper,
-  Box,
+  Box
 } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../../redux/store'
@@ -16,12 +16,12 @@ import { Form, Formik, useFormikContext } from 'formik'
 import {
   addLogItem,
   clearCaptcha,
-  setNotificationTimerID,
-  unravelCaptchaItem,
+  setNotificationTimerId,
+  unravelCaptchaItem
 } from '../../../../../redux/spamer-reducer'
 import MyTextField from '../../../../common/MyTextField'
-import submit from '../../../../../utils/submit'
-import Spamer from '../../../../../utils/Spamer'
+import validate from '../../../../../utils/spam/validate'
+import stop from '../../../../../utils/spam/stop'
 
 function PaperComponent (props: any) {
   return (
@@ -34,12 +34,12 @@ function PaperComponent (props: any) {
 function CaptchaDialog () {
   const dispatch = useDispatch()
   const captcha = useSelector((state: RootReducerType) => state.spamerReducer.captcha).filter(item => !item.captchaKey)
-  const notificationTimerID = useSelector((state: RootReducerType) => state.spamerReducer.timers.notificationTimerID)
+  const notificationTimerId = useSelector((state: RootReducerType) => state.spamerReducer.timers.notificationTimerId)
   const { values: spamValues, setFieldError: spamSetFieldError }: any = useFormikContext()
 
   useEffect(() => {
-    if (!!captcha.length) {
-      const timerID = window.setInterval(() => {
+    if (captcha.length) {
+      const timerId = window.setInterval(() => {
         document.title = 'Требуется капча'
         window.setTimeout(() => {
           document.title = 'VK_SPAMER_ONLINE - Бесплатный спамер для вк'
@@ -51,25 +51,25 @@ function CaptchaDialog () {
         document.title = 'VK_SPAMER_ONLINE - Бесплатный спамер для вк'
       }, 1250)
 
-      dispatch(setNotificationTimerID(timerID))
+      dispatch(setNotificationTimerId(timerId))
     } else {
-      clearInterval(notificationTimerID)
+      clearInterval(notificationTimerId)
     }
   }, [captcha.length])
 
   const initialValues: any = {}
-  for (let item of captcha) {
-    initialValues[item.userID] = ''
+  for (const item of captcha) {
+    initialValues[item.userId] = ''
   }
 
   const handleClose = () => {
     dispatch(clearCaptcha())
-    Spamer.stop('Спам остановлен', 'info')
+    stop(addLogItem('Спам остановлен', 'info', `Спам остановлен - ${Date.now()}`), spamValues)
   }
 
   return (
     <Dialog
-      open={!!captcha.length}
+      open={!!captcha.length && spamValues.captchaMode !== 'Антикапча'}
       onClose={handleClose}
       PaperComponent={PaperComponent}
       aria-labelledby="draggable-dialog-title"
@@ -85,29 +85,23 @@ function CaptchaDialog () {
           initialValues={initialValues}
           onSubmit={(values, { setFieldError }) => {
             let ok = true
-            for (let item of Object.entries(values)) {
-              const [userID, captchaKey] = item
+            for (const item of Object.entries(values)) {
+              const [userId, captchaKey] = item
 
               if (!captchaKey) {
-                setFieldError(userID, 'Введите капчу')
+                setFieldError(userId, 'Введите капчу')
                 ok = false
               } else {
                 // @ts-ignore
-                dispatch(unravelCaptchaItem(+userID, captchaKey))
+                dispatch(unravelCaptchaItem(+userId, captchaKey))
               }
             }
 
             if (ok) {
-              submit(
-                { ...spamValues, addressees: spamValues.addressees.split('\n').filter((str: string) => str) },
+              validate(
+                { ...spamValues, addresses: spamValues.addresses.split('\n').filter((str: string) => str) },
                 spamSetFieldError,
-                () => {
-                  dispatch(addLogItem(
-                    'Рассылка продолжена',
-                    'info',
-                    `${Date.now()} Рассылка начата info`,
-                  ))
-                },
+                addLogItem('Рассылка продолжена', 'info', `Рассылка продолжена - ${Date.now()}`)
               )
             }
           }}
@@ -119,7 +113,7 @@ function CaptchaDialog () {
                   <div key={index} style={{ display: 'flex', alignItems: 'center', margin: '10px' }}>
                     <img src={item.captchaImg} alt="captcha" style={{ marginRight: '20px' }}/>
                     <Box width={250}>
-                      <MyTextField fullWidth name={item.userID.toString()} label="Введите капчу с картинки"/>
+                      <MyTextField fullWidth name={item.userId.toString()} label="Введите капчу с картинки"/>
                     </Box>
                   </div>
                 )

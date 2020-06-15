@@ -1,20 +1,20 @@
 import React, { useState } from 'react'
-import s from './Addressees.module.css'
+import s from './Addresses.module.css'
 import Select from './Select'
 import Upload from './Upload'
 import Shuffle from './Shuffle'
-import FieldAddressees from './FieldAddressees/FieldAddressees'
+import FieldAddresses from './FieldAddresses/FieldAddresses'
 import { useFormikContext } from 'formik'
-import addresses from '../../../../../utils/addresses'
+import getPlaceholder from '../../../../../utils/get-placeholder'
 
-function Addressees () {
+function Addresses () {
   const { values } : { values: any } = useFormikContext()
-  const [placeholder, setPlaceholder] = useState(addresses.getPlaceholder(values.spamMode))
+  const [placeholder, setPlaceholder] = useState(getPlaceholder(values.spamMode))
 
   return (
-    <div className={s.addressees}>
+    <div className={s.addresses}>
       <Select setPlaceholder={setPlaceholder}/>
-      <FieldAddressees placeholder={placeholder}/>
+      <FieldAddresses placeholder={placeholder}/>
       <div className={s.buttons}>
         <Upload/>
         <Shuffle/>
@@ -23,4 +23,4 @@ function Addressees () {
   )
 }
 
-export default Addressees
+export default Addresses

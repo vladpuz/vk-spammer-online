@@ -7,13 +7,13 @@ import AddIcon from '@material-ui/icons/Add'
 import RemoveIcon from '@material-ui/icons/Remove'
 import { removeAccount, setIsEnabled } from '../../../../../redux/accounts-reducer'
 import { useDispatch, useSelector } from 'react-redux'
-import { IAccount } from '../../../../../types/types'
+import { IAccount } from '../../../../../types/app-types'
 import { RootReducerType } from '../../../../../redux/store'
 import { Draggable } from 'react-beautiful-dnd'
 import storage from 'store2'
 
 interface IProps {
-  userID: number
+  userId: number
   avatarURL: string
   fullName: string
   currentSender: boolean
@@ -23,7 +23,7 @@ interface IProps {
 }
 
 const Account: React.FC<IProps> = ({
-  userID,
+  userId,
   avatarURL,
   fullName,
   currentSender,
@@ -33,15 +33,15 @@ const Account: React.FC<IProps> = ({
 }) => {
   const disabledClassName = isEnabled ? '' : s.accountDisabled
   const isCurrentSenderClassName = currentSender && s.currentSender
-  const vkLink = `https://vk.com/id${userID}`
+  const vkLink = `https://vk.com/id${userId}`
   const dispatch = useDispatch()
   const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
   const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
 
   const remove = () => {
-    dispatch(removeAccount(userID))
+    dispatch(removeAccount(userId))
     const accounts = storage.local.get('accounts')
-    storage.local.set('accounts', accounts.filter((account: IAccount) => account.profileInfo.id !== userID))
+    storage.local.set('accounts', accounts.filter((account: IAccount) => account.profileInfo.id !== userId))
   }
 
   const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
@@ -51,7 +51,7 @@ const Account: React.FC<IProps> = ({
   })
 
   return (
-    <Draggable isDragDisabled={spamOnPause || spamOnRun} draggableId={String(userID)} index={index}>
+    <Draggable isDragDisabled={spamOnPause || spamOnRun} draggableId={String(userId)} index={index}>
       {
         (provided, snapshot) => (
           <div
@@ -83,13 +83,13 @@ const Account: React.FC<IProps> = ({
                     aria-label="remove"
                     onClick={() => {
                       const accounts = storage.local.get('accounts').map(
-                        (account: IAccount) => account.profileInfo.id === userID ? {
+                        (account: IAccount) => account.profileInfo.id === userId ? {
                           ...account,
                           isEnabled: false
                         } : account
                       )
                       storage.local.set('accounts', accounts)
-                      dispatch(setIsEnabled(userID, false))
+                      dispatch(setIsEnabled(userId, false))
                     }}
                   >
                     <RemoveIcon/>
@@ -97,13 +97,13 @@ const Account: React.FC<IProps> = ({
                 ) : (
                   <IconButton aria-label="add" onClick={() => {
                     const accounts = storage.local.get('accounts').map(
-                      (account: IAccount) => account.profileInfo.id === userID ? {
+                      (account: IAccount) => account.profileInfo.id === userId ? {
                         ...account,
                         isEnabled: true
                       } : account
                     )
                     storage.local.set('accounts', accounts)
-                    dispatch(setIsEnabled(userID, true))
+                    dispatch(setIsEnabled(userId, true))
                   }}>
                     <AddIcon/>
                   </IconButton>

@@ -1,9 +1,13 @@
 import React from 'react'
 import PauseIcon from '@material-ui/icons/Pause'
 import Button from '@material-ui/core/Button'
-import Spamer from '../../../../../../utils/Spamer'
+import pause from '../../../../../../utils/spam/pause'
+import { useFormikContext } from 'formik'
+import { addLogItem } from '../../../../../../redux/spamer-reducer'
 
 function PauseButton () {
+  const { values }: any = useFormikContext()
+
   return (
     <Button
       fullWidth
@@ -11,7 +15,10 @@ function PauseButton () {
       color="primary"
       startIcon={<PauseIcon/>}
       onClick={() => {
-        Spamer.pause('Рассылка приостановлена', 'info')
+        pause(
+          addLogItem('Рассылка приостановлена', 'info', `Рассылка приостановлена - ${Date.now()}`),
+          values.autoSwitchTime
+        )
       }}
     >
       Пауза

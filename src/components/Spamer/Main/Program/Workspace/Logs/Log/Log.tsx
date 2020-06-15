@@ -1,6 +1,6 @@
 import React from 'react'
 import s from './Log.module.css'
-import { LogStatusType } from '../../../../../../../types/types'
+import { LogStatusType } from '../../../../../../../types/app-types'
 import { CircularProgress, withStyles } from '@material-ui/core'
 import cn from 'classnames'
 import ErrorIcon from '@material-ui/icons/Error'

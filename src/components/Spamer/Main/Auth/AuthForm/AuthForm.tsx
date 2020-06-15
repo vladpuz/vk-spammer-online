@@ -2,8 +2,8 @@ import React from 'react'
 import s from './AuthForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootReducerType } from '../../../../../redux/store'
-import { authAccount } from '../../../../../redux/accounts-reducer'
-import { AuthAppType } from '../../../../../types/types'
+import { login } from '../../../../../redux/accounts-reducer'
+import { AuthAppType } from '../../../../../types/app-types'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 import MyTextField from '../../../../common/MyTextField'
@@ -35,7 +35,7 @@ function AuthForm () {
       onSubmit={(values, { setValues }) => {
         const { app, login, password, code } = values
         // @ts-ignore
-        dispatch(authAccount(app, login, password, code)).then(() => {
+        dispatch(login(app, login, password, code)).then(() => {
           setValues({
             app: isSuccessLogin ? 'windows' : app,
             login: isSuccessLogin ? '' : login,

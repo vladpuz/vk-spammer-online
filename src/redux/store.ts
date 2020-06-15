@@ -5,7 +5,7 @@ import spamerReducer from './spamer-reducer'
 
 const rootReducer = combineReducers({
   accountsReducer,
-  spamerReducer,
+  spamerReducer
 })
 
 export type RootReducerType = ReturnType<typeof rootReducer>

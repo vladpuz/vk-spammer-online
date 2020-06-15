@@ -6,17 +6,19 @@ import StopIcon from '@material-ui/icons/Stop'
 import ClearIcon from '@material-ui/icons/Clear'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearLog } from '../../../../../../redux/spamer-reducer'
+import { addLogItem, clearLog } from '../../../../../../redux/spamer-reducer'
 import { RootReducerType } from '../../../../../../redux/store'
-import Spamer from '../../../../../../utils/Spamer'
 import ResumeButton from './ResumeButton'
 import PauseButton from './PauseButton'
+import stop from '../../../../../../utils/spam/stop'
+import { useFormikContext } from 'formik'
 
 function Buttons () {
   const buttonWidth = 200
   const spamIsRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
   const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
   const dispatch = useDispatch()
+  const { values }: { values: any } = useFormikContext()
 
   return (
     <div className={s.buttons}>
@@ -45,7 +47,12 @@ function Buttons () {
           color="primary"
           startIcon={<StopIcon/>}
           disabled={!spamIsRun}
-          onClick={() => {Spamer.stop('Рассылка прекращена', 'info')}}
+          onClick={() => {
+            stop(
+              addLogItem('Рассылка прекращена', 'info', `Рассылка прекращена - ${Date.now()}`),
+              values.autoSwitchTime
+            )
+          }}
         >
           Прервать спам
         </Button>
@@ -57,7 +64,7 @@ function Buttons () {
           variant="contained"
           color="primary"
           startIcon={<ClearIcon/>}
-          onClick={() => {dispatch(clearLog())}}
+          onClick={() => { dispatch(clearLog()) }}
         >
           Очистить лог
         </Button>
