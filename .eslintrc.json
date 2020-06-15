@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es2020": true
+    "es2020": true,
+    "jest": true
   },
   "extends": [
     "plugin:react/recommended",
@@ -22,6 +23,7 @@
   "rules": {
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "error",
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "camelcase": "warn"
   }
 }
