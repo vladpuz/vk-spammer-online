@@ -19,7 +19,7 @@
 аккаунтов для накрутки лайков, даже в платной версии, скорей всего в целях заработка. Об этом прямым текстом написано в
 его условиях использования.
 
-![Screenshot](https://github.com/vladislav-puzyrev/vk-spamer-online/raw/master/screenshot.png)
+![Screenshot](https://user-images.githubusercontent.com/52296792/85111159-61a99e80-b22d-11ea-9e6d-9342c90e8b02.png)
 
 Начать использовать [**VK-SPAMER-ONLINE**](https://vladislav-puzyrev.github.io/vk-spamer-online)
 
