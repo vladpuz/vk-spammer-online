@@ -2,10 +2,10 @@ import React from 'react'
 import s from './Logs.module.css'
 import Log from './Log/Log'
 import { useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../../../redux/store'
+import { StateType } from '../../../../../../redux/store'
 
 function Logs () {
-  const logs = useSelector((state: RootReducerType) => state.spamerReducer.logs)
+  const logs = useSelector((state: StateType) => state.spamerReducer.logs)
 
   return (
     <div className={s.logs}>

@@ -1,18 +1,17 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux'
 import thunkMiddleware from 'redux-thunk'
-import accountsReducer from './accounts-reducer'
-import spamerReducer from './spamer-reducer'
+import accountsReducer from './ducks/accounts/reducer'
+import spamerReducer from './ducks/spamer/reducer'
 
-const rootReducer = combineReducers({
+const reducers = combineReducers({
   accountsReducer,
   spamerReducer
 })
 
-export type RootReducerType = ReturnType<typeof rootReducer>
-
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+const store = createStore(reducers, composeEnhancers(applyMiddleware(thunkMiddleware)))
 
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunkMiddleware)))
-
+export type GetActionsType<T> = T extends { [keys: string]: infer U } ? U : never
+export type StateType = ReturnType<typeof reducers>
 export default store

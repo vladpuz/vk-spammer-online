@@ -1,6 +1,5 @@
-export const versionAPI = '5.110'
+export const apiVersion = '5.110'
 export const proxyURL = 'https://dry-lowlands-96591.herokuapp.com/'
-export const antiCaptchaBaseURL = 'https://api.anti-captcha.com/'
 
 export const getBaseURL = (
   method: string,
@@ -8,7 +7,7 @@ export const getBaseURL = (
   opt?: { captchaKey?: string, captchaSid?: number }
 ): string => {
   let baseURL = `${proxyURL}https://api.vk.com/method/${method}?`
-  baseURL += `v=${versionAPI}&`
+  baseURL += `v=${apiVersion}&`
   baseURL += `access_token=${token}&`
 
   if (opt?.captchaKey && opt?.captchaSid) {
@@ -17,6 +16,16 @@ export const getBaseURL = (
   }
 
   return baseURL
+}
+
+export type ResponseType<R = number> = {
+  error?: {
+    error_code: number
+    error_msg: string
+    captcha_img: string
+    captcha_sid: number
+  },
+  response: R
 }
 
 export const authApps = {

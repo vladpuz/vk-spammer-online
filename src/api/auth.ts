@@ -1,7 +1,22 @@
 import axios from 'axios'
-import { proxyURL, versionAPI, authApps } from './config'
-import { AuthAppType } from '../types/app-types'
-import { IAuthRes } from '../types/api-types'
+import { apiVersion, authApps, getBaseURL, proxyURL, ResponseType } from './config'
+import { AuthAppType, ProfileType } from '../types/types'
+
+type AuthRes = {
+  access_token: string
+  expires_in: number
+  user_id: number
+  trusted_hash: string
+
+  error: string
+  error_description: string
+  validation_type: string
+  validation_sid: string
+  phone_mask: string
+  redirect_uri: string
+  captcha_img: string
+  captcha_sid: number
+}
 
 // Возвращает токен или ошибку для повторного запроса с кодом 2FA
 export async function auth (
@@ -13,7 +28,7 @@ export async function auth (
     captchaKey?: string,
     captchaSid?: string
   } = { app: 'windows' }
-): Promise<IAuthRes> {
+): Promise<AuthRes> {
   const { app, code, captchaKey, captchaSid } = opt
   const { clientId, clientSecret } = authApps[app || 'windows']
 
@@ -21,7 +36,7 @@ export async function auth (
   URL += 'grant_type=password&'
   URL += '2fa_supported=1&'
   URL += 'force_sms=1&'
-  URL += `v=${versionAPI}&`
+  URL += `v=${apiVersion}&`
   URL += `client_id=${clientId}&`
   URL += `client_secret=${clientSecret}&`
   URL += `username=${username}&`
@@ -36,4 +51,13 @@ export async function auth (
   } catch (err) {
     return err.response.data
   }
+}
+
+// Возвращает данные о профиле
+export async function getProfileInfo (token: string): Promise<ResponseType<ProfileType[]>> {
+  let URL = getBaseURL('users.get', token)
+  URL += 'fields=photo_50&'
+
+  const res = await axios.get(URL)
+  return res.data
 }

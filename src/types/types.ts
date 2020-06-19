@@ -1,10 +1,8 @@
-import { IGetProfileInfoRes } from './api-types'
-
 export type LogStatusType = 'error' | 'success' | 'warning' | 'info' | 'pending'
 export type AuthAppType = 'android' | 'iphone' | 'ipad' | 'windows' | 'windowsPhone'
 export type SpamModeType = 'pm' | 'chat' | 'chatAutoExit' | 'usersWalls' | 'groupsWalls' | 'comments' | 'discussions'
 
-export interface ISpamValues {
+export type SpamValuesType = {
   autoSwitchTime: number
   antiCaptchaKey: string
   message: string
@@ -14,25 +12,34 @@ export interface ISpamValues {
   onePass: boolean
   captchaMode: 'Антикапча' | 'Показывать капчу' | 'Игнорировать капчу'
   spamMode: SpamModeType
-  addresses: Array<string>
+  addresses: string[]
 }
 
-export interface IAccount {
-  profileInfo: IGetProfileInfoRes
+export type ProfileType = {
+  id: number
+  first_name: string
+  last_name: string
+  is_closed: boolean
+  can_access_closed: boolean
+  photo_50: string
+}
+
+export type AccountType = {
+  profile: ProfileType
   token: string
   currentSender: boolean
   isEnabled: boolean
   error: null | string
 }
 
-export interface ILog {
+export type LogType = {
   title: string
   status: LogStatusType
   time: string
   key: string
 }
 
-export interface ICaptcha {
+export type CaptchaType = {
   userId: number
   captchaImg: string
   captchaKey: string

@@ -1,5 +1,5 @@
 import React from 'react'
-import { addLogItem } from '../../../../../../redux/spamer-reducer'
+import { addLogItem } from '../../../../../../redux/ducks/spamer/action-creators'
 import Button from '@material-ui/core/Button'
 import SkipNextIcon from '@material-ui/icons/SkipNext'
 import validate from '../../../../../../utils/spam/validate'

@@ -5,14 +5,14 @@ import { IconButton } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import AddIcon from '@material-ui/icons/Add'
 import RemoveIcon from '@material-ui/icons/Remove'
-import { removeAccount, setIsEnabled } from '../../../../../redux/accounts-reducer'
+import { removeAccount, setIsEnabled } from '../../../../../redux/ducks/accounts/action-creators'
 import { useDispatch, useSelector } from 'react-redux'
-import { IAccount } from '../../../../../types/app-types'
-import { RootReducerType } from '../../../../../redux/store'
+import { AccountType } from '../../../../../types/types'
+import { StateType } from '../../../../../redux/store'
 import { Draggable } from 'react-beautiful-dnd'
 import storage from 'store2'
 
-interface IProps {
+type Props = {
   userId: number
   avatarURL: string
   fullName: string
@@ -22,7 +22,7 @@ interface IProps {
   index: number
 }
 
-const Account: React.FC<IProps> = ({
+const Account: React.FC<Props> = ({
   userId,
   avatarURL,
   fullName,
@@ -35,13 +35,13 @@ const Account: React.FC<IProps> = ({
   const isCurrentSenderClassName = currentSender && s.currentSender
   const vkLink = `https://vk.com/id${userId}`
   const dispatch = useDispatch()
-  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: StateType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: StateType) => state.spamerReducer.spamOnRun)
 
   const remove = () => {
     dispatch(removeAccount(userId))
     const accounts = storage.local.get('accounts')
-    storage.local.set('accounts', accounts.filter((account: IAccount) => account.profileInfo.id !== userId))
+    storage.local.set('accounts', accounts.filter((account: AccountType) => account.profile.id !== userId))
   }
 
   const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
@@ -83,7 +83,7 @@ const Account: React.FC<IProps> = ({
                     aria-label="remove"
                     onClick={() => {
                       const accounts = storage.local.get('accounts').map(
-                        (account: IAccount) => account.profileInfo.id === userId ? {
+                        (account: AccountType) => account.profile.id === userId ? {
                           ...account,
                           isEnabled: false
                         } : account
@@ -97,7 +97,7 @@ const Account: React.FC<IProps> = ({
                 ) : (
                   <IconButton aria-label="add" onClick={() => {
                     const accounts = storage.local.get('accounts').map(
-                      (account: IAccount) => account.profileInfo.id === userId ? {
+                      (account: AccountType) => account.profile.id === userId ? {
                         ...account,
                         isEnabled: true
                       } : account

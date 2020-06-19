@@ -4,13 +4,13 @@ import { Button } from '@material-ui/core'
 import ShuffleIcon from '@material-ui/icons/Shuffle'
 import { useFormikContext } from 'formik'
 import { useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../../redux/store'
+import { StateType } from '../../../../../redux/store'
 import storage from 'store2'
 
 function Shuffle () {
   const { values, setFieldValue }: { values: any, setFieldValue: any } = useFormikContext()
-  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: StateType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: StateType) => state.spamerReducer.spamOnRun)
 
   return (
     <Button

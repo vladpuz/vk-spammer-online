@@ -6,8 +6,8 @@ import StopIcon from '@material-ui/icons/Stop'
 import ClearIcon from '@material-ui/icons/Clear'
 import { Box } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { addLogItem, clearLog } from '../../../../../../redux/spamer-reducer'
-import { RootReducerType } from '../../../../../../redux/store'
+import { addLogItem, clearLog } from '../../../../../../redux/ducks/spamer/action-creators'
+import { StateType } from '../../../../../../redux/store'
 import ResumeButton from './ResumeButton'
 import PauseButton from './PauseButton'
 import stop from '../../../../../../utils/spam/stop'
@@ -15,8 +15,8 @@ import { useFormikContext } from 'formik'
 
 function Buttons () {
   const buttonWidth = 200
-  const spamIsRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
-  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
+  const spamIsRun = useSelector((state: StateType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: StateType) => state.spamerReducer.spamOnPause)
   const dispatch = useDispatch()
   const { values }: { values: any } = useFormikContext()
 

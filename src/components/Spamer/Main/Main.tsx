@@ -1,15 +1,14 @@
 import React from 'react'
 import s from './Main.module.css'
-import Program from './Program/Program'
 import { Route, Switch } from 'react-router-dom'
-import Auth from './Auth/Auth'
+import routes from '../../../config/routes'
 
 function Main () {
   return (
     <main className={s.main}>
       <Switch>
-        <Route path="/accounts" component={Auth}/>
-        <Route path="/" component={Program}/>
+        <Route path={routes.spamer.subroutes.accounts.path} component={routes.spamer.subroutes.accounts.component}/>
+        <Route path={routes.spamer.path} component={routes.spamer.component}/>
       </Switch>
     </main>
   )

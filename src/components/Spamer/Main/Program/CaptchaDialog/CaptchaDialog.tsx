@@ -10,7 +10,7 @@ import {
   Box
 } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../../redux/store'
+import { StateType } from '../../../../../redux/store'
 import Draggable from 'react-draggable'
 import { Form, Formik, useFormikContext } from 'formik'
 import {
@@ -18,7 +18,7 @@ import {
   clearCaptcha,
   setNotificationTimerId,
   unravelCaptchaItem
-} from '../../../../../redux/spamer-reducer'
+} from '../../../../../redux/ducks/spamer/action-creators'
 import MyTextField from '../../../../common/MyTextField'
 import validate from '../../../../../utils/spam/validate'
 import stop from '../../../../../utils/spam/stop'
@@ -33,8 +33,8 @@ function PaperComponent (props: any) {
 
 function CaptchaDialog () {
   const dispatch = useDispatch()
-  const captcha = useSelector((state: RootReducerType) => state.spamerReducer.captcha).filter(item => !item.captchaKey)
-  const notificationTimerId = useSelector((state: RootReducerType) => state.spamerReducer.timers.notificationTimerId)
+  const captcha = useSelector((state: StateType) => state.spamerReducer.captcha).filter(item => !item.captchaKey)
+  const notificationTimerId = useSelector((state: StateType) => state.spamerReducer.timers.notificationTimerId)
   const { values: spamValues, setFieldError: spamSetFieldError }: any = useFormikContext()
 
   useEffect(() => {

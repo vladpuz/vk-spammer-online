@@ -1,8 +1,8 @@
 import axios from 'axios'
 import store from '../redux/store'
-import { getBaseURL } from './config'
-import { addCancelerItem } from '../redux/spamer-reducer'
+import { addCancelerItem } from '../redux/ducks/spamer/action-creators'
 import { setChatName, setChatPhoto } from './helpers'
+import { getBaseURL, ResponseType } from './config'
 
 export async function sendToUser (
   token: string,
@@ -10,18 +10,17 @@ export async function sendToUser (
   message: string,
   attachment: string,
   opt?: { captchaKey?: string, captchaSid?: number }
-): Promise<any> {
+): Promise<ResponseType> {
   let URL = getBaseURL('messages.send', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `random_id=${Date.now()}&`
   URL += `domain=${userDomain}&`
   if (message) URL += `message=${message}&`
   if (attachment) URL += `attachment=${attachment}&`
 
-  console.log(URL)
-
   const source = axios.CancelToken.source()
   store.dispatch(addCancelerItem(source))
-  return (await axios.get(URL, { cancelToken: source.token })).data
+  const res = await axios.get(URL, { cancelToken: source.token })
+  return res.data
 }
 
 export async function sendToChat (
@@ -30,7 +29,7 @@ export async function sendToChat (
   message: string,
   attachment: string,
   opt?: { captchaKey?: string, captchaSid?: number }
-): Promise<any> {
+): Promise<ResponseType> {
   let URL = getBaseURL('messages.send', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `random_id=${Date.now()}&`
   URL += `peer_id=${2000000000 + chatId}&`
@@ -48,7 +47,8 @@ export async function sendToChat (
   const promise = axios.get(URL, { cancelToken: source.token })
 
   await Promise.allSettled(promises)
-  return (await promise).data
+  const res = await promise
+  return res.data
 }
 
 export async function sendToComments (
@@ -57,7 +57,7 @@ export async function sendToComments (
   message: string,
   attachment: string,
   opt?: { captchaKey?: string, captchaSid?: number }
-): Promise<any> {
+): Promise<ResponseType<{ comment_id: number, parents_stack: any[] }>> {
   const [ownerId, postId] = commentId.split('_')
   let URL = getBaseURL('messages.createComment', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `owner_id=${ownerId}&`
@@ -67,7 +67,8 @@ export async function sendToComments (
 
   const source = axios.CancelToken.source()
   store.dispatch(addCancelerItem(source))
-  return (await axios.get(URL, { cancelToken: source.token })).data
+  const res = await axios.get(URL, { cancelToken: source.token })
+  return res.data
 }
 
 export async function sendToDiscussions (
@@ -76,7 +77,7 @@ export async function sendToDiscussions (
   message: string,
   attachment: string,
   opt?: { captchaKey?: string, captchaSid?: number }
-): Promise<any> {
+): Promise<ResponseType> {
   const [groupId, topicId] = discussionsId.split('_')
   let URL = getBaseURL('board.createComment', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `group_id=${groupId}&`
@@ -86,7 +87,8 @@ export async function sendToDiscussions (
 
   const source = axios.CancelToken.source()
   store.dispatch(addCancelerItem(source))
-  return (await axios.get(URL, { cancelToken: source.token })).data
+  const res = await axios.get(URL, { cancelToken: source.token })
+  return res.data
 }
 
 export async function postToUser (
@@ -95,7 +97,7 @@ export async function postToUser (
   message: string,
   attachment: string,
   opt?: { captchaKey?: string, captchaSid?: number }
-): Promise<any> {
+): Promise<ResponseType<{ post_id: number }>> {
   let URL = getBaseURL('wall.post', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `owner_id=${userId}&`
   if (message) URL += `message=${message}&`
@@ -103,7 +105,8 @@ export async function postToUser (
 
   const source = axios.CancelToken.source()
   store.dispatch(addCancelerItem(source))
-  return (await axios.get(URL, { cancelToken: source.token })).data
+  const res = await axios.get(URL, { cancelToken: source.token })
+  return res.data
 }
 
 export async function postToGroup (
@@ -112,7 +115,7 @@ export async function postToGroup (
   message: string,
   attachment: string,
   opt?: { captchaKey?: string, captchaSid?: number }
-): Promise<any> {
+): Promise<ResponseType<{ post_id: number }>> {
   let URL = getBaseURL('wall.post', token, { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `owner_id=-${groupId}&`
   if (message) URL += `message=${message}&`
@@ -120,5 +123,6 @@ export async function postToGroup (
 
   const source = axios.CancelToken.source()
   store.dispatch(addCancelerItem(source))
-  return (await axios.get(URL, { cancelToken: source.token })).data
+  const res = await axios.get(URL, { cancelToken: source.token })
+  return res.data
 }

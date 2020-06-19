@@ -3,9 +3,9 @@ import s from './Spamer.module.css'
 import Sidebar from './Sidebar/Sidebar'
 import Main from './Main/Main'
 import storage from 'store2'
-import { SpamModeType } from '../../types/app-types'
+import { SpamModeType } from '../../types/types'
 import validate from '../../utils/spam/validate'
-import { addLogItem } from '../../redux/spamer-reducer'
+import { addLogItem } from '../../redux/ducks/spamer/action-creators'
 import { Form, Formik } from 'formik'
 
 function Spamer () {

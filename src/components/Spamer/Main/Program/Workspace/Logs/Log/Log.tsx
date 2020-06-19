@@ -1,6 +1,6 @@
 import React from 'react'
 import s from './Log.module.css'
-import { LogStatusType } from '../../../../../../../types/app-types'
+import { LogStatusType } from '../../../../../../../types/types'
 import { CircularProgress, withStyles } from '@material-ui/core'
 import cn from 'classnames'
 import ErrorIcon from '@material-ui/icons/Error'
@@ -11,17 +11,17 @@ import HourglassFullIcon from '@material-ui/icons/HourglassFull'
 
 const ColorCircularProgress = withStyles({
   root: {
-    color: '#191919',
-  },
+    color: '#191919'
+  }
 })(CircularProgress)
 
-interface IProps {
+type Props = {
   title: string
   status: LogStatusType
   time: string
 }
 
-function Log ({ title, status, time }: IProps) {
+function Log ({ title, status, time }: Props) {
   let Icon: any
   if (status === 'error') Icon = ErrorIcon
   if (status === 'success') Icon = CheckCircleIcon

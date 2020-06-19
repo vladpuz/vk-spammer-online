@@ -1,13 +1,13 @@
 import React from 'react'
 import { InputAdornment } from '@material-ui/core'
 import { useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../redux/store'
+import { StateType } from '../../../../redux/store'
 import storage from 'store2'
 import MyTextField from '../../../common/MyTextField'
 
 function AutoSwitchTime () {
-  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: StateType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: StateType) => state.spamerReducer.spamOnRun)
 
   return (
     <MyTextField

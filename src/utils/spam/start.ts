@@ -1,7 +1,6 @@
 import store from '../../redux/store'
 import {
   addLogItem,
-  send,
   setAddresseeIndex,
   setAutoPauseTimerId,
   setAutoSwitchRemaining,
@@ -11,14 +10,15 @@ import {
   setSpamOnRun,
   setSpamTimerId,
   setStartTimestamp
-} from '../../redux/spamer-reducer'
-import { setCurrentSender } from '../../redux/accounts-reducer'
+} from '../../redux/ducks/spamer/action-creators'
+import { send } from '../../redux/ducks/spamer/thunks'
+import { setCurrentSender } from '../../redux/ducks/accounts/action-creators'
 import pause from './pause'
 import stop from './stop'
 import randomization from '../randomization'
-import { ISpamValues } from '../../types/app-types'
+import { SpamValuesType } from '../../types/types'
 
-function start (spamValues: ISpamValues, logItem: ReturnType<typeof addLogItem>) {
+function start (spamValues: SpamValuesType, logItem: ReturnType<typeof addLogItem>) {
   const state = store.getState()
   const { autoSwitchRemaining, senderIndex } = state.spamerReducer.storedValues
   const accounts = state.accountsReducer.accounts.filter(account => account.isEnabled)
@@ -52,7 +52,7 @@ function start (spamValues: ISpamValues, logItem: ReturnType<typeof addLogItem>)
     const senderTimerId = window.setTimeout(senderChangeTick, autoSwitchRemaining * 1000)
 
     store.dispatch(setSenderTimerId(senderTimerId))
-    store.dispatch(setCurrentSender(accounts[senderIndex].profileInfo.id))
+    store.dispatch(setCurrentSender(accounts[senderIndex].profile.id))
   }
 
   // Установка таймера рассылки
@@ -74,11 +74,11 @@ function senderChange () {
 
   const nextSenderIndex = (senderIndex + 1 === accounts.length) ? 0 : senderIndex + 1
   const currentAccount = accounts[nextSenderIndex]
-  const accountName = `${currentAccount.profileInfo.first_name} ${currentAccount.profileInfo.last_name}`
+  const accountName = `${currentAccount.profile.first_name} ${currentAccount.profile.last_name}`
 
   store.dispatch(setStartTimestamp(Date.now()))
   store.dispatch(setSenderIndex(nextSenderIndex))
-  store.dispatch(setCurrentSender(accounts[nextSenderIndex].profileInfo.id))
+  store.dispatch(setCurrentSender(accounts[nextSenderIndex].profile.id))
   store.dispatch(addLogItem(
     `Смена аккаунта на ${accountName}`,
     'info',
@@ -86,7 +86,7 @@ function senderChange () {
   ))
 }
 
-function spam (spamValues: ISpamValues) {
+function spam (spamValues: SpamValuesType) {
   const state = store.getState()
   const addresseeIndex = state.spamerReducer.storedValues.addresseeIndex
   const accounts = state.accountsReducer.accounts.filter(account => account.isEnabled)

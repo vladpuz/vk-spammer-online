@@ -3,16 +3,16 @@ import Title from '../../../../../common/Title/Title'
 import s from './FieldAddresses.module.css'
 import MyTextField from '../../../../../common/MyTextField'
 import { useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../../../redux/store'
+import { StateType } from '../../../../../../redux/store'
 import storage from 'store2'
 
-interface IProps {
+type Props = {
   placeholder: string
 }
 
-function FieldAddresses ({ placeholder }: IProps) {
-  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
+function FieldAddresses ({ placeholder }: Props) {
+  const spamOnPause = useSelector((state: StateType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: StateType) => state.spamerReducer.spamOnRun)
 
   return (
     <div className={s.field}>

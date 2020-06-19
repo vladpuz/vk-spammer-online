@@ -2,29 +2,29 @@ import React from 'react'
 import s from './Accounts.module.css'
 import Account from './Account/Account'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../redux/store'
+import { StateType } from '../../../../redux/store'
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
-import { setAccounts } from '../../../../redux/accounts-reducer'
+import { setAccounts } from '../../../../redux/ducks/accounts/action-creators'
 import Title from '../../../common/Title/Title'
 import storage from 'store2'
 
 function Accounts () {
   const dispatch = useDispatch()
-  const accounts = useSelector((state: RootReducerType) => state.accountsReducer.accounts)
+  const accounts = useSelector((state: StateType) => state.accountsReducer.accounts)
   const accountsElements = accounts.map((account, index) => (
     <Account
-      key={account.profileInfo.id}
-      avatarURL={account.profileInfo.photo_50}
+      key={account.profile.id}
+      avatarURL={account.profile.photo_50}
       currentSender={account.currentSender}
       error={account.error}
-      fullName={`${account.profileInfo.first_name} ${account.profileInfo.last_name}`}
+      fullName={`${account.profile.first_name} ${account.profile.last_name}`}
       isEnabled={account.isEnabled}
-      userId={account.profileInfo.id}
+      userId={account.profile.id}
       index={index}
     />
   ))
 
-  const reorder = (list: Array<any>, startIndex: number, endIndex: number) => {
+  const reorder = (list: any[], startIndex: number, endIndex: number) => {
     const result = [...list]
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)

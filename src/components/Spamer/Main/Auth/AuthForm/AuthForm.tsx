@@ -1,9 +1,8 @@
 import React from 'react'
 import s from './AuthForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../../redux/store'
-import { login } from '../../../../../redux/accounts-reducer'
-import { AuthAppType } from '../../../../../types/app-types'
+import { StateType } from '../../../../../redux/store'
+import { AuthAppType } from '../../../../../types/types'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 import MyTextField from '../../../../common/MyTextField'
@@ -14,8 +13,8 @@ import { NavLink } from 'react-router-dom'
 import { Button } from '@material-ui/core'
 
 function AuthForm () {
-  const codeIsRequired = useSelector((state: RootReducerType) => state.accountsReducer.authWorkflow.codeIsRequired)
-  const isSuccessLogin = useSelector((state: RootReducerType) => state.accountsReducer.authWorkflow.isSuccessLogin)
+  const codeIsRequired = useSelector((state: StateType) => state.accountsReducer.authWorkflow.codeIsRequired)
+  const isSuccessLogin = useSelector((state: StateType) => state.accountsReducer.authWorkflow.isSuccessLogin)
   const dispatch = useDispatch()
 
   return (
@@ -24,12 +23,12 @@ function AuthForm () {
         app: 'windows' as AuthAppType,
         login: '',
         password: '',
-        code: undefined,
+        code: undefined
       }}
 
       validationSchema={yup.object({
         login: yup.string().required('Введите логин'),
-        password: yup.string().required('Введите пароль'),
+        password: yup.string().required('Введите пароль')
       })}
 
       onSubmit={(values, { setValues }) => {
@@ -40,7 +39,7 @@ function AuthForm () {
             app: isSuccessLogin ? 'windows' : app,
             login: isSuccessLogin ? '' : login,
             password: isSuccessLogin ? '' : password,
-            code: undefined,
+            code: undefined
           })
         })
       }}

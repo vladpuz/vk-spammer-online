@@ -1,11 +1,11 @@
 import React from 'react'
 import { Button, CircularProgress } from '@material-ui/core'
 import { useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../../../redux/store'
+import { StateType } from '../../../../../../redux/store'
 import s from './AddButton.module.css'
 
 function AddButton () {
-  const authInProgress = useSelector((state: RootReducerType) => state.accountsReducer.authWorkflow.authInProgress)
+  const authInProgress = useSelector((state: StateType) => state.accountsReducer.authWorkflow.authInProgress)
 
   return (
     <div className={s.button}>

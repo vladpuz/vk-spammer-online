@@ -7,16 +7,21 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import SdStorageIcon from '@material-ui/icons/SdStorage'
-import { login, clearAccounts, setIsEnabledAll, shuffleAccounts } from '../../../../../redux/accounts-reducer'
+import {
+  clearAccounts,
+  setIsEnabledAll,
+  shuffleAccounts
+} from '../../../../../redux/ducks/accounts/action-creators'
+import { login } from '../../../../../redux/ducks/accounts/thunks'
 import { useDispatch, useSelector } from 'react-redux'
-import { AuthAppType } from '../../../../../types/app-types'
-import { RootReducerType } from '../../../../../redux/store'
+import { AuthAppType } from '../../../../../types/types'
+import { StateType } from '../../../../../redux/store'
 import lodash from 'lodash'
 
 function Buttons () {
   const dispatch = useDispatch()
-  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: StateType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: StateType) => state.spamerReducer.spamOnRun)
 
   return (
     <div className={s.buttons}>

@@ -1,5 +1,5 @@
 import store from '../../redux/store'
-import { addLogItem, setAutoSwitchRemaining, setSpamOnPause } from '../../redux/spamer-reducer'
+import { addLogItem, setAutoSwitchRemaining, setSpamOnPause } from '../../redux/ducks/spamer/action-creators'
 
 function pause (logItem: ReturnType<typeof addLogItem>, autoSwitchTime: number) {
   const { storedValues, startTimestamp, timers } = store.getState().spamerReducer

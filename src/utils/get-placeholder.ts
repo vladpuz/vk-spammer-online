@@ -1,4 +1,4 @@
-import { SpamModeType } from '../types/app-types'
+import { SpamModeType } from '../types/types'
 
 // Получение плейсхолдера для списка адресатов в зависимости от режима рассылки
 function getPlaceholder (mode: SpamModeType): string {

@@ -7,8 +7,8 @@ import {
   setSenderIndex,
   setSpamOnPause,
   setSpamOnRun
-} from '../../redux/spamer-reducer'
-import { clearCurrentSender } from '../../redux/accounts-reducer'
+} from '../../redux/ducks/spamer/action-creators'
+import { clearCurrentSender } from '../../redux/ducks/accounts/action-creators'
 
 function stop (logItem: ReturnType<typeof addLogItem>, autoSwitchTime: number, isCancel: boolean = true) {
   const { timers, cancelers } = store.getState().spamerReducer

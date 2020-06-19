@@ -2,21 +2,21 @@ import React from 'react'
 import Title from '../../../../common/Title/Title'
 import { MenuItem } from '@material-ui/core'
 import MyTextField from '../../../../common/MyTextField'
-import { SpamModeType } from '../../../../../types/app-types'
+import { SpamModeType } from '../../../../../types/types'
 import { useFormikContext } from 'formik'
 import { useSelector } from 'react-redux'
-import { RootReducerType } from '../../../../../redux/store'
+import { StateType } from '../../../../../redux/store'
 import storage from 'store2'
 import getPlaceholder from '../../../../../utils/get-placeholder'
 
-interface IProps {
+type Props = {
   setPlaceholder: (placeholder: string) => void
 }
 
-function Select ({ setPlaceholder }: IProps) {
+function Select ({ setPlaceholder }: Props) {
   const { setFieldValue } = useFormikContext()
-  const spamOnPause = useSelector((state: RootReducerType) => state.spamerReducer.spamOnPause)
-  const spamOnRun = useSelector((state: RootReducerType) => state.spamerReducer.spamOnRun)
+  const spamOnPause = useSelector((state: StateType) => state.spamerReducer.spamOnPause)
+  const spamOnRun = useSelector((state: StateType) => state.spamerReducer.spamOnRun)
 
   return (
     <>

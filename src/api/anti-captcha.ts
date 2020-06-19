@@ -1,9 +1,19 @@
 import axios from 'axios'
-import { antiCaptchaBaseURL } from './config'
-import { ICreateTaskRes, IGetTaskResultRes } from '../types/api-types'
 
-export async function createTask (clientKey: string, base64: string): Promise<ICreateTaskRes> {
-  const res = await axios.post(`${antiCaptchaBaseURL}createTask`, {
+const antiCaptcha = axios.create({
+  baseURL: 'https://api.anti-captcha.com/'
+})
+
+type CreateTaskRes = {
+  errorId: number
+  errorCode: string
+  errorDescription: string
+  taskId: number
+}
+
+// Создаем задачу на разгадывание капчи
+export async function createTask (clientKey: string, base64: string): Promise<CreateTaskRes> {
+  const res = await antiCaptcha.post('createTask', {
     clientKey,
     task: {
       type: 'ImageToTextTask',
@@ -16,7 +26,21 @@ export async function createTask (clientKey: string, base64: string): Promise<IC
   return res.data
 }
 
-export async function getTaskResult (clientKey: string, taskId: number): Promise<IGetTaskResultRes> {
-  const res = await axios.post(`${antiCaptchaBaseURL}getTaskResult`, { clientKey, taskId })
+type GetTaskResultRes = {
+  errorId: number
+  errorCode: string
+  errorDescription: string
+  status: string
+  solution: any
+  cost: number
+  ip: string
+  createTime: number
+  endTime: number
+  solveCount: number
+}
+
+// Пытаемся получить результат капчи
+export async function getTaskResult (clientKey: string, taskId: number): Promise<GetTaskResultRes> {
+  const res = await antiCaptcha.post('getTaskResult', { clientKey, taskId })
   return res.data
 }

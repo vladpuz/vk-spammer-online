@@ -1,11 +1,11 @@
 import store from '../../redux/store'
-import { addLogItem } from '../../redux/spamer-reducer'
+import { addLogItem } from '../../redux/ducks/spamer/action-creators'
 import start from './start'
-import { ISpamValues } from '../../types/app-types'
+import { SpamValuesType } from '../../types/types'
 
 // Валидирует данные и начинает спам
 function validate (
-  spamValues: ISpamValues,
+  spamValues: SpamValuesType,
   setFieldError: (field: string, message: string) => void,
   logItem: ReturnType<typeof addLogItem>
 ) {

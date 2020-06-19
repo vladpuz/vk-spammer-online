@@ -1,14 +1,18 @@
 import React from 'react'
 import { Snackbar } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { setAccountRepeated, setIsSuccessLogin, setCodeIsIncorrect } from '../../../../../redux/accounts-reducer'
+import {
+  setAccountRepeated,
+  setIsSuccessLogin,
+  setCodeIsIncorrect
+} from '../../../../../redux/ducks/accounts/action-creators'
 import Alert from '@material-ui/lab/Alert'
-import { RootReducerType } from '../../../../../redux/store'
+import { StateType } from '../../../../../redux/store'
 
 function Snackbars () {
-  const accountRepeated = useSelector((state: RootReducerType) => state.accountsReducer.authWorkflow.accountRepeated)
-  const isSuccessLogin = useSelector((state: RootReducerType) => state.accountsReducer.authWorkflow.isSuccessLogin)
-  const codeIsIncorrect = useSelector((state: RootReducerType) => state.accountsReducer.authWorkflow.codeIsIncorrect)
+  const accountRepeated = useSelector((state: StateType) => state.accountsReducer.authWorkflow.accountRepeated)
+  const isSuccessLogin = useSelector((state: StateType) => state.accountsReducer.authWorkflow.isSuccessLogin)
+  const codeIsIncorrect = useSelector((state: StateType) => state.accountsReducer.authWorkflow.codeIsIncorrect)
   const dispatch = useDispatch()
 
   return (
