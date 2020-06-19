@@ -89,7 +89,7 @@ function Instructions () {
             <div>
               <p>
                 Спамер интегрирован с сервисом
-                <a className={s.a} target="_blank" rel="noreferrer"
+                <a className={s.a} target="_blank" rel="noopener noreferrer"
                    href="https://anti-captcha.com"> anti-captcha.com</a>.
                 На нем работают реальные люди которые отгадывают нам капчу и получают за это деньги. Разгадывание капчи
                 <b> платное</b>. Цена примерно <b>0.05₽</b> за одну капчу картинку.
@@ -97,7 +97,7 @@ function Instructions () {
               <p>
                 Чтобы работал режим антикапчи нужно ввести ключ учетной записи полученный на этом сервисе. Для начала
                 зарегистрируйтесь на нем, ключ после пополнения баланса можно будет взять
-                здесь - <a className={s.a} target="_blank" rel="noreferrer"
+                здесь - <a className={s.a} target="_blank" rel="noopener noreferrer"
                            href="https://anti-captcha.com/clients/settings/apisetup">
                 anti-captcha.com/clients/settings/apisetup
               </a>.
@@ -136,7 +136,7 @@ function Instructions () {
                 Для смены фото беседы, нужно получить специальную строку с сервера вк, в будущем я добавлю всё это в
                 удобный интерфейс. Зайдите сюда <a
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className={s.a}
                 href="https://vk.com/dev/photos.getChatUploadServer">
                 https://vk.com/dev/photos.getChatUploadServer
