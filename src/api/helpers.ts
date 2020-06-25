@@ -1,35 +1,34 @@
-import axios from 'axios'
-import store from '../redux/store'
-import { addCancelerItem } from '../redux/ducks/spamer/action-creators'
-import { getBaseURL, ResponseType } from './config'
+import ApiError, { VKErrorRes } from './ApiError'
+import { getBaseURL, server } from './config'
 
-export async function setChatName (token: string, chatId: number, title: string): Promise<ResponseType> {
-  let URL = getBaseURL('messages.editChat', token)
+export const setChatName = async (token: string, chatId: number, title: string): Promise<{ response: number }> => {
+  let URL = getBaseURL(token, 'messages.editChat')
   URL += `chat_id=${chatId}&`
   URL += `title=${title}&`
 
-  const source = axios.CancelToken.source()
-  store.dispatch(addCancelerItem(source))
-  const res = await axios.get(URL, { cancelToken: source.token })
-  return res.data
+  const response = await server.get(URL)
+  if (response.data.error) throw new ApiError<VKErrorRes>(response)
+  return response.data
 }
 
-export async function setChatPhoto (
-  token: string, file: string): Promise<ResponseType<{ message_id: number, chat: any }>> {
-  let URL = getBaseURL('messages.setChatPhoto', token)
+export const setChatPhoto = async (
+  token: string,
+  file: string
+): Promise<{ response: { message_id: number, chat: any } }> => {
+  let URL = getBaseURL(token, 'messages.setChatPhoto')
   URL += `file=${file}&`
 
-  const source = axios.CancelToken.source()
-  store.dispatch(addCancelerItem(source))
-  const res = await axios.get(URL, { cancelToken: source.token })
-  return res.data
+  const response = await server.get(URL)
+  if (response.data.error) throw new ApiError<VKErrorRes>(response)
+  return response.data
 }
 
-export async function leaveTheChat (token: string, chatId: number, userId: number): Promise<ResponseType> {
-  let URL = getBaseURL('messages.removeChatUser', token)
+export const leaveTheChat = async (token: string, chatId: number, userId: number): Promise<{ response: number }> => {
+  let URL = getBaseURL(token, 'messages.removeChatUser')
   URL += `chat_id=${chatId}&`
   URL += `user_id=${userId}&`
 
-  const res = await axios.get(URL)
-  return res.data
+  const response = await server.get(URL)
+  if (response.data.error) throw new ApiError<VKErrorRes>(response)
+  return response.data
 }
