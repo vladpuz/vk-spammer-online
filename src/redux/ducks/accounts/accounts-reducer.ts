@@ -18,7 +18,7 @@ const initialState = {
 
 export type ActionsType = ReturnType<GetActionsType<typeof actions>>
 
-function accountsReducer (state = initialState, action: ActionsType): typeof initialState {
+const accountsReducer = (state = initialState, action: ActionsType): typeof initialState => {
   switch (action.type) {
     case types.SET_ACCOUNTS:
       return {
