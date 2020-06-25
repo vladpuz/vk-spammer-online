@@ -1,3 +1,5 @@
+import { GetProfileInfoRes } from '../api/auth'
+
 export type LogStatusType = 'error' | 'success' | 'warning' | 'info' | 'pending'
 export type AuthAppType = 'android' | 'iphone' | 'ipad' | 'windows' | 'windowsPhone'
 export type SpamModeType = 'pm' | 'chat' | 'chatAutoExit' | 'usersWalls' | 'groupsWalls' | 'comments' | 'discussions'
@@ -15,17 +17,8 @@ export type SpamValuesType = {
   addresses: string[]
 }
 
-export type ProfileType = {
-  id: number
-  first_name: string
-  last_name: string
-  is_closed: boolean
-  can_access_closed: boolean
-  photo_50: string
-}
-
 export type AccountType = {
-  profile: ProfileType
+  profile: GetProfileInfoRes
   token: string
   currentSender: boolean
   isEnabled: boolean
