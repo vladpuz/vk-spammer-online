@@ -1,7 +1,7 @@
 import lodash from 'lodash'
 
 // Делает рандомизацию строки по синтаксису 'Привет, [[value1 | value2 | value3]]'
-function randomization (text: string): string {
+const textRandomizer = (text: string): string => {
   let result = ''
 
   for (let i = 0; i < text.length; i++) {
@@ -28,4 +28,4 @@ function randomization (text: string): string {
   return result
 }
 
-export default randomization
+export default textRandomizer
