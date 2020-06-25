@@ -10,8 +10,8 @@ import { addLogItem, clearLog } from '../../../../../../redux/ducks/spamer/actio
 import { StateType } from '../../../../../../redux/store'
 import ResumeButton from './ResumeButton'
 import PauseButton from './PauseButton'
-import stop from '../../../../../../utils/spam/stop'
 import { useFormikContext } from 'formik'
+import stop from '../../../../../../redux/thunks/spam/stop/stop'
 
 function Buttons () {
   const buttonWidth = 200
@@ -48,9 +48,11 @@ function Buttons () {
           startIcon={<StopIcon/>}
           disabled={!spamIsRun}
           onClick={() => {
-            stop(
-              addLogItem('Рассылка прекращена', 'info', `Рассылка прекращена - ${Date.now()}`),
-              values.autoSwitchTime
+            dispatch(
+              stop(
+                addLogItem('Рассылка прекращена', 'info', `Рассылка прекращена - ${Date.now()}`),
+                values.autoSwitchTime
+              )
             )
           }}
         >

@@ -1,13 +1,15 @@
 import React from 'react'
 import { InputAdornment } from '@material-ui/core'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { StateType } from '../../../../redux/store'
 import storage from 'store2'
 import MyTextField from '../../../common/MyTextField'
+import { setAutoSwitchRemaining } from '../../../../redux/ducks/spamer/action-creators'
 
 function AutoSwitchTime () {
   const spamOnPause = useSelector((state: StateType) => state.spamerReducer.spamOnPause)
   const spamOnRun = useSelector((state: StateType) => state.spamerReducer.spamOnRun)
+  const dispatch = useDispatch()
 
   return (
     <MyTextField
@@ -28,6 +30,7 @@ function AutoSwitchTime () {
           autoSwitchTime: e.currentTarget.value,
           autoSwitchRemaining: e.currentTarget.value
         })
+        dispatch(setAutoSwitchRemaining(+e.currentTarget.value))
       }}
       name="autoSwitchTime"
     />

@@ -12,7 +12,7 @@ import {
   setIsEnabledAll,
   shuffleAccounts
 } from '../../../../../redux/ducks/accounts/action-creators'
-import { login } from '../../../../../redux/ducks/accounts/thunks'
+import { login } from '../../../../../redux/ducks/accounts/thunk-creators'
 import { useDispatch, useSelector } from 'react-redux'
 import { AuthAppType } from '../../../../../types/types'
 import { StateType } from '../../../../../redux/store'
@@ -40,7 +40,7 @@ function Buttons () {
               if (reader.result && typeof reader.result === 'string') {
                 const data = reader.result.split('\n').map(item => {
                   return (item && item.includes(':')) ? {
-                    login: item.split(':')[0].trim(),
+                    username: item.split(':')[0].trim(),
                     password: item.split(':')[1].trim()
                   } : ''
                 })
@@ -49,7 +49,7 @@ function Buttons () {
                   if (item) {
                     const apps = ['android', 'iphone', 'ipad', 'windows', 'windowsPhone']
                     const app = apps[lodash.random(0, apps.length - 1)] as AuthAppType
-                    dispatch(login(app, item.login, item.password))
+                    dispatch(login(item.username, item.password, { app }))
                   }
                 }
               }

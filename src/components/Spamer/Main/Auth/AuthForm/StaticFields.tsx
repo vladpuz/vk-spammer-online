@@ -12,7 +12,7 @@ function StaticFields () {
         <MenuItem value="iphone">iPhone</MenuItem>
         <MenuItem value="ipad">iPad</MenuItem>
       </MyTextField>
-      <MyTextField fullWidth name="login" label="Телефон или email" type="text" variant="filled"/>
+      <MyTextField fullWidth name="username" label="Телефон или email" type="text" variant="filled"/>
       <MyTextField fullWidth name="password" label="Пароль" type="password" variant="filled"/>
     </>
   )

@@ -1,12 +1,14 @@
 import React from 'react'
 import PauseIcon from '@material-ui/icons/Pause'
 import Button from '@material-ui/core/Button'
-import pause from '../../../../../../utils/spam/pause'
 import { useFormikContext } from 'formik'
 import { addLogItem } from '../../../../../../redux/ducks/spamer/action-creators'
+import { useDispatch } from 'react-redux'
+import pause from '../../../../../../redux/thunks/spam/pause/pause'
 
 function PauseButton () {
   const { values }: any = useFormikContext()
+  const dispatch = useDispatch()
 
   return (
     <Button
@@ -15,9 +17,11 @@ function PauseButton () {
       color="primary"
       startIcon={<PauseIcon/>}
       onClick={() => {
-        pause(
-          addLogItem('Рассылка приостановлена', 'info', `Рассылка приостановлена - ${Date.now()}`),
-          values.autoSwitchTime
+        dispatch(
+          pause(
+            addLogItem('Рассылка приостановлена', 'info', `Рассылка приостановлена - ${Date.now()}`),
+            values.autoSwitchTime
+          )
         )
       }}
     >

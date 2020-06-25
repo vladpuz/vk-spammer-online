@@ -4,11 +4,13 @@ import Sidebar from './Sidebar/Sidebar'
 import Main from './Main/Main'
 import storage from 'store2'
 import { SpamModeType } from '../../types/types'
-import validate from '../../utils/spam/validate'
 import { addLogItem } from '../../redux/ducks/spamer/action-creators'
 import { Form, Formik } from 'formik'
+import { useDispatch } from 'react-redux'
+import start from '../../redux/thunks/spam/start/start'
 
 function Spamer () {
+  const dispatch = useDispatch()
   const checkValue = (value: number | string, defaultValue: number | string): number | string => {
     if (typeof value !== 'undefined') {
       if (typeof value === 'string') return value
@@ -32,16 +34,16 @@ function Spamer () {
         addresses: storage.get('fields')?.addresses || ''
       }}
       onSubmit={(values, { setFieldError }) => {
-        validate(
+        dispatch(start(
+          addLogItem('Рассылка начата', 'info', `Рассылка начата - ${Date.now()}`),
           {
             ...values,
             autoSwitchTime: +values.autoSwitchTime,
             autoPauseTimeout: +values.autoPauseTimeout,
             addresses: values.addresses.split('\n').filter((str: string) => str)
           },
-          setFieldError,
-          addLogItem('Рассылка начата', 'info', `Рассылка начата - ${Date.now()}`)
-        )
+          setFieldError
+        ))
       }}
     >
       <Form>

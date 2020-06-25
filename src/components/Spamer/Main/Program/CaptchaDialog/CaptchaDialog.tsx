@@ -20,8 +20,8 @@ import {
   unravelCaptchaItem
 } from '../../../../../redux/ducks/spamer/action-creators'
 import MyTextField from '../../../../common/MyTextField'
-import validate from '../../../../../utils/spam/validate'
-import stop from '../../../../../utils/spam/stop'
+import stop from '../../../../../redux/thunks/spam/stop/stop'
+import start from '../../../../../redux/thunks/spam/start/start'
 
 function PaperComponent (props: any) {
   return (
@@ -64,7 +64,9 @@ function CaptchaDialog () {
 
   const handleClose = () => {
     dispatch(clearCaptcha())
-    stop(addLogItem('Спам остановлен', 'info', `Спам остановлен - ${Date.now()}`), spamValues)
+    dispatch(
+      stop(addLogItem('Спам остановлен', 'info', `Спам остановлен - ${Date.now()}`), spamValues)
+    )
   }
 
   return (
@@ -98,11 +100,16 @@ function CaptchaDialog () {
             }
 
             if (ok) {
-              validate(
-                { ...spamValues, addresses: spamValues.addresses.split('\n').filter((str: string) => str) },
-                spamSetFieldError,
-                addLogItem('Рассылка продолжена', 'info', `Рассылка продолжена - ${Date.now()}`)
-              )
+              dispatch(start(
+                addLogItem('Рассылка продолжена', 'info', `Рассылка продолжена - ${Date.now()}`),
+                {
+                  ...spamValues,
+                  addresses: spamValues.addresses.split('\n').filter((str: string) => str),
+                  autoSwitchTime: +spamValues.autoSwitchTime,
+                  autoPauseTimeout: +spamValues.autoPauseTimeout
+                },
+                spamSetFieldError
+              ))
             }
           }}
         >
