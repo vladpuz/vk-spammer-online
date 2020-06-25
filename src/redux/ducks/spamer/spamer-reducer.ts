@@ -34,7 +34,7 @@ const initialState = {
 
 export type ActionsType = ReturnType<GetActionsType<typeof actions>>
 
-function spamerReducer (state = initialState, action: ActionsType): typeof initialState {
+const spamerReducer = (state = initialState, action: ActionsType): typeof initialState => {
   switch (action.type) {
     case types.SET_SPAM_ON_RUN:
       return {
