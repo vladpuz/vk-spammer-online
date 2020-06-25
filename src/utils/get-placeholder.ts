@@ -1,7 +1,7 @@
 import { SpamModeType } from '../types/types'
 
 // Получение плейсхолдера для списка адресатов в зависимости от режима рассылки
-function getPlaceholder (mode: SpamModeType): string {
+const getPlaceholder = (mode: SpamModeType): string => {
   switch (mode) {
     case 'pm':
       return 'vanya_101\nid497257108\nkseniya2015\nи т.д.'
