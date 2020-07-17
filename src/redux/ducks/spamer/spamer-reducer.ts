@@ -5,7 +5,7 @@ import * as actions from './action-creators'
 import { GetActionsType } from '../../store'
 import { CaptchaType, LogStatusType, LogType } from '../../../types/types'
 
-const initialState = {
+export const spamerReducerState = {
   spamOnRun: false,
   spamOnPause: false,
   startTimestamp: 0,
@@ -34,7 +34,7 @@ const initialState = {
 
 export type ActionsType = ReturnType<GetActionsType<typeof actions>>
 
-const spamerReducer = (state = initialState, action: ActionsType): typeof initialState => {
+const spamerReducer = (state = spamerReducerState, action: ActionsType): typeof spamerReducerState => {
   switch (action.type) {
     case types.SET_SPAM_ON_RUN:
       return {

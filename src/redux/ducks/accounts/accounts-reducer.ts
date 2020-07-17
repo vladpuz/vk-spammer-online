@@ -5,7 +5,7 @@ import * as actions from './action-creators'
 import { GetActionsType } from '../../store'
 import { AccountType } from '../../../types/types'
 
-const initialState = {
+export const accountsReducerState = {
   accounts: (storage.local.get('accounts') || []) as AccountType[],
   authWorkflow: {
     authInProgress: false,
@@ -18,7 +18,7 @@ const initialState = {
 
 export type ActionsType = ReturnType<GetActionsType<typeof actions>>
 
-const accountsReducer = (state = initialState, action: ActionsType): typeof initialState => {
+const accountsReducer = (state = accountsReducerState, action: ActionsType): typeof accountsReducerState => {
   switch (action.type) {
     case types.SET_ACCOUNTS:
       return {
