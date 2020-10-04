@@ -59,7 +59,7 @@ export const sendToComments = async (
   opt?: { captchaKey?: string, captchaSid?: number }
 ): Promise<{ response: { comment_id: number, parents_stack: any[] } }> => {
   const [ownerId, postId] = commentId.split('_')
-  let URL = getBaseURL(token, 'messages.createComment', { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
+  let URL = getBaseURL(token, 'wall.createComment', { captchaKey: opt?.captchaKey, captchaSid: opt?.captchaSid })
   URL += `owner_id=${ownerId}&`
   URL += `post_id=${postId}&`
   if (message) URL += `message=${message}&`
