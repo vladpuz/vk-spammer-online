@@ -10,7 +10,8 @@ import { SpamValuesType } from '../../../../types/types'
 // Делаем и обрабатываем запрос
 const handleSend = (spamValues: SpamValuesType): ThunkType => {
   return async (dispatch, getState) => {
-    const { message, attachment, spamMode, addresses } = spamValues
+    const { attachment, spamMode, addresses } = spamValues
+    const message = spamValues.message.replaceAll('\n', '%0A')
     const { storedValues, captcha } = getState().spamerReducer
     const accounts = getState().accountsReducer.accounts.filter(account => account.isEnabled)
 
