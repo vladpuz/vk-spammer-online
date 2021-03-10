@@ -46,7 +46,7 @@ function Spamer () {
         ))
       }}
     >
-      <Form>
+      <Form id="globalForm">
         <div className={s.flex}>
           <Sidebar/>
           <Main/>

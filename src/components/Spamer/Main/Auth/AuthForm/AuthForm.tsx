@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react';
 import s from './AuthForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { StateType } from '../../../../../redux/store'
@@ -17,6 +17,22 @@ function AuthForm () {
   const codeIsRequired = useSelector((state: StateType) => state.accountsReducer.authWorkflow.codeIsRequired)
   const isSuccessLogin = useSelector((state: StateType) => state.accountsReducer.authWorkflow.isSuccessLogin)
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    const form = document.querySelector('#globalForm')
+    const docFrag = document.createDocumentFragment()
+
+    if (form) {
+      while (form.firstChild) {
+        const child = form.removeChild(form.firstChild)
+        docFrag.appendChild(child)
+      }
+
+      form.parentNode?.replaceChild(docFrag, form)
+    }
+
+    return () => location.reload()
+  }, [])
 
   return (
     <Formik
