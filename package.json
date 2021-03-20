@@ -37,7 +37,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^ 12.8.1",
+    "@testing-library/user-event": "^13.0.6",
     "@types/axios": "^0.14.0",
     "@types/classnames": "^2.2.10",
     "@types/jest": "^26.0.0",
