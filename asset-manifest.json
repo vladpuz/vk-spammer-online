@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/vk-spamer-online/static/css/main.8a60392f.chunk.css",
+    "main.js": "/vk-spamer-online/static/js/main.e9bc113b.chunk.js",
+    "main.js.map": "/vk-spamer-online/static/js/main.e9bc113b.chunk.js.map",
+    "runtime-main.js": "/vk-spamer-online/static/js/runtime-main.6168e349.js",
+    "runtime-main.js.map": "/vk-spamer-online/static/js/runtime-main.6168e349.js.map",
+    "static/js/2.a8142ceb.chunk.js": "/vk-spamer-online/static/js/2.a8142ceb.chunk.js",
+    "static/js/2.a8142ceb.chunk.js.map": "/vk-spamer-online/static/js/2.a8142ceb.chunk.js.map",
+    "index.html": "/vk-spamer-online/index.html",
+    "static/css/main.8a60392f.chunk.css.map": "/vk-spamer-online/static/css/main.8a60392f.chunk.css.map",
+    "static/js/2.a8142ceb.chunk.js.LICENSE.txt": "/vk-spamer-online/static/js/2.a8142ceb.chunk.js.LICENSE.txt",
+    "static/media/logo.7f3c8c40.png": "/vk-spamer-online/static/media/logo.7f3c8c40.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.6168e349.js",
+    "static/js/2.a8142ceb.chunk.js",
+    "static/css/main.8a60392f.chunk.css",
+    "static/js/main.e9bc113b.chunk.js"
+  ]
+}
