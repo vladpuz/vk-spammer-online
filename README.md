@@ -1,34 +1,64 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center">
+  <img style="max-height: 250px" src="https://user-images.githubusercontent.com/52296792/111873877-5cdc6b80-89b4-11eb-83ca-8323f84b4543.png" alt="vk-spammer-online"/>
+</div>
 
-## Getting Started
+<h1 align="center">vk-spammer-online</h1>
 
-First, run the development server:
+<hr/>
+
+<div align="center">
+    <b>💥 Бесплатный спамер для вк работающий в браузере 💥</b>
+    <br>
+    <br>
+    <img src="https://user-images.githubusercontent.com/52296792/85111159-61a99e80-b22d-11ea-9e6d-9342c90e8b02.png" alt="screenshot"/>
+    <br>
+    <br>
+    <a href="https://vladislav-puzyrev.github.io/vk-spammer-online"><b>Начать использовать VK-SPAMER-ONLINE</b></a>
+</div>
+
+## Почему VK-SPAMER-ONLINE? 🤔
+
+* Бесплатный на 100%
+* Не нужно ничего скачивать
+* Не воруем и не используем ваши аккаунты
+* Open Source проект
+
+## Доступные режимы рассылки 💬
+
+* Личные сообщения
+* Беседы
+* Беседы с автовыходом
+* Стены юзеров
+* Стены групп
+* Комментарии
+* Обсуждения
+
+## Возможности ✔
+
+* Добавление любых вложений
+* Поддержка неограниченного количества аккаунтов
+* Рандомизация текста и вложений
+* Интеграция с [anti-captcha.com](https://anti-captcha.com/)
+* Загрузка аккаунтов и списка адресатов из файлов
+
+## Запуск локально 🖥
+
+Вы можете запускать спамер у себя на компьютере, для этого проделайте следующие шаги:
+
+1) Установите Node.js (лучше версию LTS) [https://nodejs.org/ru](https://nodejs.org/ru).
+2) Склонируйте репозиторий.
+3) Выполните команды в корне проекта:
 
 ```bash
-npm run dev
-# or
-yarn dev
+npm install -g yarn
+yarn install
+yarn start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4) Откройте [http://localhost:3000](http://localhost:3000) в своем браузере 🎉✨
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Обратная связь 🤝
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Если у вас есть вопросы или пожелания не стесняйтесь
+открывать [issues](https://github.com/vladislav-puzyrev/vk-spammer-online/issues/new/choose) или пишите мне
+в [telegram](https://t.me/vladislav_puzyrev)!
