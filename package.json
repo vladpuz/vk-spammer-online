@@ -1,9 +1,9 @@
 {
-  "name": "vk-spamer-online",
+  "name": "vk-spammer-online",
   "version": "3.0.2",
   "private": true,
   "license": "MIT",
-  "homepage": "https://vladislav-puzyrev.github.io/vk-spamer-online",
+  "homepage": "https://vladislav-puzyrev.github.io/vk-spammer-online",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
