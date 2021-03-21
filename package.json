@@ -1,14 +1,15 @@
 {
   "name": "vk-spammer-online",
   "private": true,
-  "license": "MIT",
   "scripts": {
     "dev": "next dev",
+    "prod": "yarn run build && yarn run start",
     "build": "next build",
     "start": "next start",
-    "test": "yarn run test:tsc && yarn run test:lint",
+    "test": "yarn run test:tsc && yarn run test:eslint && yarn run test:stylelint",
     "test:tsc": "tsc --noEmit",
-    "test:lint": "eslint ."
+    "test:eslint": "eslint .",
+    "test:stylelint": "stylelint **/*.{ts,tsx}"
   },
   "dependencies": {
     "next": "^10.0.9",
@@ -17,18 +18,27 @@
     "next-themes": "^0.0.14",
     "next-translate": "^1.0.4",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "reset.css": "^2.0.2",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
+    "@types/styled-components": "^5.1.9",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "babel-plugin-styled-components": "^1.12.0",
     "eslint": "^7.22.0",
     "eslint-config-airbnb-typescript": "^12.3.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "stylelint": "^13.12.0",
+    "stylelint-config-recess-order": "^2.3.0",
+    "stylelint-config-standard": "^21.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-order": "^4.1.0",
     "typescript": "^4.2.3"
   }
 }

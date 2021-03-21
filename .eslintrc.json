@@ -4,20 +4,7 @@
     "node": true,
     "es2021": true
   },
-  "ignorePatterns": [
-    "**/*.js",
-    "**/*.jsx"
-  ],
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:import/typescript",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:jsx-a11y/recommended",
-    "airbnb-typescript"
-  ],
+  "ignorePatterns": ["**/*.js", "**/*.jsx"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json",
@@ -34,9 +21,20 @@
     "react-hooks",
     "jsx-a11y"
   ],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended",
+    "airbnb-typescript"
+  ],
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "react/jsx-props-no-spreading": "off",
+    "object-curly-newline": "off",
     "arrow-body-style": "off"
   }
 }

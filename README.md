@@ -1,8 +1,8 @@
 <div align="center">
-  <img style="max-height: 250px" src="https://user-images.githubusercontent.com/52296792/111873877-5cdc6b80-89b4-11eb-83ca-8323f84b4543.png" alt="vk-spammer-online"/>
+  <img style="max-height: 250px" src="https://user-images.githubusercontent.com/52296792/111873877-5cdc6b80-89b4-11eb-83ca-8323f84b4543.png" alt="VK-SPAMMER.ONLINE"/>
 </div>
 
-<h1 align="center">vk-spammer-online</h1>
+<h1 align="center">VK-SPAMMER.ONLINE</h1>
 
 <hr/>
 
@@ -13,10 +13,10 @@
     <img src="https://user-images.githubusercontent.com/52296792/85111159-61a99e80-b22d-11ea-9e6d-9342c90e8b02.png" alt="screenshot"/>
     <br>
     <br>
-    <a href="https://vladislav-puzyrev.github.io/vk-spammer-online"><b>Начать использовать VK-SPAMER-ONLINE</b></a>
+    <a href="https://vladislav-puzyrev.github.io/vk-spammer-online"><b>Начать использовать VK-SPAMMER.ONLINE</b></a>
 </div>
 
-## Почему VK-SPAMER-ONLINE? 🤔
+## Почему VK-SPAMMER.ONLINE? 🤔
 
 * Бесплатный на 100%
 * Не нужно ничего скачивать
