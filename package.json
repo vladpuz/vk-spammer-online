@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "test": "yarn run test:tsc && yarn run test:eslint && yarn run test:stylelint",
-    "test:tsc": "tsc --noEmit",
+    "test:tsc": "tsc",
     "test:eslint": "eslint .",
-    "test:stylelint": "stylelint **/*.{ts,tsx}"
+    "test:stylelint": "stylelint **/*.ts"
   },
   "dependencies": {
     "next": "^10.0.9",
