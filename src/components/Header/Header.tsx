@@ -1,17 +1,30 @@
-import React from 'react'
-import s from './Header.module.css'
-import logo from '../../assets/images/logo.png'
-import { NavLink } from 'react-router-dom'
-import GitHubIcon from '@material-ui/icons/GitHub'
-import { IconButton } from '@material-ui/core'
+import React, { useState } from 'react';
+import s from './Header.module.css';
+import logo from '../../assets/images/logo.png';
+import { NavLink } from 'react-router-dom';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import { IconButton } from '@material-ui/core';
 
-function Header () {
+function Header() {
+  const [open, setOpen] = useState(true);
+
   return (
     <header className={s.header}>
+      {open && (
+        <div className={s.navalny}>
+          <span>
+            Свободу Алексею Навальному!
+          </span>
+          <span>
+            Поддержите инициативу честных выборов — <a href="https://free.navalny.com" target="_blank">https://free.navalny.com</a>
+          </span>
+          <button onClick={() => setOpen(false)}>X</button>
+        </div>
+      )}
       <div className={s.inner}>
         <div className={s.logo}>
           <NavLink to="/">
-            <img className={s.logo__image} src={logo} alt="logo"/>
+            <img className={s.logo__image} src={logo} alt="logo" />
           </NavLink>
           <div className={s.logo__text}>
             <NavLink to="/">
@@ -22,11 +35,11 @@ function Header () {
         </div>
 
         <IconButton href="https://github.com/vladislav-puzyrev/vk-spammer-online" target="_blank" aria-label="github">
-          <GitHubIcon fontSize="large"/>
+          <GitHubIcon fontSize="large" />
         </IconButton>
       </div>
     </header>
-  )
+  );
 }
 
-export default Header
+export default Header;
