@@ -8,7 +8,7 @@
     "start": "next start",
     "test": "yarn run test:tsc && yarn run test:eslint && yarn run test:stylelint",
     "test:tsc": "tsc",
-    "test:eslint": "eslint .",
+    "test:eslint": "eslint **/*.{ts,tsx}",
     "test:stylelint": "stylelint **/*.ts"
   },
   "dependencies": {
