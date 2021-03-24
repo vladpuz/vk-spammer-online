@@ -7,7 +7,6 @@ const focus = css`
 
   *:focus-visible {
     outline: var(--color) auto 5px;
-    outline-offset: 5px;
   }
 `;
 
