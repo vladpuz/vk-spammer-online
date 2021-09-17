@@ -1,5 +1,4 @@
-Репозиторий был переименован. Новая ссылка на приложение —
-[https://vladislav-puzyrev.github.io/vk-spammer-online](https://vladislav-puzyrev.github.io/vk-spammer-online)
+Этот репозиторий не поддерживается
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/52296792/85717731-3fb98b80-b707-11ea-8150-fc23cb4952a4.png" alt="logo"/>
@@ -57,9 +56,3 @@ yarn start
 ```
 
 4) Откройте [http://localhost:3000](http://localhost:3000) в своем браузере 🎉✨
-
-## Обратная связь 🤝
-
-Если у вас есть вопросы или пожелания не стесняйтесь
-открывать [issues](https://github.com/vladislav-puzyrev/vk-spammer-online/issues/new/choose) или пишите мне
-в [telegram](https://t.me/vladislav_puzyrev)!
