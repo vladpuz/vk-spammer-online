@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import s from './Header.module.css';
 import logo from '../../assets/images/logo.png';
 import { NavLink } from 'react-router-dom';
@@ -6,21 +6,8 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import { IconButton } from '@material-ui/core';
 
 function Header() {
-  const [open, setOpen] = useState(true);
-
   return (
     <header className={s.header}>
-      {open && (
-        <div className={s.navalny}>
-          <span>
-            Свободу Алексею Навальному!
-          </span>
-          <span>
-            Поддержите инициативу честных выборов — <a href="https://free.navalny.com" target="_blank">https://free.navalny.com</a>
-          </span>
-          <button onClick={() => setOpen(false)}>X</button>
-        </div>
-      )}
       <div className={s.inner}>
         <div className={s.logo}>
           <NavLink to="/">

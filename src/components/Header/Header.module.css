@@ -6,32 +6,6 @@
   min-width: 1400px;
 }
 
-.navalny {
-  text-align: center;
-  display: grid;
-  grid-row-gap: 5px;
-  align-items: center;
-  justify-content: center;
-  background: rgb(255, 51, 0);
-  padding: 10px;
-  position: relative;
-}
-
-.navalny a {
-  color: rgb(0, 0, 51);
-  text-decoration: underline;
-}
-
-.navalny button {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  background: white;
-  padding: 5px 8px;
-  border: none;
-  cursor: pointer;
-}
-
 .inner {
   width: 1400px;
   margin: 0 auto;
