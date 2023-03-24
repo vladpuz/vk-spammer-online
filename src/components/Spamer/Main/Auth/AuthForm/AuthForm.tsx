@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'
 import s from './AuthForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { StateType } from '../../../../../redux/store'
 import { AuthAppType } from '../../../../../types/types'
-import { Formik, Form } from 'formik'
+import { Form, Formik } from 'formik'
 import * as yup from 'yup'
 import MyTextField from '../../../../common/MyTextField'
 import Snackbars from './Snackbars'
@@ -37,7 +37,7 @@ function AuthForm () {
   return (
     <Formik
       initialValues={{
-        app: 'windows' as AuthAppType,
+        app: 'android' as AuthAppType,
         username: '',
         password: '',
         code: undefined

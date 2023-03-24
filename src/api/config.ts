@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const apiVersion = '5.110'
-export const proxyURL = 'https://dry-lowlands-96591.herokuapp.com/'
+export const proxyURL = ''
 export const server = axios.create({ validateStatus: () => true })
 
 export const getBaseURL = (

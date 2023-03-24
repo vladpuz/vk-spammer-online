@@ -1,13 +1,14 @@
-import ApiError, { VKErrorRes, AuthErrorRes } from './ApiError'
+import ApiError, { AuthErrorRes, VKErrorRes } from './ApiError'
 import { apiVersion, getBaseURL, proxyURL, server } from './config'
 import { AuthAppType } from '../types/types'
 
-const authApps = {
+export const authApps = {
   android: { clientId: '2274003', clientSecret: 'hHbZxrka2uZ6jB1inYsH' },
+  windows: { clientId: '3697615', clientSecret: 'AlVXZFMUqyrnABp8ncuU' },
+  windowsPhone: { clientId: '3502557', clientSecret: 'PEObAuQi6KloPM4T30DV' },
   iphone: { clientId: '3140623', clientSecret: 'VeWdmVclDCtn6ihuP1nt' },
   ipad: { clientId: '3682744', clientSecret: 'mY6CDUswIVdJLCD3j15n' },
-  windows: { clientId: '3697615', clientSecret: 'AlVXZFMUqyrnABp8ncuU' },
-  windowsPhone: { clientId: '3502557', clientSecret: 'PEObAuQi6KloPM4T30DV' }
+  vkMe: { clientId: '6146827', clientSecret: 'qVxWRF1CwHERuIrKBnqe' }
 }
 
 type AuthRes = {
@@ -28,7 +29,7 @@ export const auth = async (
     captchaSid?: string
   }
 ): Promise<AuthRes> => {
-  const { clientId, clientSecret } = authApps[opt?.app || 'windows']
+  const { clientId, clientSecret } = authApps[opt?.app || 'android']
 
   let URL = proxyURL + 'https://oauth.vk.com/token?'
   URL += 'grant_type=password&'

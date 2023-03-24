@@ -15,6 +15,17 @@ function Instructions () {
       <div className={s.instructions}>
         <ul className={s.list}>
           <li className={s.list__item}>
+            <h3 className={s.subtitle}>Запуск браузера с выключенным CORS</h3>
+            <p>
+              Откройте браузер на основе Chromium с выключенным CORS. В противном случае работать с VK API из браузера
+              не получится. Пример запуска Chrome для Windows:
+              <pre>
+                "C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --user-data-dir="C://chrome-dev-disabled-security"
+              </pre>
+            </p>
+            <p>
+              Можно сделать .bat файл, чтобы не прописывать команду каждый раз.
+            </p>
             <h3 className={s.subtitle}>Адресаты рассылки</h3>
             <ul className={s.addressesList}>
               <li className={s.addressesList__item}>
