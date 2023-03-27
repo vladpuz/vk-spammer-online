@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const apiVersion = '5.110'
+export const apiVersion = '5.131'
 export const proxyURL = ''
 export const server = axios.create({ validateStatus: () => true })
 
