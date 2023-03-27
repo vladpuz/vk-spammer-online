@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/vk-spammer-online/static/css/main.1555f7ae.chunk.css",
-    "main.js": "/vk-spammer-online/static/js/main.dd7dc383.chunk.js",
-    "main.js.map": "/vk-spammer-online/static/js/main.dd7dc383.chunk.js.map",
+    "main.js": "/vk-spammer-online/static/js/main.2b4a4a26.chunk.js",
+    "main.js.map": "/vk-spammer-online/static/js/main.2b4a4a26.chunk.js.map",
     "runtime-main.js": "/vk-spammer-online/static/js/runtime-main.6a20f9d6.js",
     "runtime-main.js.map": "/vk-spammer-online/static/js/runtime-main.6a20f9d6.js.map",
     "static/js/2.7433c55d.chunk.js": "/vk-spammer-online/static/js/2.7433c55d.chunk.js",
@@ -16,6 +16,6 @@
     "static/js/runtime-main.6a20f9d6.js",
     "static/js/2.7433c55d.chunk.js",
     "static/css/main.1555f7ae.chunk.css",
-    "static/js/main.dd7dc383.chunk.js"
+    "static/js/main.2b4a4a26.chunk.js"
   ]
 }
