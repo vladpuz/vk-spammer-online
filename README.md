@@ -13,7 +13,7 @@
     <img src="https://user-images.githubusercontent.com/52296792/85111159-61a99e80-b22d-11ea-9e6d-9342c90e8b02.png" alt="screenshot"/>
     <br>
     <br>
-    <a href="https://vpuzzyrev.github.io/vk-spammer-online"><b>Начать использовать VK-SPAMER-ONLINE</b></a>
+    <a href="https://vladpuz.github.io/vk-spammer-online"><b>Начать использовать VK-SPAMER-ONLINE</b></a>
 </div>
 
 ## Почему VK-SPAMER-ONLINE? 🤔

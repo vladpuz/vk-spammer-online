@@ -2,7 +2,7 @@
   "name": "vk-spammer-online",
   "version": "3.0.3",
   "private": true,
-  "homepage": "https://vpuzzyrev.github.io/vk-spammer-online",
+  "homepage": "https://vladpuz.github.io/vk-spammer-online",
   "license": "MIT",
   "scripts": {
     "build": "react-scripts --openssl-legacy-provider build",
