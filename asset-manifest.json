@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/vk-spammer-online/static/css/main.311c5dc1.chunk.css",
-    "main.js": "/vk-spammer-online/static/js/main.102aab32.chunk.js",
-    "main.js.map": "/vk-spammer-online/static/js/main.102aab32.chunk.js.map",
+    "main.css": "/vk-spammer-online/static/css/main.1555f7ae.chunk.css",
+    "main.js": "/vk-spammer-online/static/js/main.6c4a054b.chunk.js",
+    "main.js.map": "/vk-spammer-online/static/js/main.6c4a054b.chunk.js.map",
     "runtime-main.js": "/vk-spammer-online/static/js/runtime-main.6a20f9d6.js",
     "runtime-main.js.map": "/vk-spammer-online/static/js/runtime-main.6a20f9d6.js.map",
     "static/js/2.9c4ca9d9.chunk.js": "/vk-spammer-online/static/js/2.9c4ca9d9.chunk.js",
     "static/js/2.9c4ca9d9.chunk.js.map": "/vk-spammer-online/static/js/2.9c4ca9d9.chunk.js.map",
     "index.html": "/vk-spammer-online/index.html",
-    "static/css/main.311c5dc1.chunk.css.map": "/vk-spammer-online/static/css/main.311c5dc1.chunk.css.map",
+    "static/css/main.1555f7ae.chunk.css.map": "/vk-spammer-online/static/css/main.1555f7ae.chunk.css.map",
     "static/js/2.9c4ca9d9.chunk.js.LICENSE.txt": "/vk-spammer-online/static/js/2.9c4ca9d9.chunk.js.LICENSE.txt",
     "static/media/logo.7f3c8c40.png": "/vk-spammer-online/static/media/logo.7f3c8c40.png"
   },
   "entrypoints": [
     "static/js/runtime-main.6a20f9d6.js",
     "static/js/2.9c4ca9d9.chunk.js",
-    "static/css/main.311c5dc1.chunk.css",
-    "static/js/main.102aab32.chunk.js"
+    "static/css/main.1555f7ae.chunk.css",
+    "static/js/main.6c4a054b.chunk.js"
   ]
 }
